@@ -1,0 +1,123 @@
+# =============================================================================
+# .gitignore — Prode Mundial 2026
+# Monorepo: backend (Spring Boot / Maven) + frontend (Angular / Node)
+# =============================================================================
+
+# ─── BACKEND — Spring Boot / Maven ───────────────────────────────────────────
+
+# Carpeta de compilación de Maven (clases, JARs, reportes)
+backend/target/
+backend/bin/
+
+# Archivos de Maven Wrapper
+!backend/.mvn/wrapper/maven-wrapper.jar
+!backend/.mvn/wrapper/maven-wrapper.properties
+
+# Logs de Spring Boot
+backend/*.log
+backend/logs/
+
+# Archivos de configuración sensibles (¡IMPORTANTÍSIMO!)
+# Ignoramos cualquier archivo de propiedades que contenga secretos
+backend/src/main/resources/application-*.properties
+# Podés crear un application-dev.properties local que nunca se subirá.
+# El application.properties principal debería tener solo variables de entorno ${VAR} o datos no sensibles.
+
+# PDFs generados por la app
+backend/fase-grupos/participantes/*.pdf
+
+
+# ─── FRONTEND — Angular / Node ────────────────────────────────────────────────
+
+# Dependencias de Node (se reinstalan con "npm install")
+frontend/node_modules/
+
+# Carpeta de build de producción (se regenera con "ng build")
+frontend/dist/
+
+# Caché de Angular CLI
+frontend/.angular/
+
+# Reportes de cobertura de tests
+frontend/coverage/
+
+# Logs de npm
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos de entorno (contienen URLs de producción o API keys)
+frontend/src/environments/environment.production.ts
+frontend/src/environments/environment.prod.ts
+
+
+# ─── IDEs, Editores y Herramientas ────────────────────────────────────────────
+
+# IntelliJ IDEA / WebStorm (JetBrains)
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Visual Studio Code
+.vscode/
+!.vscode/extensions.json
+
+# Eclipse / NetBeans
+.classpath
+.project
+.settings/
+.factorypath
+nbproject/
+nbbuild/
+nbdist/
+nb-configuration.xml
+
+# Herramientas de IA y Asistentes (Antigravity/Gemini)
+.gemini/
+.antigravity/
+brain/
+implementation_plan.md
+task.md
+walkthrough.md
+
+
+# ─── Sistema Operativo ────────────────────────────────────────────────────────
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+
+# ─── Variables de entorno ─────────────────────────────────────────────────────
+# Nunca subir archivos .env que contengan passwords, API keys, etc.
+.env
+.env.local
+.env.production
+.env.development
+*.env
+*.local
+
+
+# ─── Misceláneos ──────────────────────────────────────────────────────────────
+
+# Archivos temporales
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Archivos de backup de editores de texto
+*.bak
+*.orig

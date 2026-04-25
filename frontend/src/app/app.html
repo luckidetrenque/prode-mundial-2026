@@ -1,0 +1,33 @@
+<!-- src/app/app.html — Layout principal de la aplicación -->
+
+<nav class="navbar">
+  <div class="navbar-brand">
+    <a routerLink="/home">
+      <span class="brand-icon">⚽</span>
+      <span class="brand-text">Prode <strong>2026</strong></span>
+    </a>
+  </div>
+
+  <ul class="navbar-menu">
+    <li><a routerLink="/fixture"       routerLinkActive="activo">Fixture</a></li>
+    <li><a routerLink="/planilla"      routerLinkActive="activo">Planilla</a></li>
+    <li><a routerLink="/resultados"    routerLinkActive="activo">Resultados</a></li>
+    <li><a routerLink="/posiciones"    routerLinkActive="activo">Posiciones</a></li>
+    <li><a routerLink="/estadisticas"  routerLinkActive="activo">Estadísticas</a></li>
+    <li><a routerLink="/participantes" routerLinkActive="activo">Participantes</a></li>
+  </ul>
+
+  <a routerLink="/admin" class="btn-admin">
+    <i class="fas fa-lock"></i> Admin
+  </a>
+</nav>
+
+<router-outlet />
+
+<footer class="footer">
+  <p>
+    Prode Mundial 2026 &mdash; Canadá &middot; Estados Unidos &middot; México
+    &nbsp;|&nbsp;
+    <a routerLink="/admin/login">Administración</a>
+  </p>
+</footer>

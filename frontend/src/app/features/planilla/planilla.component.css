@@ -1,0 +1,10 @@
+.group-table { font-size: 12px; margin-bottom: 0; }
+.group-table caption { font-size: 0.9rem; }
+.seleccionado { background-color: #e8f8f5 !important; }
+.equipo-nombre { margin-left: 0.3em; font-size: 0.8rem; text-transform: uppercase; }
+@media (max-width: 576px) { .equipo-nombre { display: none; } }
+.datos-participante { margin-top: 2em; padding: 1.5em; background-color: aliceblue; border-radius: 8px; max-width: 500px; }
+.progreso { margin-bottom: 1em; font-size: 0.9rem; color: var(--clr-primary-dark); }
+.campo-error { color: var(--clr-error-text); font-size: 0.75rem; }
+.planilla-exito { padding: 2em; text-align: center; }
+.codigo-planilla { font-size: 1.5rem; color: #56042c; display: block; margin: 0.5em 0; }
