@@ -1,4 +1,4 @@
-// src/app/features/planilla/planilla.component.ts
+// planilla.component.ts — VERSIÓN MEJORADA
 import { Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -18,14 +18,15 @@ const GRUPOS_2026 = ['A','B','C','D','E','F','G','H','I','J','K','L'];
 })
 export class PlanillaComponent implements OnInit {
 
-  cargando        = signal(true);
-  guardando       = signal(false);
-  errorMensaje    = signal<string | null>(null);
+  cargando         = signal(true);
+  guardando        = signal(false);
+  errorMensaje     = signal<string | null>(null);
   planillaGuardada = signal<PlanillaResponse | null>(null);
 
   partidos: Partido[] = [];
   grupos = GRUPOS_2026;
 
+  // Mapa interno de predicciones: partidoId → resultado
   private predicciones = new Map<number, ResultadoPrediccion>();
 
   form: FormGroup;
@@ -61,16 +62,32 @@ export class PlanillaComponent implements OnInit {
 
   seleccionar(partidoId: number, prediccion: ResultadoPrediccion): void {
     this.predicciones.set(partidoId, prediccion);
+    // Fuerza detección de cambios creando nueva referencia (para signals)
+    this._prediccionesVersion.update(v => v + 1);
+  }
+
+  // Signal auxiliar para forzar re-render al cambiar el mapa
+  private _prediccionesVersion = signal(0);
+
+  getPrediccion(partidoId: number): ResultadoPrediccion | null {
+    void this._prediccionesVersion(); // suscribe al signal
+    return this.predicciones.get(partidoId) ?? null;
   }
 
   prediccionSeleccionada(partidoId: number): boolean {
+    void this._prediccionesVersion();
     return this.predicciones.has(partidoId);
   }
 
-  prediccionesCompletadas(): number { return this.predicciones.size; }
+  prediccionesCompletadas(): number {
+    void this._prediccionesVersion();
+    return this.predicciones.size;
+  }
+
   totalPartidos(): number { return this.partidos.length; }
 
   formularioValido(): boolean {
+    void this._prediccionesVersion();
     return this.form.valid && this.predicciones.size === this.partidos.length;
   }
 
@@ -78,6 +95,7 @@ export class PlanillaComponent implements OnInit {
     if (!this.formularioValido()) return;
     this.guardando.set(true);
     this.errorMensaje.set(null);
+
     const request = {
       nombre:   this.form.value.nombre.toUpperCase(),
       apellido: this.form.value.apellido.toUpperCase(),
@@ -86,15 +104,20 @@ export class PlanillaComponent implements OnInit {
         ([partidoId, prediccion]) => ({ partidoId, prediccion })
       )
     };
+
     this.planillaService.guardar(request).subscribe({
       next: response => { this.planillaGuardada.set(response); this.guardando.set(false); },
-      error: err => { this.errorMensaje.set(err.error?.error ?? 'Error al guardar la planilla.'); this.guardando.set(false); }
+      error: err => {
+        this.errorMensaje.set(err.error?.error ?? 'Error al guardar la planilla.');
+        this.guardando.set(false);
+      }
     });
   }
 
   nuevaPlanilla(): void {
     this.planillaGuardada.set(null);
     this.predicciones.clear();
+    this._prediccionesVersion.update(v => v + 1);
     this.form.reset();
   }
 }

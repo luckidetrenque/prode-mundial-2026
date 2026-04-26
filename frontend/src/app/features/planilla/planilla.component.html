@@ -1,6 +1,6 @@
-<!-- src/app/features/planilla/planilla.component.html -->
+<!-- planilla.component.html — VERSIÓN MEJORADA -->
 <main class="main">
-  <h2>Planilla de la Fase de Grupos</h2>
+  <h2><i class="fas fa-list-check"></i> Planilla — Fase de Grupos</h2>
 
   @if (cargando()) {
     <div class="spinner-container"><div class="spinner"></div></div>
@@ -8,77 +8,151 @@
 
   @if (planillaGuardada()) {
     <div class="planilla-exito">
-      <p class="msg-success">✅ {{ planillaGuardada()!.mensaje }}</p>
-      <p>Tu número de planilla es: <strong class="codigo-planilla">{{ planillaGuardada()!.codigo }}</strong></p>
-      <p>Presentá este número para confirmar tu participación.</p>
-      <button class="btn btn-secondary" (click)="nuevaPlanilla()">Cargar otra planilla</button>
+      <div class="exito-icono"><i class="fas fa-circle-check"></i></div>
+      <p class="msg-success">{{ planillaGuardada()!.mensaje }}</p>
+      <p style="color: var(--clr-text-muted); font-size: 0.9rem; margin-bottom: 0.5em;">Tu número de planilla es:</p>
+      <strong class="codigo-planilla">{{ planillaGuardada()!.codigo }}</strong>
+      <p style="color: var(--clr-text-muted); font-size: 0.85rem; margin: 1em 0 1.5em;">
+        Guardá este número. Lo vas a necesitar para confirmar tu participación.
+      </p>
+      <button class="btn btn-secondary" (click)="nuevaPlanilla()">
+        <i class="fas fa-plus"></i> Cargar otra planilla
+      </button>
     </div>
   }
 
   @if (errorMensaje()) {
-    <p class="msg-error">❌ {{ errorMensaje() }}</p>
+    <p class="msg-error"><i class="fas fa-triangle-exclamation"></i> {{ errorMensaje() }}</p>
   }
 
   @if (!cargando() && !planillaGuardada()) {
+
+    <!-- Barra de progreso sticky -->
+    <div class="progreso-wrap">
+      <div class="progreso-header">
+        <span class="progreso-label"><i class="fas fa-chart-simple" style="font-size:0.75rem;margin-right:4px;color:var(--clr-primary-light)"></i>Predicciones</span>
+        <span class="progreso-count">
+          {{ prediccionesCompletadas() }}
+          <span>/ {{ totalPartidos() }}</span>
+        </span>
+      </div>
+      <div class="barra-track">
+        <div
+          class="barra-fill"
+          [class.completa]="prediccionesCompletadas() === totalPartidos()"
+          [style.width.%]="totalPartidos() ? (prediccionesCompletadas() / totalPartidos()) * 100 : 0"
+        ></div>
+      </div>
+    </div>
+
     <form [formGroup]="form" (ngSubmit)="guardar()">
+
+      <!-- Grilla de grupos -->
       <div class="groups-grid">
         @for (grupo of grupos; track grupo) {
-          <table class="group-table">
-            <caption>GRUPO {{ grupo }}</caption>
-            <thead>
-              <tr>
-                <th>#</th><th>L</th><th>EQUIPO</th><th>E</th><th>EQUIPO</th><th>V</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (partido of getPartidosPorGrupo(grupo); track partido.id) {
-                <tr [class.seleccionado]="prediccionSeleccionada(partido.id)">
-                  <td>{{ partido.numero }}</td>
-                  <td><input type="radio" [name]="'partido_' + partido.id" value="LOCAL" (change)="seleccionar(partido.id, 'LOCAL')" /></td>
-                  <td>
-                    <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" class="flag" width="32" />
-                    <span class="equipo-nombre">{{ partido.equipoLocalShow }}</span>
-                  </td>
-                  <td><input type="radio" [name]="'partido_' + partido.id" value="EMPATE" (change)="seleccionar(partido.id, 'EMPATE')" /></td>
-                  <td>
-                    <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow" class="flag" width="32" />
-                    <span class="equipo-nombre">{{ partido.equipoVisitanteShow }}</span>
-                  </td>
-                  <td><input type="radio" [name]="'partido_' + partido.id" value="VISITANTE" (change)="seleccionar(partido.id, 'VISITANTE')" /></td>
-                </tr>
-              }
-            </tbody>
-          </table>
+          <div class="group-table">
+            <div style="background:var(--clr-primary-dark);padding:0.45em 0.85em;border-radius:var(--radius-md) var(--radius-md) 0 0;display:flex;align-items:center;gap:0.5em;">
+              <span style="font-family:var(--font-display);font-size:0.8rem;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.6)">GRUPO</span>
+              <span style="font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--clr-accent)">{{ grupo }}</span>
+            </div>
+
+            @for (partido of getPartidosPorGrupo(grupo); track partido.id) {
+              <div
+                class="partido-row"
+                [class.seleccionado]="prediccionSeleccionada(partido.id)"
+              >
+                <!-- Número -->
+                <span class="partido-num">{{ partido.numero }}</span>
+
+                <!-- Equipo local -->
+                <div class="equipo-local">
+                  <span class="equipo-nombre">{{ partido.equipoLocalShow }}</span>
+                  <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" class="flag" width="28" height="19" />
+                </div>
+
+                <!-- Opciones L / E / V -->
+                <div class="opciones-centro">
+                  <span
+                    class="opcion-btn"
+                    [class.activa-local]="getPrediccion(partido.id) === 'LOCAL'"
+                    (click)="seleccionar(partido.id, 'LOCAL')"
+                    title="Local gana"
+                  >L</span>
+                  <span
+                    class="opcion-btn"
+                    [class.activa-empate]="getPrediccion(partido.id) === 'EMPATE'"
+                    (click)="seleccionar(partido.id, 'EMPATE')"
+                    title="Empate"
+                  >E</span>
+                  <span
+                    class="opcion-btn"
+                    [class.activa-visitante]="getPrediccion(partido.id) === 'VISITANTE'"
+                    (click)="seleccionar(partido.id, 'VISITANTE')"
+                    title="Visitante gana"
+                  >V</span>
+                </div>
+
+                <!-- Equipo visitante -->
+                <div class="equipo-visitante">
+                  <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow" class="flag" width="28" height="19" />
+                  <span class="equipo-nombre">{{ partido.equipoVisitanteShow }}</span>
+                </div>
+              </div>
+            }
+          </div>
         }
       </div>
 
+      <!-- Datos del participante -->
       <div class="datos-participante">
+        <p class="datos-titulo"><i class="fas fa-user" style="font-size:0.95rem;color:var(--clr-primary-light)"></i> Tus datos</p>
+
+        @if (prediccionesCompletadas() === totalPartidos() && totalPartidos() > 0) {
+          <div class="aviso-completo">
+            <i class="fas fa-circle-check"></i>
+            ¡Completaste todas las predicciones! Ingresá tus datos y guardá.
+          </div>
+        }
+
         <div class="form-group">
           <label for="nombre">Nombre</label>
-          <input id="nombre" type="text" formControlName="nombre" placeholder="Escribí tu nombre" />
+          <input id="nombre" type="text" formControlName="nombre" placeholder="Tu nombre" autocomplete="given-name" />
           @if (form.get('nombre')?.invalid && form.get('nombre')?.touched) {
-            <span class="campo-error">El nombre es obligatorio</span>
+            <span class="campo-error"><i class="fas fa-circle-exclamation" style="font-size:0.7rem"></i> El nombre es obligatorio</span>
           }
         </div>
+
         <div class="form-group">
           <label for="apellido">Apellido</label>
-          <input id="apellido" type="text" formControlName="apellido" placeholder="Escribí tu apellido" />
+          <input id="apellido" type="text" formControlName="apellido" placeholder="Tu apellido" autocomplete="family-name" />
           @if (form.get('apellido')?.invalid && form.get('apellido')?.touched) {
-            <span class="campo-error">El apellido es obligatorio</span>
+            <span class="campo-error"><i class="fas fa-circle-exclamation" style="font-size:0.7rem"></i> El apellido es obligatorio</span>
           }
         </div>
+
         <div class="form-group">
           <label for="afiliado">N° de Afiliado</label>
-          <input id="afiliado" type="number" formControlName="afiliado" placeholder="Número de afiliado" min="1" />
+          <input id="afiliado" type="number" formControlName="afiliado" placeholder="Número de afiliado" min="1" autocomplete="off" />
           @if (form.get('afiliado')?.invalid && form.get('afiliado')?.touched) {
-            <span class="campo-error">El número de afiliado es obligatorio</span>
+            <span class="campo-error"><i class="fas fa-circle-exclamation" style="font-size:0.7rem"></i> El número de afiliado es obligatorio</span>
           }
         </div>
-        <p class="progreso">Predicciones completadas: <strong>{{ prediccionesCompletadas() }} / {{ totalPartidos() }}</strong></p>
-        <button type="submit" class="btn btn-primary" [disabled]="guardando() || !formularioValido()">
-          @if (guardando()) { <span>Guardando...</span> } @else { <span>Guardar Planilla</span> }
+
+        <button type="submit" class="btn btn-primary" style="width:100%;margin-top:0.5em" [disabled]="guardando() || !formularioValido()">
+          @if (guardando()) {
+            <i class="fas fa-spinner fa-spin"></i> Guardando...
+          } @else {
+            <i class="fas fa-floppy-disk"></i> Guardar Planilla
+          }
         </button>
+
+        @if (!formularioValido() && !guardando()) {
+          <p style="font-size:0.75rem;color:var(--clr-text-muted);text-align:center;margin-top:0.6em">
+            Completá todas las predicciones y tus datos para poder guardar.
+          </p>
+        }
       </div>
+
     </form>
   }
 </main>

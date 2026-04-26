@@ -1,10 +1,246 @@
-.group-table { font-size: 12px; margin-bottom: 0; }
-.group-table caption { font-size: 0.9rem; }
-.seleccionado { background-color: #e8f8f5 !important; }
-.equipo-nombre { margin-left: 0.3em; font-size: 0.8rem; text-transform: uppercase; }
-@media (max-width: 576px) { .equipo-nombre { display: none; } }
-.datos-participante { margin-top: 2em; padding: 1.5em; background-color: aliceblue; border-radius: 8px; max-width: 500px; }
-.progreso { margin-bottom: 1em; font-size: 0.9rem; color: var(--clr-primary-dark); }
-.campo-error { color: var(--clr-error-text); font-size: 0.75rem; }
-.planilla-exito { padding: 2em; text-align: center; }
-.codigo-planilla { font-size: 1.5rem; color: #56042c; display: block; margin: 0.5em 0; }
+/* planilla.component.css — VERSIÓN MEJORADA */
+
+/* ── Layout ──────────────────────────────────────────────────────────────── */
+.groups-grid { gap: 1.25em; }
+
+/* ── Tabla de grupo ──────────────────────────────────────────────────────── */
+.group-table {
+  border: 1px solid var(--clr-border-strong);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  font-size: 12px;
+}
+
+.group-table caption {
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  padding: 0.45em 0.85em;
+  text-align: left;
+}
+
+/* ── Fila de partido ──────────────────────────────────────────────────────── */
+.partido-row {
+  display: grid;
+  grid-template-columns: 28px 1fr 80px 1fr;
+  align-items: center;
+  gap: 0;
+  border-bottom: 1px solid var(--clr-border);
+  transition: background 0.15s;
+  cursor: pointer;
+}
+
+.partido-row:last-child { border-bottom: none; }
+.partido-row:hover { background: var(--clr-surface-alt); }
+.partido-row.seleccionado { background: #edf8fb; }
+
+/* Número de partido */
+.partido-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75em 0.25em;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--clr-text-muted);
+  border-right: 1px solid var(--clr-border);
+  height: 100%;
+}
+
+/* Bloque de equipo local */
+.equipo-local {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4em;
+  padding: 0.6em 0.5em;
+}
+
+/* Bloque de equipo visitante */
+.equipo-visitante {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.4em;
+  padding: 0.6em 0.5em;
+}
+
+.equipo-nombre {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--clr-text);
+}
+
+/* Bloque central con 3 opciones L / E / V */
+.opciones-centro {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 0.5em 0.25em;
+  border-left: 1px solid var(--clr-border);
+  border-right: 1px solid var(--clr-border);
+}
+
+/* Botón de opción individual */
+.opcion-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid var(--clr-border-strong);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--clr-surface);
+  user-select: none;
+}
+
+.opcion-btn:hover { border-color: var(--clr-primary); color: var(--clr-primary); background: rgba(56,120,135,0.06); }
+
+.opcion-btn.activa-local     { border-color: var(--clr-primary); background: var(--clr-primary); color: white; box-shadow: 0 2px 6px rgba(56,120,135,0.4); }
+.opcion-btn.activa-empate    { border-color: var(--clr-primary-dark); background: var(--clr-primary-dark); color: white; box-shadow: 0 2px 6px rgba(18,51,59,0.35); }
+.opcion-btn.activa-visitante { border-color: var(--clr-maroon); background: var(--clr-maroon); color: white; box-shadow: 0 2px 6px rgba(86,4,44,0.4); }
+
+/* Radio ocultos */
+input[type="radio"].visually-hidden {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+/* ── Barra de progreso ───────────────────────────────────────────────────── */
+.progreso-wrap {
+  position: sticky;
+  top: 60px;
+  z-index: 90;
+  background: var(--clr-surface);
+  padding: 0.85em 0 0.6em;
+  border-bottom: 1px solid var(--clr-border);
+  margin-bottom: 1.5em;
+}
+
+.progreso-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5em;
+}
+
+.progreso-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--clr-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.progreso-count {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--clr-primary-dark);
+}
+
+.progreso-count span { color: var(--clr-text-muted); font-size: 0.85rem; font-weight: 400; }
+
+.barra-track {
+  height: 6px;
+  background: var(--clr-surface-alt);
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid var(--clr-border);
+}
+
+.barra-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--clr-primary) 0%, var(--clr-primary-light) 100%);
+  transition: width 0.3s ease;
+}
+
+.barra-fill.completa { background: linear-gradient(90deg, #1a7a4a 0%, #2ecc71 100%); }
+
+/* ── Datos del participante ──────────────────────────────────────────────── */
+.datos-participante {
+  margin-top: 2em;
+  padding: 1.75em 2em;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border-strong);
+  border-radius: var(--radius-lg);
+  max-width: 520px;
+  box-shadow: var(--shadow-md);
+}
+
+.datos-titulo {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--clr-primary-dark);
+  margin-bottom: 1.25em;
+}
+
+.campo-error {
+  color: var(--clr-error-text);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.aviso-completo {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 0.8rem;
+  color: var(--clr-success-text);
+  background: var(--clr-success-bg);
+  padding: 0.5em 0.75em;
+  border-radius: var(--radius-sm);
+  margin-bottom: 1em;
+  font-weight: 500;
+}
+
+/* ── Éxito ───────────────────────────────────────────────────────────────── */
+.planilla-exito {
+  padding: 3em 2em;
+  text-align: center;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.exito-icono {
+  font-size: 3rem;
+  color: var(--clr-success-text);
+  margin-bottom: 0.5em;
+}
+
+.codigo-planilla {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--clr-maroon);
+  letter-spacing: 2px;
+  margin: 0.25em 0 0.15em;
+  padding: 0.15em 0.6em;
+  background: var(--clr-surface-alt);
+  border: 2px dashed var(--clr-maroon);
+  border-radius: var(--radius-md);
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 576px) {
+  .equipo-nombre { display: none; }
+  .datos-participante { padding: 1.25em; }
+  .opciones-centro { gap: 2px; }
+  .opcion-btn { width: 20px; height: 20px; font-size: 0.55rem; }
+}
