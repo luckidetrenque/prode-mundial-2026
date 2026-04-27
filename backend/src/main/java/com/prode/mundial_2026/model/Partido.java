@@ -52,6 +52,7 @@ public class Partido {
     // Enum anidado: define los valores válidos para "fase"
     public enum FasePartido {
         GRUPOS,
+        DIECISEISAVOS,
         OCTAVOS,
         CUARTOS,
         SEMIFINAL,

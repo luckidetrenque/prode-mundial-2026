@@ -18,18 +18,14 @@ public class PlanillaService {
     private final UsuarioRepository usuarioRepository;
     private final PartidoRepository partidoRepository;
 
-    // @Transactional → si algo falla, deshace todos los cambios en la DB
-    // Garantiza que no queden datos a medias (ej: usuario sin planilla)
     @Transactional
     public PlanillaResponseDTO guardarPlanilla(PlanillaRequestDTO request) {
 
-        // 1. Verificar que el afiliado no tenga planilla confirmada
         if (planillaRepository.existsByAfiliado(request.getAfiliado())) {
             throw new RuntimeException(
-                    "Ya existe una planilla confirmada para el afiliado N° " + request.getAfiliado());
+                    "Ya existe una planilla para el afiliado N° " + request.getAfiliado());
         }
 
-        // 2. Crear o recuperar el usuario participante
         Usuario usuario = usuarioRepository
                 .findByAfiliado(request.getAfiliado())
                 .orElseGet(() -> {
@@ -41,15 +37,12 @@ public class PlanillaService {
                     return usuarioRepository.save(nuevo);
                 });
 
-        // 3. Crear la planilla con un código único basado en el timestamp
         Planilla planilla = new Planilla();
         planilla.setUsuario(usuario);
         planilla.setCodigo(System.currentTimeMillis());
         planilla.setConfirmada(false);
 
-        // 4. Agregar las predicciones a la planilla
         for (PlanillaRequestDTO.PrediccionItemDTO item : request.getPredicciones()) {
-
             Partido partido = partidoRepository.findById(item.getPartidoId())
                     .orElseThrow(() -> new RuntimeException(
                             "Partido no encontrado: ID " + item.getPartidoId()));
@@ -59,13 +52,9 @@ public class PlanillaService {
             prediccion.setPartido(partido);
             prediccion.setPrediccion(
                     Prediccion.ResultadoPrediccion.valueOf(item.getPrediccion()));
-
-            // Agregamos la predicción a la lista de la planilla
-            // Como tenemos CascadeType.ALL, se guardará junto con la planilla
             planilla.getPredicciones().add(prediccion);
         }
 
-        // 5. Guardar todo en la DB (planilla + predicciones en una sola operación)
         planillaRepository.save(planilla);
 
         return new PlanillaResponseDTO(
@@ -104,12 +93,17 @@ public class PlanillaService {
                 .toList();
     }
 
+    // ── FIX BUG #1 ────────────────────────────────────────────────────────────
+    // El frontend envía el CÓDIGO de planilla (número visible al participante),
+    // no el ID interno de la tabla. Usamos findByCodigo() en lugar de findById().
+    // ─────────────────────────────────────────────────────────────────────────
     @Transactional
-    public void confirmarPlanilla(Long id) {
-        Planilla planilla = planillaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Planilla no encontrada"));
+    public void confirmarPlanilla(Long codigo) {
+        Planilla planilla = planillaRepository
+                .findByCodigo(codigo)
+                .orElseThrow(() -> new RuntimeException(
+                        "Planilla no encontrada con código: " + codigo));
         planilla.setConfirmada(true);
-        // No hace falta llamar a save() porque @Transactional detecta el cambio
-        // y lo persiste automáticamente al cerrar la transacción (dirty checking)
+        // @Transactional hace dirty-checking automático — no hace falta save()
     }
 }

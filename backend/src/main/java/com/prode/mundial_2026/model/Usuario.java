@@ -22,18 +22,26 @@ public class Usuario {
     @Column(nullable = false, length = 50)
     private String apellido;
 
-    // unique = true → no puede haber dos usuarios con el mismo número de afiliado
     @Column(nullable = false, unique = true)
     private Integer afiliado;
 
     @Column(length = 100)
     private String email;
 
-    // Solo los admins tienen password; los participantes no se logean
     @Column(name = "es_admin")
     private Boolean esAdmin = false;
 
-    // Guardamos la password cifrada con BCrypt (nunca en texto plano)
     @Column(length = 100)
     private String password;
+
+    // ── FIX SEG #1 ────────────────────────────────────────────────────────────
+    // tokenVersion permite invalidar JWTs existentes sin esperar a que expiren.
+    // Al hacer logout se incrementa en 1. El JwtFilter compara el valor del
+    // token contra el valor actual en la DB — si no coinciden, rechaza el token.
+    //
+    // Hibernate crea la columna automáticamente con ddl-auto=update.
+    // El valor 0 por defecto es compatible con los registros existentes.
+    // ─────────────────────────────────────────────────────────────────────────
+    @Column(name = "token_version", nullable = false)
+    private int tokenVersion = 0;
 }

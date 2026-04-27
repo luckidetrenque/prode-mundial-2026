@@ -1,5 +1,6 @@
 package com.prode.mundial_2026.controller;
 
+import com.prode.mundial_2026.dto.ResultadoDTO;
 import com.prode.mundial_2026.dto.ResultadoRequestDTO;
 import com.prode.mundial_2026.model.Partido;
 import com.prode.mundial_2026.model.Prediccion;
@@ -22,24 +23,33 @@ public class ResultadoController {
     private final ResultadoRepository resultadoRepository;
     private final PartidoRepository partidoRepository;
 
-    // GET /api/resultados → lista los resultados cargados (público)
+    // ── FIX SEG #4 ──────────────────────────────────────────────────────────
+    // Devolvemos ResultadoDTO en lugar de la entidad Resultado cruda,
+    // para no exponer el ID interno ni los campos de Hibernate.
+    // ────────────────────────────────────────────────────────────────────────
     @GetMapping
-    public ResponseEntity<List<Resultado>> listar() {
-        return ResponseEntity.ok(resultadoRepository.findAllWithPartido());
+    public ResponseEntity<List<ResultadoDTO>> listar() {
+        List<ResultadoDTO> dtos = resultadoRepository.findAllWithPartido()
+                .stream()
+                .map(r -> new ResultadoDTO(
+                        new ResultadoDTO.PartidoResumenDTO(
+                                r.getPartido().getId(),
+                                r.getPartido().getNumero()),
+                        r.getResultado().name()))
+                .toList();
+        return ResponseEntity.ok(dtos);
     }
 
     // PUT /api/resultados/{partidoId} → carga o actualiza un resultado (admin)
     @PutMapping("/{partidoId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Resultado> guardar(
+    public ResponseEntity<ResultadoDTO> guardar(
             @PathVariable Long partidoId,
             @Valid @RequestBody ResultadoRequestDTO request) {
 
         Partido partido = partidoRepository.findById(partidoId)
-                .orElseThrow(() -> new RuntimeException("Partido no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Partido no encontrado: " + partidoId));
 
-        // Si ya existe un resultado para este partido, lo actualizamos
-        // Si no existe, creamos uno nuevo
         Resultado resultado = resultadoRepository
                 .findByPartidoId(partidoId)
                 .orElse(new Resultado());
@@ -48,6 +58,12 @@ public class ResultadoController {
         resultado.setResultado(
                 Prediccion.ResultadoPrediccion.valueOf(request.getResultado()));
 
-        return ResponseEntity.ok(resultadoRepository.save(resultado));
+        Resultado guardado = resultadoRepository.save(resultado);
+
+        return ResponseEntity.ok(new ResultadoDTO(
+                new ResultadoDTO.PartidoResumenDTO(
+                        guardado.getPartido().getId(),
+                        guardado.getPartido().getNumero()),
+                guardado.getResultado().name()));
     }
 }

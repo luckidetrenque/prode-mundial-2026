@@ -1,4 +1,3 @@
-// Lo que Angular manda al hacer POST /api/planillas
 package com.prode.mundial_2026.dto;
 
 import jakarta.validation.constraints.*;
@@ -20,7 +19,8 @@ public class PlanillaRequestDTO {
     @Min(value = 1, message = "El número de afiliado debe ser mayor a 0")
     private Integer afiliado;
 
-    // Lista de predicciones, una por cada partido de la fase de grupos
+    // ── FIX BUG #3 ────────────────────────────────────────────────────────────
+    // El Mundial 2026 tiene 12 grupos de 4 equipos = 72 partidos en fase de grupos (12 x 6).
     @NotEmpty(message = "Debe incluir predicciones")
     @Size(min = 72, max = 72, message = "Debe predecir exactamente los 72 partidos de la fase de grupos")
     private List<PrediccionItemDTO> predicciones;

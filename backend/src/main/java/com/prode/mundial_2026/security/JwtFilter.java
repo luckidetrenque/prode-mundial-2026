@@ -16,8 +16,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
-// OncePerRequestFilter garantiza que este filtro se ejecute una sola vez por request
-// @RequiredArgsConstructor (Lombok) genera el constructor con los campos final
 @Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
@@ -31,35 +29,50 @@ public class JwtFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        // 1. Buscamos el header "Authorization: Bearer <token>"
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            // No hay token → continuamos sin autenticar (endpoints públicos pasan igual)
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 2. Extraemos el token (quitamos el prefijo "Bearer ")
         String token = authHeader.substring(7);
 
-        // 3. Validamos el token
         if (!jwtUtil.esTokenValido(token)) {
+            System.out.println("DEBUG JWT: Token inválido o expirado");
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 4. Extraemos el afiliado del token y buscamos al admin en la DB
         Integer afiliado = jwtUtil.extraerAfiliado(token);
         Usuario admin = usuarioRepository.findByAfiliado(afiliado).orElse(null);
 
-        if (admin == null || !admin.getEsAdmin()) {
+        if (admin == null) {
+            System.out.println("DEBUG JWT: Usuario no encontrado para afiliado: " + afiliado);
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 5. Autenticamos al usuario en el contexto de seguridad de Spring
-        // Esto le dice a Spring: "este request viene de un admin autenticado"
+        if (!admin.getEsAdmin()) {
+            System.out.println("DEBUG JWT: Usuario " + afiliado + " no tiene permisos de ADMIN");
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // ── FIX SEG #1 ────────────────────────────────────────────────────────
+        // Comparamos la versión del token contra la versión actual en la DB.
+        // Si no coinciden (porque el admin hizo logout), rechazamos el token
+        // aunque sea criptográficamente válido y no haya expirado.
+        // ─────────────────────────────────────────────────────────────────────
+        int tokenVersion = jwtUtil.extraerTokenVersion(token);
+        if (tokenVersion != admin.getTokenVersion()) {
+            System.out.println("DEBUG JWT: Versión de token no coincide. Token: " + tokenVersion + ", DB: " + admin.getTokenVersion());
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        System.out.println("DEBUG JWT: Autenticando usuario " + admin.getAfiliado() + " como ROLE_ADMIN");
+
         var autenticacion = new UsernamePasswordAuthenticationToken(
                 admin,
                 null,

@@ -1,6 +1,7 @@
 // cargar-resultados.component.ts — VERSIÓN MEJORADA
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { forkJoin } from 'rxjs';
 import { PartidoService } from '../../../core/services/partido.service';
 import { ResultadoService } from '../../../core/services/resultado.service';
 import { Partido } from '../../../shared/models/partido.model';
@@ -487,13 +488,30 @@ export class CargarResultadosComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.partidoService.getPartidos().subscribe({
-      next: data => {
-        this.partidos.set(data.filter(p => p.fase === 'GRUPOS'));
+    // Cargamos tanto los partidos como los resultados ya existentes
+    forkJoin({
+      partidos: this.partidoService.getPartidos(),
+      resultados: this.resultadoService.getResultados()
+    }).subscribe({
+      next: ({ partidos, resultados }) => {
+        // 1. Filtrar solo fase de grupos
+        const filtrados = partidos.filter(p => p.fase === 'GRUPOS');
+        this.partidos.set(filtrados);
+
+        // 2. Pre-cargar los resultados que ya están en la DB
+        const guardados = new Set<number>();
+        resultados.forEach(r => {
+          const partidoId = r.partido.id;
+          this.selecciones.set(partidoId, r.resultado);
+          guardados.add(partidoId);
+        });
+
+        this.resultadosGuardados.set(guardados);
+        this._selVersion.update(v => v + 1); // Notificar cambios en el Map
         this.cargando.set(false);
       },
       error: () => {
-        this.mensajeError.set('No se pudieron cargar los partidos.');
+        this.mensajeError.set('No se pudieron cargar los datos del servidor.');
         this.cargando.set(false);
       }
     });

@@ -9,56 +9,64 @@ import javax.crypto.SecretKey;
 import java.util.Base64;
 import java.util.Date;
 
-// @Component → Spring crea una instancia de esta clase y la gestiona
 @Component
 public class JwtUtil {
 
-    // Lee el valor de jwt.secret desde application.properties
     @Value("${jwt.secret}")
     private String secret;
 
     @Value("${jwt.expiration}")
-    private Long expiration; // en milisegundos (86400000 = 24 horas)
+    private Long expiration;
 
-    // Genera la clave criptográfica a partir del secreto
     private SecretKey getKey() {
         byte[] keyBytes = Base64.getDecoder().decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // Genera un token JWT para el usuario autenticado
-    // El "subject" es el número de afiliado del admin
-    public String generarToken(Integer afiliado) {
+    // ── FIX SEG #1 ────────────────────────────────────────────────────────────
+    // Incluimos tokenVersion en el payload del JWT.
+    // Al hacer logout, incrementamos tokenVersion en el Usuario (en la DB).
+    // El JwtFilter compara la versión del token contra la versión actual del
+    // usuario — si no coinciden, el token se rechaza aunque no haya expirado.
+    // ─────────────────────────────────────────────────────────────────────────
+    public String generarToken(Integer afiliado, int tokenVersion) {
         return Jwts.builder()
                 .subject(afiliado.toString())
+                .claim("tv", tokenVersion)          // tv = token version
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getKey())
                 .compact();
     }
 
-    // Extrae el número de afiliado del token
     public Integer extraerAfiliado(String token) {
-        String subject = Jwts.parser()
+        return Integer.parseInt(getClaims(token).getSubject());
+    }
+
+    // Extrae la versión del token del payload
+    public int extraerTokenVersion(String token) {
+        Object tv = getClaims(token).get("tv");
+        if (tv == null) return 0;
+        if (tv instanceof Integer) return (Integer) tv;
+        if (tv instanceof Long)    return ((Long) tv).intValue();
+        if (tv instanceof String)  return Integer.parseInt((String) tv);
+        return 0;
+    }
+
+    public boolean esTokenValido(String token) {
+        try {
+            getClaims(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    private Claims getClaims(String token) {
+        return Jwts.parser()
                 .verifyWith(getKey())
                 .build()
                 .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
-        return Integer.parseInt(subject);
-    }
-
-    // Verifica si el token es válido (firma correcta y no expirado)
-    public boolean esTokenValido(String token) {
-        try {
-            Jwts.parser()
-                    .verifyWith(getKey())
-                    .build()
-                    .parseSignedClaims(token);
-            return true;
-        } catch (JwtException | IllegalArgumentException e) {
-            // Token inválido, expirado o mal formado
-            return false;
-        }
+                .getPayload();
     }
 }

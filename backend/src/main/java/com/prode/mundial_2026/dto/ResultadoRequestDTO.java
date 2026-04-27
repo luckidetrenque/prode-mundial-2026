@@ -8,9 +8,6 @@ import lombok.Data;
 @Data
 public class ResultadoRequestDTO {
 
-    @NotNull(message = "El id del partido es obligatorio")
-    private Long partidoId;
-
     @NotNull(message = "El resultado es obligatorio")
     @Pattern(regexp = "LOCAL|EMPATE|VISITANTE", message = "El resultado debe ser LOCAL, EMPATE o VISITANTE")
     private String resultado;
