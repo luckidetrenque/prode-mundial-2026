@@ -33,9 +33,9 @@ CREATE DATABASE prode_mundial_2026;
 
 -- Crear el admin inicial (ejecutar en la app o directamente en la DB)
 -- La password elegida debe estar encriptada con BCrypt:
-INSERT INTO usuarios (nombre, apellido, afiliado, es_admin, password)
+INSERT INTO usuarios (nombre, apellido, afiliado, es_admin, password, token_version)
 VALUES ('Admin', 'UPJ', 9999,  true,
-  '<TU_HASH_BCRYPT_AQUI>');
+  '<TU_HASH_BCRYPT_AQUI>', 0);
 ```
 
 ### 2. Backend
