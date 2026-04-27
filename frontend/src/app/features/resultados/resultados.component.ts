@@ -204,7 +204,7 @@ import { ResultadoPrediccion } from '../../shared/models/planilla.model';
     }
 
     .partido-card:hover { box-shadow: var(--shadow-sm); border-color: var(--clr-border-strong); }
-    .partido-card.con-resultado { border-left: 3px solid var(--clr-primary-light); }
+    .partido-card.con-resultado { border-left: 4px solid var(--wc-mexico); }
 
     /* Número */
     .partido-n { font-size: 0.7rem; font-weight: 700; color: var(--clr-text-muted); text-align: center; }
@@ -213,36 +213,37 @@ import { ResultadoPrediccion } from '../../shared/models/planilla.model';
     .equipo-bloque {
       display: flex;
       align-items: center;
-      gap: 0.5em;
+      gap: 0.6em;
     }
 
     .equipo-bloque--right { justify-content: flex-end; flex-direction: row-reverse; }
 
-    .equipo-bloque.ganador .equipo-nomb { font-weight: 700; color: var(--clr-primary-dark); }
+    .equipo-bloque.ganador .equipo-nomb { font-weight: 800; color: var(--wc-neutral-dark); }
 
     .equipo-nomb {
       font-size: 0.78rem;
-      font-weight: 500;
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.3px;
       color: var(--clr-text);
     }
 
     .flag-lg {
-      border-radius: 2px;
+      border-radius: 3px;
       box-shadow: 0 1px 4px rgba(0,0,0,0.2);
       flex-shrink: 0;
+      border: 1px solid rgba(0,0,0,0.05);
     }
 
     /* Badge ganador */
     .badge-win {
       font-size: 0.6rem;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: 0.5px;
       text-transform: uppercase;
-      background: var(--clr-success-bg);
-      color: var(--clr-success-text);
-      padding: 0.15em 0.5em;
+      background: #e8f5e9;
+      color: var(--wc-mexico);
+      padding: 0.2em 0.6em;
       border-radius: 10px;
     }
 
@@ -262,17 +263,18 @@ import { ResultadoPrediccion } from '../../shared/models/planilla.model';
       font-family: var(--font-display);
       font-size: 1.1rem;
       font-weight: 700;
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
 
-    .resultado-local     { background: var(--clr-primary); color: white; }
-    .resultado-empate    { background: var(--clr-primary-dark); color: white; }
-    .resultado-visitante { background: var(--clr-maroon); color: white; }
+    .resultado-local     { background: var(--wc-mexico); color: white; }
+    .resultado-empate    { background: var(--wc-usa); color: white; }
+    .resultado-visitante { background: var(--wc-canada); color: white; }
 
     .resultado-pendiente {
       width: 36px;
@@ -282,9 +284,11 @@ import { ResultadoPrediccion } from '../../shared/models/planilla.model';
       display: flex;
       align-items: center;
       justify-content: center;
+      background: #fafafa;
     }
 
-    .vs-text { font-size: 0.6rem; font-weight: 700; color: var(--clr-text-muted); letter-spacing: 1px; }
+    .vs-text { font-size: 0.65rem; font-weight: 800; color: var(--clr-text-muted); letter-spacing: 1px; }
+
 
     /* ── Responsive ──────────────────────────────────────────────────────── */
     @media (max-width: 576px) {

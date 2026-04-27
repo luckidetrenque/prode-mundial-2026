@@ -4,12 +4,20 @@
 
 /* ── Variables ───────────────────────────────────────────────────────────── */
 :root {
-  --clr-primary:        #387887;
-  --clr-primary-light:  #6CC1D4;
-  --clr-primary-dark:   #12333B;
-  --clr-accent:         #fec310;
-  --clr-maroon:         #56042c;
-  --clr-maroon-light:   #a3396c;
+  /* 2026 Official Palette */
+  --wc-mexico:          #3CAC3B;
+  --wc-usa:             #2A398D;
+  --wc-canada:          #E61D25;
+  --wc-neutral-light:   #D1D4D1;
+  --wc-neutral-dark:    #474A4A;
+
+  /* Functional Colors */
+  --clr-primary:        var(--wc-mexico);
+  --clr-primary-light:  #5edb5c;
+  --clr-primary-dark:   var(--wc-usa);
+  --clr-accent:         var(--wc-canada);
+  --clr-maroon:         var(--wc-canada);
+  --clr-maroon-light:   #ff4d56;
   --clr-gold:           #FFD700;
   --clr-silver:         #C0C0C0;
   --clr-bronze:         #CD7F32;
@@ -20,10 +28,10 @@
   --clr-warning-bg:     #fff8e1;
   --clr-warning-text:   #8a6500;
   --clr-surface:        #ffffff;
-  --clr-surface-alt:    #f5f7f8;
+  --clr-surface-alt:    #f2f4f5;
   --clr-border:         rgba(0,0,0,0.08);
-  --clr-border-strong:  rgba(0,0,0,0.14);
-  --clr-text:           #1a1f20;
+  --clr-border-strong:  var(--wc-neutral-light);
+  --clr-text:           var(--wc-neutral-dark);
   --clr-text-muted:     #6b7a80;
   --radius-sm:  6px;
   --radius-md:  10px;

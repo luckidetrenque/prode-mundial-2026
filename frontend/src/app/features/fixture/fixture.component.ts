@@ -169,8 +169,8 @@ type VistaFiltro = 'GRUPOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFINAL' | 'FINAL';
       display: inline-flex;
       align-items: center;
       gap: 0.4em;
-      padding: 0.45em 1em;
-      border: 1.5px solid var(--clr-border-strong);
+      padding: 0.5em 1.2em;
+      border: 1px solid var(--clr-border-strong);
       border-radius: 20px;
       background: var(--clr-surface);
       color: var(--clr-text-muted);
@@ -181,8 +181,13 @@ type VistaFiltro = 'GRUPOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFINAL' | 'FINAL';
       font-family: var(--font-body);
     }
 
-    .fase-tab:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
-    .fase-tab.activo { border-color: var(--clr-primary-dark); background: var(--clr-primary-dark); color: white; }
+    .fase-tab:hover { border-color: var(--wc-mexico); color: var(--wc-mexico); background: rgba(60, 172, 59, 0.05); }
+    .fase-tab.activo { 
+      border-color: var(--wc-usa); 
+      background: linear-gradient(135deg, var(--wc-usa), #3a4bb0); 
+      color: white; 
+      box-shadow: 0 4px 12px rgba(42, 57, 141, 0.3);
+    }
 
     .fase-count {
       background: rgba(255,255,255,0.2);
@@ -205,8 +210,8 @@ type VistaFiltro = 'GRUPOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFINAL' | 'FINAL';
     }
 
     .btn-grupo {
-      padding: 0.25em 0.65em;
-      border: 1.5px solid var(--clr-border-strong);
+      padding: 0.3em 0.8em;
+      border: 1px solid var(--clr-border-strong);
       border-radius: 20px;
       background: var(--clr-surface);
       color: var(--clr-text-muted);
@@ -217,8 +222,8 @@ type VistaFiltro = 'GRUPOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFINAL' | 'FINAL';
       font-family: var(--font-body);
     }
 
-    .btn-grupo:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
-    .btn-grupo.activo { border-color: var(--clr-primary); background: var(--clr-primary); color: white; }
+    .btn-grupo:hover { border-color: var(--wc-mexico); color: var(--wc-mexico); }
+    .btn-grupo.activo { border-color: var(--wc-mexico); background: var(--wc-mexico); color: white; }
 
     /* ── Groups grid ─────────────────────────────────────────────────────── */
     .groups-grid { gap: 1.25em; }
@@ -228,21 +233,22 @@ type VistaFiltro = 'GRUPOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFINAL' | 'FINAL';
       border-radius: var(--radius-md);
       overflow: hidden;
       box-shadow: var(--shadow-sm);
+      background: var(--clr-surface);
     }
 
     .group-caption {
       display: flex;
       align-items: center;
       gap: 0.4em;
-      padding: 0.45em 0.85em;
-      background: var(--clr-primary-dark);
+      padding: 0.6em 1em;
+      background: linear-gradient(to right, var(--wc-usa), #3a4bb0);
     }
 
     .group-letter {
       font-family: var(--font-display);
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       font-weight: 700;
-      color: var(--clr-accent);
+      color: white;
     }
 
     .group-label {
@@ -250,11 +256,11 @@ type VistaFiltro = 'GRUPOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFINAL' | 'FINAL';
       font-size: 0.7rem;
       font-weight: 600;
       letter-spacing: 2px;
-      color: rgba(255,255,255,0.5);
+      color: rgba(255,255,255,0.7);
     }
 
     .tabla-grupo { margin: 0; }
-    .tabla-grupo thead th { background: var(--clr-surface-alt); }
+    .tabla-grupo thead th { background: #f8fafb; border-bottom: 1px solid var(--clr-border-strong); }
 
     /* Columnas */
     .th-num   { width: 28px; text-align: center; }
@@ -266,27 +272,26 @@ type VistaFiltro = 'GRUPOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFINAL' | 'FINAL';
     .td-equipo {
       display: flex;
       align-items: center;
-      gap: 0.4em;
+      gap: 0.5em;
     }
-
-    .td-equipo--local { justify-content: flex-end; }
 
     .equipo-txt {
       font-size: 0.75rem;
-      font-weight: 500;
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.2px;
+      color: var(--wc-neutral-dark);
     }
 
     /* Badges */
     .badge-final {
       display: inline-block;
-      background: var(--clr-success-bg);
-      color: var(--clr-success-text);
+      background: #e8f5e9;
+      color: var(--wc-mexico);
       font-size: 0.62rem;
       font-weight: 700;
       letter-spacing: 0.5px;
-      padding: 0.15em 0.5em;
+      padding: 0.2em 0.6em;
       border-radius: 8px;
     }
 
@@ -298,56 +303,66 @@ type VistaFiltro = 'GRUPOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFINAL' | 'FINAL';
       letter-spacing: 1px;
     }
 
-    .partido-jugado td { opacity: 0.7; }
+    .partido-jugado td { opacity: 0.6; }
 
     /* ── Eliminatorias ───────────────────────────────────────────────────── */
     .elim-wrap {
       display: flex;
       flex-direction: column;
-      gap: 0.6em;
+      gap: 0.8em;
     }
 
     .elim-card {
       display: grid;
       grid-template-columns: 28px 1fr 44px 1fr auto;
       align-items: center;
-      gap: 0.75em;
-      padding: 0.85em 1em;
+      gap: 1em;
+      padding: 1em 1.25em;
       background: var(--clr-surface);
       border: 1px solid var(--clr-border);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-lg);
       box-shadow: var(--shadow-sm);
       transition: var(--transition);
     }
 
-    .elim-card:hover { border-color: var(--clr-border-strong); box-shadow: var(--shadow-md); }
+    .elim-card:hover { 
+      border-color: var(--wc-usa); 
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08); 
+      transform: scale(1.01);
+    }
 
     .elim-num { font-size: 0.7rem; font-weight: 700; color: var(--clr-text-muted); text-align: center; }
 
     .elim-equipo {
       display: flex;
       align-items: center;
-      gap: 0.5em;
+      gap: 0.6em;
     }
 
     .elim-equipo--local  { justify-content: flex-end; }
     .elim-equipo--visit  { justify-content: flex-start; }
 
     .elim-nomb {
-      font-size: 0.82rem;
-      font-weight: 600;
+      font-size: 0.85rem;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.3px;
+      letter-spacing: 0.4px;
+      color: var(--wc-neutral-dark);
     }
 
-    .flag-elim { border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); flex-shrink: 0; }
+    .flag-elim { 
+      border-radius: 4px; 
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15); 
+      flex-shrink: 0; 
+      border: 1px solid rgba(0,0,0,0.05);
+    }
 
     .elim-vs {
       text-align: center;
       font-family: var(--font-display);
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       font-weight: 700;
-      color: var(--clr-text-muted);
+      color: var(--wc-canada);
       letter-spacing: 1px;
     }
 
@@ -355,14 +370,14 @@ type VistaFiltro = 'GRUPOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFINAL' | 'FINAL';
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      gap: 0.1em;
+      gap: 0.15em;
     }
 
-    .elim-fecha { font-size: 0.75rem; font-weight: 600; color: var(--clr-text); }
-    .elim-hora  { font-size: 0.7rem; color: var(--clr-text-muted); }
-    .elim-sede  { font-size: 0.68rem; color: var(--clr-text-muted); max-width: 110px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .elim-fecha { font-size: 0.78rem; font-weight: 700; color: var(--wc-neutral-dark); }
+    .elim-hora  { font-size: 0.7rem; color: var(--clr-text-muted); font-weight: 500; }
+    .elim-sede  { font-size: 0.68rem; color: var(--clr-text-muted); max-width: 120px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.8; }
 
-    .por-definir { font-size: 0.78rem; color: var(--clr-text-muted); font-style: italic; }
+    .por-definir { font-size: 0.78rem; color: var(--clr-text-muted); font-style: italic; font-weight: 500; }
 
     /* ── Responsive ──────────────────────────────────────────────────────── */
     @media (max-width: 640px) {
@@ -370,9 +385,10 @@ type VistaFiltro = 'GRUPOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFINAL' | 'FINAL';
       .th-sede    { display: none; }
       .elim-card  { grid-template-columns: 24px 1fr 36px 1fr; }
       .elim-meta  { display: none; }
-      .elim-nomb  { font-size: 0.7rem; }
+      .elim-nomb  { font-size: 0.75rem; }
       .subtitulo  { font-size: 0.78rem; }
     }
+
   `]
 })
 export class FixtureComponent implements OnInit {

@@ -82,39 +82,52 @@ import { AuthService } from '../../../core/services/auth.service';
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, var(--clr-primary-dark) 0%, var(--clr-primary) 100%);
+      background: linear-gradient(135deg, var(--wc-usa) 0%, #1a237e 100%);
       padding: 1em;
+      position: relative;
+    }
+
+    .login-page::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+      opacity: 0.05;
     }
 
     .login-card {
+      position: relative;
       background: white;
-      border-radius: 16px;
-      padding: 2.5em 2em;
+      border-radius: 20px;
+      padding: 3em 2.5em;
       width: 100%;
-      max-width: 400px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      max-width: 420px;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.3);
     }
 
     .login-header {
       text-align: center;
-      margin-bottom: 2em;
+      margin-bottom: 2.5em;
     }
 
     .login-icon {
-      font-size: 2.5rem;
-      color: var(--clr-primary);
-      margin-bottom: 0.5em;
+      font-size: 3rem;
+      color: var(--wc-mexico);
+      margin-bottom: 0.4em;
     }
 
     .login-header h1 {
-      font-size: 1.4rem;
-      font-weight: 700;
+      font-size: 1.5rem;
+      font-weight: 800;
       margin: 0.25em 0;
-      color: var(--clr-primary-dark);
+      color: var(--wc-usa);
+      font-family: var(--font-display);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .login-header p {
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       color: #666;
       margin: 0;
     }
@@ -122,19 +135,21 @@ import { AuthService } from '../../../core/services/auth.service';
     .login-form {
       display: flex;
       flex-direction: column;
-      gap: 1.25em;
+      gap: 1.5em;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 0.4em;
+      gap: 0.5em;
     }
 
     .form-group label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #444;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--wc-neutral-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .input-wrap {
@@ -143,7 +158,7 @@ import { AuthService } from '../../../core/services/auth.service';
 
     .input-icon {
       position: absolute;
-      left: 0.9em;
+      left: 1em;
       top: 50%;
       transform: translateY(-50%);
       color: #aaa;
@@ -152,36 +167,51 @@ import { AuthService } from '../../../core/services/auth.service';
 
     .input-wrap input {
       width: 100%;
-      padding: 0.75em 0.75em 0.75em 2.5em;
-      border: 1.5px solid #ddd;
-      border-radius: 8px;
+      padding: 0.85em 1em 0.85em 2.8em;
+      border: 1.5px solid #eee;
+      border-radius: 12px;
       font-size: 0.95rem;
-      transition: border-color 0.2s;
+      transition: all 0.2s;
       box-sizing: border-box;
+      background: #fcfcfc;
     }
 
     .input-wrap input:focus {
       outline: none;
-      border-color: var(--clr-primary);
-      box-shadow: 0 0 0 3px rgba(86, 4, 44, 0.1);
+      border-color: var(--wc-mexico);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(60, 172, 59, 0.15);
     }
 
     .btn-login {
       width: 100%;
-      padding: 0.85em;
+      padding: 1em;
       font-size: 1rem;
-      border-radius: 8px;
-      margin-top: 0.5em;
+      border-radius: 12px;
+      margin-top: 1em;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5em;
+      gap: 0.6em;
+      font-weight: 700;
+      background: var(--wc-usa);
+      border: none;
+      box-shadow: 0 4px 15px rgba(42, 57, 141, 0.3);
+    }
+
+    .btn-login:hover:not(:disabled) {
+      background: #1a237e;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(42, 57, 141, 0.4);
     }
 
     .campo-error {
-      color: var(--clr-error-text);
+      color: var(--wc-canada);
       font-size: 0.75rem;
+      font-weight: 500;
+      margin-top: 0.2em;
     }
+
   `]
 })
 export class LoginComponent {
