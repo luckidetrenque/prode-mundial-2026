@@ -25,26 +25,38 @@ import { EstadisticaPartido } from '../../shared/models/estadistica.model';
 
       @if (!cargando() && estadisticas().length > 0) {
 
-        <!-- Resumen general -->
-        <div class="resumen-strip">
-          <div class="resumen-item">
-            <span class="resumen-num">{{ estadisticas()[0].totalVotos }}</span>
-            <span class="resumen-label">Planillas</span>
+        <!-- Resumen general mejorado -->
+        <div class="stats-overview">
+          <div class="overview-card">
+            <i class="fas fa-file-contract"></i>
+            <div class="overview-data">
+              <span class="overview-num">{{ totalPlanillas() }}</span>
+              <span class="overview-label">Planillas Totales</span>
+            </div>
           </div>
-          <div class="resumen-sep"></div>
-          <div class="resumen-item">
-            <span class="resumen-num">{{ estadisticas().length }}</span>
-            <span class="resumen-label">Partidos</span>
+          
+          <div class="overview-card">
+            <i class="fas fa-house"></i>
+            <div class="overview-data">
+              <span class="overview-num">{{ totalPrediccionesLocal() }}</span>
+              <span class="overview-label">Votos Local</span>
+            </div>
           </div>
-          <div class="resumen-sep"></div>
-          <div class="resumen-item">
-            <span class="resumen-num">{{ totalPrediccionesLocal() }}</span>
-            <span class="resumen-label">Votes Local</span>
+
+          <div class="overview-card">
+            <i class="fas fa-equals"></i>
+            <div class="overview-data">
+              <span class="overview-num">{{ totalPrediccionesEmpate() }}</span>
+              <span class="overview-label">Votos Empate</span>
+            </div>
           </div>
-          <div class="resumen-sep"></div>
-          <div class="resumen-item">
-            <span class="resumen-num">{{ totalPrediccionesEmpate() }}</span>
-            <span class="resumen-label">Votes Empate</span>
+
+          <div class="overview-card">
+            <i class="fas fa-plane-departure"></i>
+            <div class="overview-data">
+              <span class="overview-num">{{ totalPrediccionesVisitante() }}</span>
+              <span class="overview-label">Votos Visitante</span>
+            </div>
           </div>
         </div>
 
@@ -80,7 +92,7 @@ import { EstadisticaPartido } from '../../shared/models/estadistica.model';
 
                 <!-- Local -->
                 <div class="barra-row">
-                  <span class="barra-label">{{ stat.equipoLocal }}</span>
+                  <span class="barra-label">{{ stat.equipoLocal }} ({{ stat.votosLocal }})</span>
                   <div class="barra-track">
                     <div
                       class="barra-fill barra-local"
@@ -88,12 +100,11 @@ import { EstadisticaPartido } from '../../shared/models/estadistica.model';
                     ></div>
                   </div>
                   <span class="barra-pct">{{ getPct(stat.votosLocal, stat.totalVotos) | number:'1.0-0' }}%</span>
-                  <span class="barra-votos">({{ stat.votosLocal }})</span>
                 </div>
 
                 <!-- Empate -->
                 <div class="barra-row">
-                  <span class="barra-label">Empate</span>
+                  <span class="barra-label">Empate ({{ stat.votosEmpate }})</span>
                   <div class="barra-track">
                     <div
                       class="barra-fill barra-empate"
@@ -101,12 +112,11 @@ import { EstadisticaPartido } from '../../shared/models/estadistica.model';
                     ></div>
                   </div>
                   <span class="barra-pct">{{ getPct(stat.votosEmpate, stat.totalVotos) | number:'1.0-0' }}%</span>
-                  <span class="barra-votos">({{ stat.votosEmpate }})</span>
                 </div>
 
                 <!-- Visitante -->
                 <div class="barra-row">
-                  <span class="barra-label">{{ stat.equipoVisitante }}</span>
+                  <span class="barra-label">{{ stat.equipoVisitante }} ({{ stat.votosVisitante }})</span>
                   <div class="barra-track">
                     <div
                       class="barra-fill barra-visitante"
@@ -114,7 +124,6 @@ import { EstadisticaPartido } from '../../shared/models/estadistica.model';
                     ></div>
                   </div>
                   <span class="barra-pct">{{ getPct(stat.votosVisitante, stat.totalVotos) | number:'1.0-0' }}%</span>
-                  <span class="barra-votos">({{ stat.votosVisitante }})</span>
                 </div>
 
               </div>
@@ -133,174 +142,178 @@ import { EstadisticaPartido } from '../../shared/models/estadistica.model';
     </main>
   `,
   styles: [`
-    /* ── Resumen strip ───────────────────────────────────────────────────── */
-    .resumen-strip {
-      display: flex;
-      align-items: center;
-      gap: 0;
-      background: var(--clr-primary-dark);
-      border-radius: var(--radius-lg);
-      padding: 1em 1.5em;
-      margin-bottom: 1.5em;
-      overflow: hidden;
+    /* ── Overview Dashboard ──────────────────────────────────────────────── */
+    .stats-overview {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1em;
+      margin-bottom: 2em;
     }
 
-    .resumen-item {
+    .overview-card {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-lg);
+      padding: 1.25em;
+      display: flex;
+      align-items: center;
+      gap: 1em;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .overview-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--clr-primary-light);
+    }
+
+    .overview-card i {
+      font-size: 1.8rem;
+      color: var(--clr-primary);
+      background: var(--clr-surface-alt);
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      flex-shrink: 0;
+    }
+
+    .overview-data {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      flex: 1;
-      gap: 0.15em;
     }
 
-    .resumen-num {
+    .overview-num {
       font-family: var(--font-display);
       font-size: 1.6rem;
       font-weight: 700;
-      color: var(--clr-accent);
-      line-height: 1;
+      color: var(--clr-primary-dark);
+      line-height: 1.1;
     }
 
-    .resumen-label {
+    .overview-label {
       font-size: 0.7rem;
-      font-weight: 500;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: rgba(255,255,255,0.6);
-    }
-
-    .resumen-sep {
-      width: 1px;
-      height: 40px;
-      background: rgba(255,255,255,0.15);
-      flex-shrink: 0;
+      letter-spacing: 0.5px;
+      color: var(--clr-text-muted);
+      margin-top: 2px;
     }
 
     /* ── Filtro grupos ───────────────────────────────────────────────────── */
     .filtro-grupos {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.35em;
-      margin-bottom: 1.25em;
+      gap: 0.4em;
+      margin-bottom: 1.5em;
+      padding: 0.5em;
+      background: var(--clr-surface-alt);
+      border-radius: 30px;
     }
 
     .btn-grupo {
-      padding: 0.3em 0.75em;
-      border: 1.5px solid var(--clr-border-strong);
+      padding: 0.4em 1em;
+      border: 1px solid transparent;
       border-radius: 20px;
-      background: var(--clr-surface);
+      background: transparent;
       color: var(--clr-text-muted);
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
       transition: var(--transition);
-      font-family: var(--font-body);
     }
 
-    .btn-grupo:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
-    .btn-grupo.activo { border-color: var(--clr-primary); background: var(--clr-primary); color: white; }
+    .btn-grupo:hover { color: var(--clr-primary); background: rgba(0,0,0,0.03); }
+    .btn-grupo.activo { background: var(--clr-primary); color: white; box-shadow: 0 2px 6px rgba(60,172,59,0.3); }
 
     /* ── Grid de cards ───────────────────────────────────────────────────── */
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1em;
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+      gap: 1.25em;
     }
 
     /* ── Card individual ─────────────────────────────────────────────────── */
     .stat-card {
       background: var(--clr-surface);
-      border: 1px solid var(--clr-border);
-      border-radius: var(--radius-md);
+      border: 1px solid var(--clr-border-strong);
+      border-radius: var(--radius-lg);
       overflow: hidden;
       box-shadow: var(--shadow-sm);
-      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
     }
 
-    .stat-card:hover { box-shadow: var(--shadow-md); border-color: var(--clr-border-strong); }
-
-    /* Header de la card */
     .stat-card-header {
       display: flex;
       align-items: center;
-      gap: 0.75em;
-      padding: 0.65em 0.9em;
-      background: var(--clr-surface-alt);
+      gap: 1em;
+      padding: 0.85em 1.25em;
+      background: linear-gradient(to right, #f8f9fa, #ffffff);
       border-bottom: 1px solid var(--clr-border);
     }
 
     .stat-num {
+      background: var(--clr-primary-dark);
+      color: white;
       font-family: var(--font-display);
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--clr-primary);
-      flex-shrink: 0;
+      font-size: 0.85rem;
+      padding: 0.2em 0.6em;
+      border-radius: 6px;
     }
 
     .stat-equipos {
       display: flex;
       align-items: center;
-      gap: 0.3em;
-      font-size: 0.72rem;
-      overflow: hidden;
-    }
-
-    .stat-local, .stat-visitante {
-      font-weight: 600;
+      gap: 0.5em;
+      font-weight: 700;
       text-transform: uppercase;
+      font-size: 0.8rem;
       letter-spacing: 0.3px;
-      color: var(--clr-text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 90px;
     }
 
-    .stat-vs {
-      font-size: 0.65rem;
-      color: var(--clr-text-muted);
-      font-weight: 500;
-      flex-shrink: 0;
-    }
+    .stat-vs { color: var(--clr-text-muted); font-weight: 400; font-size: 0.7rem; }
 
     /* Barras */
     .stat-barras {
+      padding: 1.25em;
       display: flex;
       flex-direction: column;
-      gap: 0.55em;
-      padding: 0.85em 0.9em;
+      gap: 0.75em;
+      flex-grow: 1;
     }
 
     .barra-row {
       display: grid;
-      grid-template-columns: 75px 1fr 34px 32px;
+      grid-template-columns: 100px 1fr 40px;
       align-items: center;
-      gap: 0.5em;
+      gap: 0.75em;
     }
 
     .barra-label {
-      font-size: 0.7rem;
-      font-weight: 500;
-      color: var(--clr-text-muted);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--clr-text);
       text-transform: uppercase;
-      letter-spacing: 0.2px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .barra-track {
-      height: 6px;
-      background: var(--clr-surface-alt);
-      border-radius: 3px;
+      height: 8px;
+      background: #f0f0f0;
+      border-radius: 4px;
       overflow: hidden;
-      border: 1px solid var(--clr-border);
     }
 
     .barra-fill {
       height: 100%;
-      border-radius: 3px;
-      transition: width 0.5s ease;
+      border-radius: 4px;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .barra-local     { background: var(--clr-primary); }
@@ -308,53 +321,34 @@ import { EstadisticaPartido } from '../../shared/models/estadistica.model';
     .barra-visitante { background: var(--clr-maroon); }
 
     .barra-pct {
-      font-size: 0.72rem;
+      font-size: 0.8rem;
       font-weight: 700;
       color: var(--clr-text);
       text-align: right;
     }
 
-    .barra-votos {
-      font-size: 0.65rem;
-      color: var(--clr-text-muted);
-      text-align: right;
-    }
-
-    /* Footer con favorito */
+    /* Footer */
     .stat-card-footer {
-      display: flex;
-      align-items: center;
-      gap: 0.4em;
-      padding: 0.5em 0.9em;
+      padding: 0.75em 1.25em;
+      background: #fafafa;
       border-top: 1px solid var(--clr-border);
-      background: var(--clr-surface-alt);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .favorito-label {
-      font-size: 0.68rem;
-      color: var(--clr-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-weight: 500;
-    }
-
-    .favorito-valor {
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: var(--clr-primary-dark);
-      text-transform: uppercase;
-    }
+    .favorito-label { font-size: 0.7rem; color: var(--clr-text-muted); text-transform: uppercase; font-weight: 600; }
+    .favorito-valor { font-size: 0.8rem; font-weight: 700; color: var(--clr-primary-dark); text-transform: uppercase; }
 
     /* ── Responsive ──────────────────────────────────────────────────────── */
-    @media (max-width: 700px) {
-      .stats-grid { grid-template-columns: 1fr; }
-      .resumen-strip { padding: 0.85em 1em; }
-      .resumen-num { font-size: 1.3rem; }
-      .barra-row { grid-template-columns: 60px 1fr 30px 28px; }
+    @media (max-width: 1024px) {
+      .stats-overview { grid-template-columns: repeat(2, 1fr); }
     }
 
-    @media (max-width: 400px) {
-      .barra-votos { display: none; }
+    @media (max-width: 600px) {
+      .stats-overview { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .barra-row { grid-template-columns: 80px 1fr 35px; }
     }
   `]
 })
@@ -365,14 +359,6 @@ export class EstadisticasComponent implements OnInit {
   grupoActivo  = signal<string | null>(null);
 
   grupos = ['A','B','C','D','E','F','G','H','I','J','K','L'];
-
-  // Mapa de partido → grupo (se construye cuando llegan los datos)
-  // Como EstadisticaPartido no tiene grupo, lo derivamos del número de partido:
-  // partidos 1–48 son grupos (4 por grupo, 12 grupos)
-  private getGrupoDeNumero(num: number): string {
-    const idx = Math.floor((num - 1) / 4);
-    return this.grupos[idx] ?? '?';
-  }
 
   constructor(private estadisticaService: EstadisticaService) {}
 
@@ -386,9 +372,7 @@ export class EstadisticasComponent implements OnInit {
   estadisticasFiltradas(): EstadisticaPartido[] {
     const activo = this.grupoActivo();
     if (!activo) return this.estadisticas();
-    return this.estadisticas().filter(
-      s => this.getGrupoDeNumero(s.numeroPartido) === activo
-    );
+    return this.estadisticas().filter(s => s.grupo === activo);
   }
 
   getPct(votos: number, total: number): number {
@@ -408,5 +392,14 @@ export class EstadisticasComponent implements OnInit {
 
   totalPrediccionesEmpate(): number {
     return this.estadisticas().reduce((acc, s) => acc + s.votosEmpate, 0);
+  }
+
+  totalPrediccionesVisitante(): number {
+    return this.estadisticas().reduce((acc, s) => acc + s.votosVisitante, 0);
+  }
+
+  totalPlanillas(): number {
+    // Tomamos el totalVotos de cualquier partido, ya que es igual para todos (nro de planillas confirmadas)
+    return this.estadisticas().length > 0 ? this.estadisticas()[0].totalVotos : 0;
   }
 }

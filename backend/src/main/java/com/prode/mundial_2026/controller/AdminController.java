@@ -30,7 +30,7 @@ public class AdminController {
                         p.getUsuario().getApellido(),
                         p.getUsuario().getAfiliado(),
                         p.getConfirmada(),
-                        "ID Interno: " + p.getId()))
+                        "", null))
                 .toList();
         return ResponseEntity.ok(response);
     }

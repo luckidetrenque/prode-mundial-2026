@@ -21,4 +21,5 @@ export interface PlanillaResponse {
   afiliado: number;
   confirmada: boolean;
   mensaje: string | null;
+  predicciones?: PrediccionItem[];
 }

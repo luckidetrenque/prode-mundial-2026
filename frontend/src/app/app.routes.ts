@@ -51,6 +51,13 @@ export const routes: Routes = [
         .then(m => m.PlanillaDetalleComponent)
   },
 
+  {
+    path: 'reglamento',
+    loadComponent: () =>
+      import('./features/reglamento/reglamento.component')
+        .then(m => m.ReglamentoComponent)
+  },
+
   // ── Rutas de admin ──────────────────────────────────────────────────────
   {
     path: 'admin/login',

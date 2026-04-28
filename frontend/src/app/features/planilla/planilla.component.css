@@ -12,11 +12,27 @@
   font-size: 12px;
 }
 
-.group-table caption {
+.group-caption {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.6em 1em;
+  background: linear-gradient(to right, var(--wc-usa), #3a4bb0);
+}
+
+.group-letter {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+}
+
+.group-label {
+  font-family: var(--font-display);
   font-size: 0.8rem;
+  font-weight: 700;
   letter-spacing: 2px;
-  padding: 0.45em 0.85em;
-  text-align: left;
+  color: rgba(255,255,255,0.7);
 }
 
 /* ── Fila de partido ──────────────────────────────────────────────────────── */

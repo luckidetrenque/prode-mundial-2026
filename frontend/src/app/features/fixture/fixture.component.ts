@@ -3,13 +3,14 @@ import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { PartidoService } from '../../core/services/partido.service';
 import { Partido } from '../../shared/models/partido.model';
+import { ShortCountryPipe } from '../../shared/pipes/short-country.pipe';
 
-type VistaFiltro = 'GRUPOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFINAL' | 'FINAL';
+type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFINAL' | 'FINAL';
 
 @Component({
   selector: 'app-fixture',
   standalone: true,
-  imports: [CommonModule, DatePipe],
+  imports: [CommonModule, DatePipe, ShortCountryPipe],
   template: `
     <main class="main">
       <h2><i class="fas fa-calendar-days"></i> Fixture — Copa del Mundo 2026</h2>
@@ -61,15 +62,15 @@ type VistaFiltro = 'GRUPOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFINAL' | 'FINAL';
           @for (grupo of gruposMostrados(); track grupo) {
             <div class="group-table-wrap">
               <div class="group-caption">
-                <span class="group-letter">{{ grupo }}</span>
                 <span class="group-label">GRUPO</span>
+                <span class="group-letter">{{ grupo }}</span>
               </div>
               <table class="tabla-grupo">
                 <thead>
                   <tr>
                     <th class="th-num">#</th>
                     <th>Local</th>
-                    <th class="th-center">Result.</th>
+                    <th class="th-center"></th>
                     <th>Visitante</th>
                     <th class="th-date">Fecha</th>
                     <th class="th-sede">Sede</th>
@@ -81,7 +82,7 @@ type VistaFiltro = 'GRUPOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFINAL' | 'FINAL';
                       <td class="th-num col-muted">{{ partido.numero }}</td>
                       <td class="td-equipo td-equipo--local">
                         <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" class="flag" width="22" height="14" />
-                        <span class="equipo-txt">{{ partido.equipoLocalShow }}</span>
+                        <span class="equipo-txt">{{ partido.equipoLocalShow | shortCountry }}</span>
                       </td>
                       <td class="th-center">
                         @if (esJugado(partido)) {
@@ -92,10 +93,10 @@ type VistaFiltro = 'GRUPOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFINAL' | 'FINAL';
                       </td>
                       <td class="td-equipo">
                         <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow" class="flag" width="22" height="14" />
-                        <span class="equipo-txt">{{ partido.equipoVisitanteShow }}</span>
+                        <span class="equipo-txt">{{ partido.equipoVisitanteShow | shortCountry }}</span>
                       </td>
                       <td class="th-date col-muted">{{ partido.fechaHora | date:'dd/MM HH:mm' }}</td>
-                      <td class="th-sede col-muted">{{ partido.sede }}</td>
+                      <td class="th-sede col-muted">{{ formatEstadio(partido.sede) }}</td>
                     </tr>
                   }
                 </tbody>
@@ -115,7 +116,7 @@ type VistaFiltro = 'GRUPOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFINAL' | 'FINAL';
               <div class="elim-equipo elim-equipo--local">
                 @if (partido.equipoLocalShow) {
                   <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" class="flag flag-elim" width="32" height="21" />
-                  <span class="elim-nomb">{{ partido.equipoLocalShow }}</span>
+                  <span class="elim-nomb">{{ partido.equipoLocalShow | shortCountry }}</span>
                 } @else {
                   <span class="por-definir">Por definir</span>
                 }
@@ -125,7 +126,7 @@ type VistaFiltro = 'GRUPOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFINAL' | 'FINAL';
 
               <div class="elim-equipo elim-equipo--visit">
                 @if (partido.equipoVisitanteShow) {
-                  <span class="elim-nomb">{{ partido.equipoVisitanteShow }}</span>
+                  <span class="elim-nomb">{{ partido.equipoVisitanteShow | shortCountry }}</span>
                   <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow" class="flag flag-elim" width="32" height="21" />
                 } @else {
                   <span class="por-definir">Por definir</span>
@@ -135,7 +136,7 @@ type VistaFiltro = 'GRUPOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFINAL' | 'FINAL';
               <div class="elim-meta">
                 <span class="elim-fecha">{{ partido.fechaHora | date:'dd/MM/yyyy' }}</span>
                 <span class="elim-hora">{{ partido.fechaHora | date:'HH:mm' }} hs</span>
-                <span class="elim-sede">{{ partido.sede }}</span>
+                <span class="elim-sede">{{ formatEstadio(partido.sede) }}</span>
               </div>
             </div>
           }
@@ -264,7 +265,7 @@ type VistaFiltro = 'GRUPOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFINAL' | 'FINAL';
 
     /* Columnas */
     .th-num   { width: 28px; text-align: center; }
-    .th-center { text-align: center; width: 58px; }
+    .th-center { text-align: center; width: 36px; }
     .th-date  { width: 80px; white-space: nowrap; }
     .th-sede  { min-width: 80px; }
     .col-muted { font-size: 0.75rem; color: var(--clr-text-muted); }
@@ -281,6 +282,10 @@ type VistaFiltro = 'GRUPOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFINAL' | 'FINAL';
       text-transform: uppercase;
       letter-spacing: 0.2px;
       color: var(--wc-neutral-dark);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 120px;
     }
 
     /* Badges */
@@ -348,6 +353,10 @@ type VistaFiltro = 'GRUPOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFINAL' | 'FINAL';
       text-transform: uppercase;
       letter-spacing: 0.4px;
       color: var(--wc-neutral-dark);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 140px;
     }
 
     .flag-elim { 
@@ -402,11 +411,12 @@ export class FixtureComponent implements OnInit {
   grupos = ['A','B','C','D','E','F','G','H','I','J','K','L'];
 
   fases = [
-    { valor: 'GRUPOS'    as VistaFiltro, label: 'Grupos',      icono: 'fas fa-layer-group' },
-    { valor: 'OCTAVOS'   as VistaFiltro, label: 'Octavos',     icono: 'fas fa-16' },
-    { valor: 'CUARTOS'   as VistaFiltro, label: 'Cuartos',     icono: 'fas fa-8' },
-    { valor: 'SEMIFINAL' as VistaFiltro, label: 'Semis',       icono: 'fas fa-4' },
-    { valor: 'FINAL'     as VistaFiltro, label: 'Final',       icono: 'fas fa-star' },
+    { valor: 'GRUPOS'        as VistaFiltro, label: 'Grupos',      icono: 'fas fa-layer-group' },
+    { valor: 'DIECISEISAVOS' as VistaFiltro, label: '16avos',      icono: 'fas fa-futbol' },
+    { valor: 'OCTAVOS'       as VistaFiltro, label: 'Octavos',     icono: 'fas fa-futbol' },
+    { valor: 'CUARTOS'       as VistaFiltro, label: 'Cuartos',     icono: 'fas fa-futbol' },
+    { valor: 'SEMIFINAL'     as VistaFiltro, label: 'Semis',       icono: 'fas fa-futbol' },
+    { valor: 'FINAL'         as VistaFiltro, label: 'Final',       icono: 'fas fa-star' },
   ];
 
   partidosFiltrados = computed(() =>
@@ -439,5 +449,10 @@ export class FixtureComponent implements OnInit {
 
   esJugado(partido: Partido): boolean {
     return new Date(partido.fechaHora) < new Date();
+  }
+
+  formatEstadio(sede: string): string {
+    if (!sede) return '';
+    return sede.replace(/ Stadium/gi, '').trim();
   }
 }

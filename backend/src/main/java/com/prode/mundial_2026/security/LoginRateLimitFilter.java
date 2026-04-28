@@ -63,8 +63,7 @@ public class LoginRateLimitFilter extends OncePerRequestFilter {
 
         if (estado[0] > MAX_INTENTOS) {
             long segundosRestantes = VENTANA_SEGUNDOS - (ahora - estado[1]);
-            response.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);  // 429 no está en la spec antigua; usamos 429 explícito
-            response.setStatus(429);
+            response.setStatus(429); // 429 no está en la spec antigua; usamos 429 explícito
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.getWriter().write(
                     "{\"error\":\"Demasiados intentos de login. Intentá en "

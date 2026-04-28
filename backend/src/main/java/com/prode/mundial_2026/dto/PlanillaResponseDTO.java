@@ -13,4 +13,5 @@ public class PlanillaResponseDTO {
     private Integer afiliado;
     private Boolean confirmada;
     private String mensaje; // ej: "Planilla guardada correctamente"
+    private java.util.List<PlanillaRequestDTO.PrediccionItemDTO> predicciones;
 }

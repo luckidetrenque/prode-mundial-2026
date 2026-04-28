@@ -236,7 +236,7 @@ interface PlanillaConCheck extends PlanillaResponse {
     /* ── Grid de planillas ───────────────────────────────────────────────── */
     .planillas-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      grid-template-columns: 1fr;
       gap: 0.75em;
       margin-bottom: 1.5em;
     }

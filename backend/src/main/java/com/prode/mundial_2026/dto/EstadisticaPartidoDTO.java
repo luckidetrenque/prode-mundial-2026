@@ -10,6 +10,7 @@ public class EstadisticaPartidoDTO {
     private Integer numeroPartido;
     private String equipoLocal;
     private String equipoVisitante;
+    private String grupo;
     private Long votosLocal;
     private Long votosEmpate;
     private Long votosVisitante;

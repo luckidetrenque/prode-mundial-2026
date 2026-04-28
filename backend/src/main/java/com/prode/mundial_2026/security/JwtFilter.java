@@ -39,7 +39,6 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = authHeader.substring(7);
 
         if (!jwtUtil.esTokenValido(token)) {
-            System.out.println("DEBUG JWT: Token inválido o expirado");
             filterChain.doFilter(request, response);
             return;
         }
@@ -47,14 +46,7 @@ public class JwtFilter extends OncePerRequestFilter {
         Integer afiliado = jwtUtil.extraerAfiliado(token);
         Usuario admin = usuarioRepository.findByAfiliado(afiliado).orElse(null);
 
-        if (admin == null) {
-            System.out.println("DEBUG JWT: Usuario no encontrado para afiliado: " + afiliado);
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        if (!admin.getEsAdmin()) {
-            System.out.println("DEBUG JWT: Usuario " + afiliado + " no tiene permisos de ADMIN");
+        if (admin == null || !admin.getEsAdmin()) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -66,12 +58,10 @@ public class JwtFilter extends OncePerRequestFilter {
         // ─────────────────────────────────────────────────────────────────────
         int tokenVersion = jwtUtil.extraerTokenVersion(token);
         if (tokenVersion != admin.getTokenVersion()) {
-            System.out.println("DEBUG JWT: Versión de token no coincide. Token: " + tokenVersion + ", DB: " + admin.getTokenVersion());
+            // Token revocado — continuamos sin autenticar
             filterChain.doFilter(request, response);
             return;
         }
-
-        System.out.println("DEBUG JWT: Autenticando usuario " + admin.getAfiliado() + " como ROLE_ADMIN");
 
         var autenticacion = new UsernamePasswordAuthenticationToken(
                 admin,

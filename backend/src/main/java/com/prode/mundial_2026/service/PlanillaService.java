@@ -63,7 +63,8 @@ public class PlanillaService {
                 usuario.getApellido(),
                 usuario.getAfiliado(),
                 planilla.getConfirmada(),
-                "Planilla guardada correctamente. Código: " + planilla.getCodigo());
+                "Planilla guardada correctamente. Código: " + planilla.getCodigo(),
+                null); // No es necesario devolverlas al guardar
     }
 
     public PlanillaResponseDTO obtenerPorCodigo(Long codigo) {
@@ -77,7 +78,8 @@ public class PlanillaService {
                 planilla.getUsuario().getApellido(),
                 planilla.getUsuario().getAfiliado(),
                 planilla.getConfirmada(),
-                null);
+                null,
+                mapearPredicciones(planilla.getPredicciones()));
     }
 
     public List<PlanillaResponseDTO> listarConfirmadas() {
@@ -89,7 +91,19 @@ public class PlanillaService {
                         p.getUsuario().getApellido(),
                         p.getUsuario().getAfiliado(),
                         p.getConfirmada(),
-                        null))
+                        null,
+                        null)) // No las incluimos en el listado general por performance
+                .toList();
+    }
+
+    private List<PlanillaRequestDTO.PrediccionItemDTO> mapearPredicciones(List<Prediccion> predicciones) {
+        return predicciones.stream()
+                .map(p -> {
+                    PlanillaRequestDTO.PrediccionItemDTO item = new PlanillaRequestDTO.PrediccionItemDTO();
+                    item.setPartidoId(p.getPartido().getId());
+                    item.setPrediccion(p.getPrediccion().name());
+                    return item;
+                })
                 .toList();
     }
 
