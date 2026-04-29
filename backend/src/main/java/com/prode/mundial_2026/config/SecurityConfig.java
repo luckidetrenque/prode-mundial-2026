@@ -49,6 +49,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Públicos
                 .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/auth/logout").permitAll()
                 .requestMatchers(HttpMethod.GET,  "/api/partidos/**").permitAll()
                 .requestMatchers(HttpMethod.GET,  "/api/resultados/**").permitAll()
                 .requestMatchers(HttpMethod.GET,  "/api/posiciones/**").permitAll()

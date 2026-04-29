@@ -99,7 +99,6 @@ interface PlanillaConCheck extends PlanillaResponse {
               <!-- Info -->
               <div class="card-info">
                 <span class="card-nombre">{{ p.nombre }} {{ p.apellido }}</span>
-                <span class="card-afiliado">Afiliado N° {{ p.afiliado }}</span>
               </div>
 
               <!-- Código -->

@@ -10,7 +10,7 @@ public class PlanillaResponseDTO {
     private Long codigo; // número único de la planilla
     private String nombre;
     private String apellido;
-    private Integer afiliado;
+    private String email;
     private Boolean confirmada;
     private String mensaje; // ej: "Planilla guardada correctamente"
     private java.util.List<PlanillaRequestDTO.PrediccionItemDTO> predicciones;

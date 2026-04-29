@@ -21,7 +21,7 @@ public class AuthService {
     public LoginResponseDTO login(LoginRequestDTO request) {
 
         Usuario usuario = usuarioRepository
-                .findByAfiliado(request.getAfiliado())
+                .findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Credenciales incorrectas"));
 
         if (!usuario.getEsAdmin()) {
@@ -35,7 +35,7 @@ public class AuthService {
         // ── FIX SEG #1 ────────────────────────────────────────────────────────
         // Pasamos la tokenVersion actual al generador para que quede en el payload.
         // ─────────────────────────────────────────────────────────────────────
-        String token = jwtUtil.generarToken(usuario.getAfiliado(), usuario.getTokenVersion());
+        String token = jwtUtil.generarToken(usuario.getEmail(), usuario.getTokenVersion());
 
         return new LoginResponseDTO(token, usuario.getNombre(), usuario.getApellido());
     }
@@ -46,8 +46,8 @@ public class AuthService {
     // ya no coincide con el valor actual del usuario.
     // ─────────────────────────────────────────────────────────────────────────
     @Transactional
-    public void logout(Integer afiliado) {
-        usuarioRepository.findByAfiliado(afiliado).ifPresent(usuario -> {
+    public void logout(String email) {
+        usuarioRepository.findByEmail(email).ifPresent(usuario -> {
             usuario.setTokenVersion(usuario.getTokenVersion() + 1);
             // @Transactional hace dirty-checking — no hace falta save()
         });

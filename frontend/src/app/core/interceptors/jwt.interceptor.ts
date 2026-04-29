@@ -9,14 +9,14 @@ import { AuthService } from '../services/auth.service';
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
-  const token = authService.getToken();
+  // Ya no agregamos el header Authorization manualmente.
+  // El navegador enviará la cookie prode_token automáticamente
+  // siempre que la petición sea "withCredentials: true".
+  const reqConCredenciales = req.clone({
+    withCredentials: true
+  });
 
-  // Si hay token, lo agregamos al header Authorization
-  const reqConToken = token
-    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
-    : req;
-
-  return next(reqConToken).pipe(
+  return next(reqConCredenciales).pipe(
     catchError((error: HttpErrorResponse) => {
       // ── FIX BUG #2 ─────────────────────────────────────────────────────────
       // Cuando el JWT expiró o es inválido, el backend devuelve 401 o 403.
@@ -28,7 +28,8 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
       // ───────────────────────────────────────────────────────────────────────
       if (
         (error.status === 401 || error.status === 403) &&
-        !req.url.includes('/auth/login')
+        !req.url.includes('/auth/login') &&
+        !req.url.includes('/auth/logout')
       ) {
         authService.logout();
       }

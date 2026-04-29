@@ -1,81 +1,611 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
+
+interface ArticuloReglamento {
+  numero: number;
+  titulo: string;
+  icono: string;
+  contenido: string;
+  destacado?: string;
+}
 
 @Component({
   selector: 'app-reglamento',
-  imports: [],
-  template: `             <h2>1. Partidos:</h2>
-            <p>Son los cuarenta y ocho (48) partidos que se jugarán en la fase de grupos del mundial de Qatar
-                2022,
-                iniciando el día
-                <strong>domingo 20 de
-                    noviembre de 2022</strong> y culminando el día <strong>viernes 2 de diciembre de 2022</strong>.
-            </p>
-            <h2>2. Planilla:</h2>
-            <p>La planilla se deberá completar y se podrá descargar desde la sección <a
-                    href="/cargar-planilla-fase-grupos.php" title="Planilla Prode Mundial Qatar 2022">#Planilla</a>. La
-                misma cuenta con los 48 partidos de
-                la fase
-                de grupos y solamente se podrá marcar como resultado válido un equipo Local (L), un equipo Visitante (V)
-                o un Empate
-                (E) por
-                cada partido.</p>
-            <p>Asimismo deberá contar con la totalidad de los partidos marcados, nombre, apellido y oficina del
-                participante.</p>
-            <p>Los partidos que no sean marcados serán computados como Nulos.</p>
-            <p>Se admiten más de una planilla por participante.</p>
-            <h2>3. Valor:</h2>
-            <p>La planilla tiene un valor de pesos quinientos <strong>($500)</strong> que deberá ser abonado de manera
-                previa o al momento
-                de
-                confirmar la misma.</p>
-            <h2>4. Confirmación de Planillas:</h2>
-            <p>Para confirmar la planilla, se deberá presentar el <strong>número único de identificación</strong> de la
-                misma generado por el
-                sistema. Las planillas se confirmarán ineludiblemente hasta el día viernes 18 de noviembre de 2022 a las
-                16:00
-                horas.</p>
-            <h2>5. Publicación de Planillas:</h2>
-            <p>Las planillas debidamente confirmadas, se publicarán el día sábado 19 de noviembre
-                de 2022 en la sección
-                <a href="/participantes-fase-grupos.php"
-                    title="Participantes Prode Mundial Qatar 2022">#Participantes</a> del sitio web.
-            </p>
-            <h2>6. Resultados:</h2>
-            <p>Serán considerados los resultados oficiales de la <abbr lang="fr"
-                    title="Fédération Internationale de Football Association">FIFA</abbr> del Mundial Qatar 2022, a su
-                vez se podrán ir
-                siguiendo
-                los resultados de los partidos en la sección <a href="/resultados-fase-grupos.php"
-                    title="Resultados Prode Mundial Qatar 2022">#Resultados</a>
-                del sitio web.
-            </p>
-            <h2>7. Ganadores:</h2>
-            <p>Será considerado como ganador en el <strong>Primer Puesto</strong> al participante que mayor cantidad de
-                puntos
-                sume, en caso de haber empate serán considerados como ganadores todos los participantes que hayan
-                empatado.
-                <br>Será considerado ganador en el <strong>Segundo Puesto</strong> al o los participantes que acierten
-                la mayor
-                cantidad de puntos detrás del Primer Puesto.
-            </p>
-            <p>Se publicarán las planillas ganadoras el día sábado 3 de diciembre de 2022 en la sección <a href="#"
-                    title="Ganadores Prode Mundial Qatar 2022">#Ganadores</a> del
-                sitio web.
-            </p>
-            <h2>8. Premios:</h2>
-            <p>Los premios serán:</p>
-            <p><strong>Primer Puesto:</strong> El participante que acierte la mayor cantidad de partidos entre los 48
-                jugados
-                por fase de grupos, gana el <strong>80% del pozo recaudado</strong>, en caso de haber empate se divide
-                entre los
-                ganadores.</p>
-            <p><strong>Segundo Puesto:</strong> El participante siguiente al Primer Puesto que acierte la mayor cantidad
-                de
-                partidos entre los 48 jugados por fase de grupos, gana el <strong>20% del pozo recaudado</strong>, en
-                caso de
-                haber empate se divide entre los ganadores.</p>
-            <h2>9. Entrega de Premios:</h2>
-            <p>Los premios serán entregados el día lunes 5 de diciembre de 2022 a las 15 horas.</p> `,
-  styles: ``,
+  standalone: true,
+  imports: [RouterLink],
+  template: `
+    <main class="main reglamento-main">
+
+      <!-- Hero del reglamento -->
+      <div class="reglamento-hero">
+        <div class="hero-badge">
+          <i class="fas fa-scale-balanced" aria-hidden="true"></i>
+          Reglamento Oficial
+        </div>
+        <h2 class="hero-titulo">
+          <i class="fas fa-book-open" aria-hidden="true"></i>
+          Bases y Condiciones
+        </h2>
+        <p class="hero-subtitulo">
+          Prode Mundial 2026 — Fase de Grupos<br>
+          <strong>Canadá · Estados Unidos · México</strong>
+        </p>
+        <div class="hero-fechas">
+          <div class="fecha-item">
+            <i class="fas fa-calendar-plus" aria-hidden="true"></i>
+            <div>
+              <span class="fecha-label">Inicio del torneo</span>
+              <span class="fecha-valor">11 de junio de 2026</span>
+            </div>
+          </div>
+          <div class="fecha-sep" aria-hidden="true"></div>
+          <div class="fecha-item">
+            <i class="fas fa-calendar-check" aria-hidden="true"></i>
+            <div>
+              <span class="fecha-label">Fin de grupos</span>
+              <span class="fecha-valor">2 de julio de 2026</span>
+            </div>
+          </div>
+          <div class="fecha-sep" aria-hidden="true"></div>
+          <div class="fecha-item">
+            <i class="fas fa-futbol" aria-hidden="true"></i>
+            <div>
+              <span class="fecha-label">Final del mundial</span>
+              <span class="fecha-valor">19 de julio de 2026</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Índice rápido -->
+      <nav class="indice-rapido" aria-label="Índice del reglamento">
+        <p class="indice-titulo"><i class="fas fa-list-ol" aria-hidden="true"></i> Ir al artículo</p>
+        <div class="indice-links">
+          @for (art of articulos; track art.numero) {
+            <button type="button" (click)="scrollTo('art-' + art.numero)" class="indice-link" [attr.aria-label]="'Ir al artículo ' + art.numero">
+              <span class="indice-num">{{ art.numero }}</span>
+              <span class="indice-text">{{ art.titulo }}</span>
+            </button>
+          }
+        </div>
+      </nav>
+
+      <!-- Artículos -->
+      <div class="articulos-lista" role="main">
+        @for (art of articulos; track art.numero) {
+          <article
+            class="articulo-card"
+            [id]="'art-' + art.numero"
+            [attr.aria-labelledby]="'titulo-art-' + art.numero"
+          >
+            <div class="articulo-header">
+              <div class="articulo-icono" aria-hidden="true">
+                <i [class]="'fas ' + art.icono"></i>
+              </div>
+              <div class="articulo-meta">
+                <span class="articulo-num">Artículo {{ art.numero }}</span>
+                <h3 class="articulo-titulo" [id]="'titulo-art-' + art.numero">{{ art.titulo }}</h3>
+              </div>
+            </div>
+
+            <div class="articulo-body">
+              <p [innerHTML]="art.contenido"></p>
+              @if (art.destacado) {
+                <div class="articulo-destacado" role="note">
+                  <i class="fas fa-circle-info" aria-hidden="true"></i>
+                  <span [innerHTML]="art.destacado"></span>
+                </div>
+              }
+            </div>
+          </article>
+        }
+      </div>
+
+      <!-- Footer CTA -->
+      <div class="reglamento-cta">
+        <div class="cta-inner">
+          <i class="fas fa-list-check cta-icono" aria-hidden="true"></i>
+          <div class="cta-texto">
+            <strong>¿Listo para participar?</strong>
+            <span>Cargá tu planilla antes del cierre de inscripciones.</span>
+          </div>
+          <a routerLink="/planilla" class="btn btn-primary cta-btn">
+            <i class="fas fa-pencil" aria-hidden="true"></i>
+            Cargar mi planilla
+          </a>
+        </div>
+      </div>
+
+    </main>
+  `,
+  styles: [`
+    /* ── Reset específico del main ───────────────────────────────────────── */
+    .reglamento-main {
+      padding-top: 0;
+    }
+
+    /* ── Hero ────────────────────────────────────────────────────────────── */
+    .reglamento-hero {
+      background: linear-gradient(135deg, var(--clr-primary-dark) 0%, #1a237e 60%, #0d1440 100%);
+      color: white;
+      padding: 3em 2em 2.5em;
+      margin: 0 -2em 2.5em;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .reglamento-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(60,172,59,0.15) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 50%, rgba(230,29,37,0.12) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5em;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 0.4em 1.2em;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 1.25em;
+      backdrop-filter: blur(8px);
+    }
+
+    .hero-titulo {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: white;
+      margin-bottom: 0.4em;
+      /* override del h2 global */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5em;
+    }
+
+    .hero-titulo i { color: rgba(255,255,255,0.6); font-size: 1.3rem; }
+
+    .hero-subtitulo {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.6;
+      margin-bottom: 2em;
+    }
+
+    .hero-subtitulo strong { color: white; }
+
+    /* Fechas clave */
+    .hero-fechas {
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: var(--radius-lg);
+      padding: 0.85em 1.5em;
+      backdrop-filter: blur(8px);
+    }
+
+    .fecha-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75em;
+      padding: 0 1.25em;
+    }
+
+    .fecha-item i {
+      font-size: 1.2rem;
+      color: var(--clr-accent);
+      flex-shrink: 0;
+    }
+
+    .fecha-item div {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+
+    .fecha-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: rgba(255,255,255,0.55);
+      font-weight: 600;
+    }
+
+    .fecha-valor {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: white;
+      white-space: nowrap;
+    }
+
+    .fecha-sep {
+      width: 1px;
+      height: 36px;
+      background: rgba(255,255,255,0.15);
+      flex-shrink: 0;
+    }
+
+    /* ── Índice rápido ───────────────────────────────────────────────────── */
+    .indice-rapido {
+      background: var(--clr-surface-alt);
+      border: 1px solid var(--clr-border-strong);
+      border-radius: var(--radius-lg);
+      padding: 1.25em 1.5em;
+      margin-bottom: 2em;
+    }
+
+    .indice-titulo {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--clr-text-muted);
+      margin-bottom: 0.85em;
+      display: flex;
+      align-items: center;
+      gap: 0.4em;
+    }
+
+    .indice-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4em;
+    }
+
+    .indice-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4em;
+      padding: 0.3em 0.75em;
+      border: 1.5px solid var(--clr-border-strong);
+      border-radius: 20px;
+      background: var(--clr-surface);
+      color: var(--clr-text);
+      font-size: 0.78rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .indice-link:hover,
+    .indice-link:focus-visible {
+      border-color: var(--clr-primary);
+      color: var(--clr-primary);
+      background: rgba(46,158,45,0.05);
+      outline: none;
+    }
+
+    .indice-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      background: var(--clr-primary-dark);
+      color: white;
+      border-radius: 50%;
+      font-size: 0.65rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .indice-text {
+      max-width: 120px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ── Lista de artículos ──────────────────────────────────────────────── */
+    .articulos-lista {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+      margin-bottom: 3em;
+    }
+
+    /* ── Card de artículo ────────────────────────────────────────────────── */
+    .articulo-card {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      scroll-margin-top: calc(var(--navbar-height, 60px) + 1.5em);
+    }
+
+    .articulo-card:hover {
+      border-color: var(--clr-border-strong);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Header del artículo */
+    .articulo-header {
+      display: flex;
+      align-items: center;
+      gap: 1em;
+      padding: 1em 1.25em;
+      background: var(--clr-surface-alt);
+      border-bottom: 1px solid var(--clr-border);
+    }
+
+    .articulo-icono {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-md);
+      background: var(--clr-primary-dark);
+      color: white;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .articulo-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1em;
+    }
+
+    .articulo-num {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--clr-text-muted);
+    }
+
+    .articulo-titulo {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      color: var(--clr-primary-dark);
+      margin: 0;
+    }
+
+    /* Cuerpo del artículo */
+    .articulo-body {
+      padding: 1.25em 1.5em;
+    }
+
+    .articulo-body p {
+      font-size: 0.9rem;
+      line-height: 1.75;
+      color: var(--clr-text);
+    }
+
+    .articulo-body p strong {
+      color: var(--clr-primary-dark);
+      font-weight: 700;
+    }
+
+    .articulo-body p a {
+      color: var(--clr-primary);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    /* Bloque destacado */
+    .articulo-destacado {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75em;
+      margin-top: 1em;
+      padding: 0.85em 1em;
+      background: #e8f0fd;
+      border-left: 3px solid var(--clr-primary-dark);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 0.85rem;
+      color: var(--clr-primary-dark);
+      line-height: 1.6;
+    }
+
+    .articulo-destacado i {
+      color: var(--clr-primary-dark);
+      font-size: 0.9rem;
+      flex-shrink: 0;
+      margin-top: 0.1em;
+    }
+
+    .articulo-destacado strong {
+      font-weight: 700;
+    }
+
+    /* ── CTA final ───────────────────────────────────────────────────────── */
+    .reglamento-cta {
+      background: linear-gradient(135deg, var(--clr-primary-dark) 0%, #1a237e 100%);
+      border-radius: var(--radius-lg);
+      padding: 1.5em 2em;
+      margin-top: 1em;
+    }
+
+    .cta-inner {
+      display: flex;
+      align-items: center;
+      gap: 1.25em;
+    }
+
+    .cta-icono {
+      font-size: 2rem;
+      color: var(--clr-accent);
+      flex-shrink: 0;
+    }
+
+    .cta-texto {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15em;
+    }
+
+    .cta-texto strong {
+      font-size: 1rem;
+      color: white;
+      font-family: var(--font-display);
+      letter-spacing: 0.3px;
+    }
+
+    .cta-texto span {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .cta-btn {
+      flex-shrink: 0;
+      padding: 0.7em 1.5em;
+      border-radius: 20px;
+    }
+
+    /* ── Responsive ──────────────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .reglamento-hero {
+        margin: 0 -1em 2em;
+        padding: 2em 1em 2em;
+      }
+
+      .hero-fechas {
+        flex-direction: column;
+        gap: 0.75em;
+        padding: 1em;
+        text-align: left;
+        width: 100%;
+      }
+
+      .fecha-sep { width: 100%; height: 1px; }
+      .fecha-item { padding: 0; }
+
+      .indice-links { gap: 0.3em; }
+      .indice-text { max-width: 90px; }
+
+      .articulo-body { padding: 1em; }
+
+      .cta-inner { flex-direction: column; text-align: center; gap: 1em; }
+      .cta-btn { width: 100%; justify-content: center; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-titulo { font-size: 1.5rem; }
+      .indice-text { display: none; }
+      .indice-link { padding: 0.3em 0.5em; }
+    }
+  `],
 })
-export class ReglamentoComponent {}
+export class ReglamentoComponent {
+
+  scrollTo(id: string): void {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  readonly articulos: ArticuloReglamento[] = [
+    {
+      numero: 1,
+      titulo: 'Partidos',
+      icono: 'fa-futbol',
+      contenido: `Son los <strong>cuarenta y ocho (48) partidos</strong> que se jugarán en la fase de grupos
+        del Mundial de Fútbol 2026, iniciando el día
+        <strong>jueves 11 de junio de 2026</strong> y culminando el día
+        <strong>jueves 2 de julio de 2026</strong>.
+        El torneo se disputará en estadios de <strong>Canadá, Estados Unidos y México</strong>.`
+    },
+    {
+      numero: 2,
+      titulo: 'Planilla',
+      icono: 'fa-list-check',
+      contenido: `La planilla se deberá completar desde la sección
+        <a href="/planilla" title="Cargar planilla">Planilla</a> del sitio web.
+        La misma cuenta con los 48 partidos de la fase de grupos y solamente se podrá marcar
+        como resultado válido: equipo <strong>Local (L)</strong>, equipo <strong>Visitante (V)</strong>
+        o <strong>Empate (E)</strong> por cada partido.
+        Deberá contar con la totalidad de los partidos marcados, nombre, apellido y correo electrónico
+        del participante.`,
+      destacado: `Los partidos que no sean marcados serán computados como <strong>Nulos</strong>.
+        Se admite <strong>más de una planilla</strong> por participante.`
+    },
+    {
+      numero: 3,
+      titulo: 'Valor',
+      icono: 'fa-dollar-sign',
+      contenido: `La planilla tiene un valor de <strong>pesos a confirmar</strong> que deberá ser
+        abonado de manera previa o al momento de confirmar la misma.
+        Los medios de pago habilitados serán informados oportunamente.`
+    },
+    {
+      numero: 4,
+      titulo: 'Confirmación de Planillas',
+      icono: 'fa-circle-check',
+      contenido: `Para confirmar la planilla, se deberá presentar el <strong>número único de
+        identificación</strong> generado por el sistema al momento de guardarla.`,
+      destacado: `Las planillas se confirmarán <strong>ineludiblemente</strong> hasta el día previo
+        al inicio del torneo. Las planillas enviadas fuera de término <strong>no serán tomadas en cuenta</strong>.`
+    },
+    {
+      numero: 5,
+      titulo: 'Publicación de Planillas',
+      icono: 'fa-users',
+      contenido: `Las planillas debidamente confirmadas se publicarán en la sección
+        <a href="/participantes" title="Participantes confirmados">Participantes</a> del sitio web
+        una vez cerrado el período de inscripción.`
+    },
+    {
+      numero: 6,
+      titulo: 'Resultados',
+      icono: 'fa-chart-simple',
+      contenido: `Serán considerados los <strong>resultados oficiales de la FIFA</strong> del
+        Mundial 2026. Los resultados podrán seguirse en tiempo real en la sección
+        <a href="/resultados" title="Resultados">Resultados</a> del sitio web,
+        y la tabla de posiciones se actualizará automáticamente.`
+    },
+    {
+      numero: 7,
+      titulo: 'Ganadores',
+      icono: 'fa-trophy',
+      contenido: `Será considerado ganador en el <strong>Primer Puesto</strong> el participante
+        que mayor cantidad de puntos acumule. En caso de empate serán considerados ganadores
+        todos los participantes que hayan igualado dicha puntuación.<br><br>
+        Será considerado ganador en el <strong>Segundo Puesto</strong> el o los participantes
+        que acierten la mayor cantidad de puntos detrás del Primer Puesto.`,
+      destacado: `Cada predicción correcta vale <strong>1 punto</strong>.
+        No se asignan puntos parciales por empates en la predicción.`
+    },
+    {
+      numero: 8,
+      titulo: 'Premios',
+      icono: 'fa-gift',
+      contenido: `<strong>Primer Puesto:</strong> El participante que acierte la mayor cantidad
+        de partidos entre los 48 jugados en fase de grupos gana el
+        <strong>80% del pozo recaudado</strong>. En caso de empate el monto se divide
+        en partes iguales entre los ganadores.<br><br>
+        <strong>Segundo Puesto:</strong> El participante siguiente al Primer Puesto gana el
+        <strong>20% del pozo recaudado</strong>. En caso de empate el monto se divide
+        en partes iguales entre los ganadores.`
+    },
+    {
+      numero: 9,
+      titulo: 'Entrega de Premios',
+      icono: 'fa-hand-holding-dollar',
+      contenido: `Los premios serán entregados dentro de los <strong>5 días hábiles</strong>
+        posteriores a la finalización de la fase de grupos del Mundial 2026.
+        La fecha y modalidad exacta de entrega será comunicada por los canales oficiales.`
+    }
+  ];
+}

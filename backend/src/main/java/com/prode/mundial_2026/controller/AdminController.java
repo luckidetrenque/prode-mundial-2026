@@ -28,10 +28,15 @@ public class AdminController {
                         p.getCodigo(),
                         p.getUsuario().getNombre(),
                         p.getUsuario().getApellido(),
-                        p.getUsuario().getAfiliado(),
+                        p.getUsuario().getEmail(),
                         p.getConfirmada(),
                         "", null))
                 .toList();
         return ResponseEntity.ok(response);
+    }
+    @GetMapping("/planillas/pendientes/count")
+    public ResponseEntity<Long> countPendientes() {
+        // Usamos una query explícita para evitar cualquier ambigüedad con el método generado
+        return ResponseEntity.ok(planillaRepository.countPendientes());
     }
 }

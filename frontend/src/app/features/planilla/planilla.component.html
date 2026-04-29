@@ -1,158 +1,189 @@
-<!-- planilla.component.html — VERSIÓN MEJORADA -->
+<!-- planilla.component.html — VERSIÓN MEJORADA v2 -->
+<!-- MEJORA 1: <span> reemplazados por <button> con aria-pressed y aria-label -->
+<!-- MEJORA 6: barra de progreso usa top: var(--navbar-height) -->
+
 <main class="main">
-  <h2><i class="fas fa-list-check"></i> Planilla — Fase de Grupos</h2>
+  <h2><i class="fas fa-list-check" aria-hidden="true"></i> Planilla — Fase de Grupos</h2>
 
   @if (cargando()) {
-    <div class="spinner-container"><div class="spinner"></div></div>
+  <div class="spinner-container" role="status" aria-label="Cargando partidos...">
+    <div class="spinner"></div>
+  </div>
   }
 
   @if (planillaGuardada()) {
-    <div class="planilla-exito">
-      <div class="exito-icono"><i class="fas fa-circle-check"></i></div>
-      <p class="msg-success">{{ planillaGuardada()!.mensaje }}</p>
-      <p style="color: var(--clr-text-muted); font-size: 0.9rem; margin-bottom: 0.5em;">Tu número de planilla es:</p>
-      <strong class="codigo-planilla">{{ planillaGuardada()!.codigo }}</strong>
-      <p style="color: var(--clr-text-muted); font-size: 0.85rem; margin: 1em 0 1.5em;">
-        Guardá este número. Lo vas a necesitar para confirmar tu participación.
-      </p>
-      <button class="btn btn-secondary" (click)="nuevaPlanilla()">
-        <i class="fas fa-plus"></i> Cargar otra planilla
-      </button>
-    </div>
+  <div class="planilla-exito" role="alert" aria-live="polite">
+    <div class="exito-icono"><i class="fas fa-circle-check" aria-hidden="true"></i></div>
+    <p class="msg-success">{{ planillaGuardada()!.mensaje }}</p>
+    <p style="color: var(--clr-text-muted); font-size: 0.9rem; margin-bottom: 0.5em;">Tu número de planilla es:</p>
+    <strong class="codigo-planilla" aria-label="Código de planilla {{ planillaGuardada()!.codigo }}">
+      {{ planillaGuardada()!.codigo }}
+    </strong>
+    <p style="color: var(--clr-text-muted); font-size: 0.85rem; margin: 1em 0 1.5em;">
+      Guardá este número. Lo vas a necesitar para confirmar tu participación.
+    </p>
+    <button class="btn btn-secondary" (click)="nuevaPlanilla()" type="button">
+      <i class="fas fa-plus" aria-hidden="true"></i> Cargar otra planilla
+    </button>
+  </div>
   }
 
   @if (errorMensaje()) {
-    <p class="msg-error"><i class="fas fa-triangle-exclamation"></i> {{ errorMensaje() }}</p>
+  <p class="msg-error" role="alert">
+    <i class="fas fa-triangle-exclamation" aria-hidden="true"></i> {{ errorMensaje() }}
+  </p>
   }
 
   @if (!cargando() && !planillaGuardada()) {
 
-    <!-- Barra de progreso sticky -->
-    <div class="progreso-wrap">
-      <div class="progreso-header">
-        <span class="progreso-label"><i class="fas fa-chart-simple" style="font-size:0.75rem;margin-right:4px;color:var(--clr-primary-light)"></i>Predicciones</span>
-        <span class="progreso-count">
-          {{ prediccionesCompletadas() }}
-          <span>/ {{ totalPartidos() }}</span>
-        </span>
+  <!-- MEJORA 6: top usa var(--navbar-height) en vez de valor hardcoded -->
+  <div class="progreso-wrap" role="status" aria-live="polite"
+    [attr.aria-label]="prediccionesCompletadas() + ' de ' + totalPartidos() + ' predicciones completadas'">
+    <div class="progreso-header">
+      <span class="progreso-label">
+        <i class="fas fa-chart-simple" aria-hidden="true"
+          style="font-size:0.75rem;margin-right:4px;color:var(--clr-primary-light)"></i>
+        Predicciones
+      </span>
+      <span class="progreso-count">
+        {{ prediccionesCompletadas() }}
+        <span>/ {{ totalPartidos() }}</span>
+      </span>
+      <button type="button" class="btn-auto" (click)="autocompletar()" aria-label="Completar automáticamente">
+        <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
+        <span>Plata o mierda</span>
+      </button>
+    </div>
+    <div class="barra-track" role="progressbar" [attr.aria-valuenow]="prediccionesCompletadas()"
+      [attr.aria-valuemin]="0" [attr.aria-valuemax]="totalPartidos()">
+      <div class="barra-fill" [class.completa]="prediccionesCompletadas() === totalPartidos()"
+        [style.width.%]="totalPartidos() ? (prediccionesCompletadas() / totalPartidos()) * 100 : 0"></div>
+    </div>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+
+    <!-- Grilla de grupos -->
+    <div class="groups-grid">
+      @for (grupo of grupos; track grupo) {
+      <div class="group-table" role="region" [attr.aria-label]="'Grupo ' + grupo">
+        <div class="group-caption">
+          <span class="group-label">GRUPO</span>
+          <span class="group-letter">{{ grupo }}</span>
+        </div>
+
+        @for (partido of getPartidosPorGrupo(grupo); track partido.id) {
+        <div class="partido-row" [class.seleccionado]="prediccionSeleccionada(partido.id)">
+          <!-- Número -->
+          <span class="partido-num" aria-hidden="true">{{ partido.numero }}</span>
+
+          <!-- Equipo local -->
+          <div class="equipo-local">
+            <span class="equipo-nombre">{{ partido.equipoLocalShow }}</span>
+            <img [src]="partido.equipoLocalBandera" [alt]="'Bandera de ' + partido.equipoLocalShow" class="flag"
+              width="28" height="19" />
+          </div>
+
+          <!-- MEJORA 1: Opciones L / E / V como <button> con aria-pressed y aria-label -->
+          <div class="opciones-centro" role="group"
+            [attr.aria-label]="'Predicción para ' + partido.equipoLocalShow + ' vs ' + partido.equipoVisitanteShow + ' — partido ' + partido.numero">
+            <button type="button" class="opcion-btn" [class.activa-local]="getPrediccion(partido.id) === 'LOCAL'"
+              [attr.aria-pressed]="getPrediccion(partido.id) === 'LOCAL'"
+              [attr.aria-label]="'Gana ' + partido.equipoLocalShow + ' (local)'"
+              (click)="seleccionar(partido.id, 'LOCAL')">L</button>
+            <button type="button" class="opcion-btn" [class.activa-empate]="getPrediccion(partido.id) === 'EMPATE'"
+              [attr.aria-pressed]="getPrediccion(partido.id) === 'EMPATE'" aria-label="Empate"
+              (click)="seleccionar(partido.id, 'EMPATE')">E</button>
+            <button type="button" class="opcion-btn"
+              [class.activa-visitante]="getPrediccion(partido.id) === 'VISITANTE'"
+              [attr.aria-pressed]="getPrediccion(partido.id) === 'VISITANTE'"
+              [attr.aria-label]="'Gana ' + partido.equipoVisitanteShow + ' (visitante)'"
+              (click)="seleccionar(partido.id, 'VISITANTE')">V</button>
+          </div>
+
+          <!-- Equipo visitante -->
+          <div class="equipo-visitante">
+            <img [src]="partido.equipoVisitanteBandera" [alt]="'Bandera de ' + partido.equipoVisitanteShow" class="flag"
+              width="28" height="19" />
+            <span class="equipo-nombre">{{ partido.equipoVisitanteShow }}</span>
+          </div>
+        </div>
+        }
       </div>
-      <div class="barra-track">
-        <div
-          class="barra-fill"
-          [class.completa]="prediccionesCompletadas() === totalPartidos()"
-          [style.width.%]="totalPartidos() ? (prediccionesCompletadas() / totalPartidos()) * 100 : 0"
-        ></div>
-      </div>
+      }
     </div>
 
-    <form [formGroup]="form" (ngSubmit)="guardar()">
+    <!-- Datos del participante -->
+    <div class="datos-participante">
+      <p class="datos-titulo">
+        <i class="fas fa-user" aria-hidden="true" style="font-size:0.95rem;color:var(--clr-primary-light)"></i>
+        Tus datos
+      </p>
 
-      <!-- Grilla de grupos -->
-      <div class="groups-grid">
-        @for (grupo of grupos; track grupo) {
-          <div class="group-table">
-            <div class="group-caption">
-              <span class="group-label">GRUPO</span>
-              <span class="group-letter">{{ grupo }}</span>
-            </div>
+      @if (prediccionesCompletadas() === totalPartidos() && totalPartidos() > 0) {
+      <div class="aviso-completo" role="status">
+        <i class="fas fa-circle-check" aria-hidden="true"></i>
+        ¡Completaste todas las predicciones! Ingresá tus datos y guardá.
+      </div>
+      }
 
-            @for (partido of getPartidosPorGrupo(grupo); track partido.id) {
-              <div
-                class="partido-row"
-                [class.seleccionado]="prediccionSeleccionada(partido.id)"
-              >
-                <!-- Número -->
-                <span class="partido-num">{{ partido.numero }}</span>
-
-                <!-- Equipo local -->
-                <div class="equipo-local">
-                  <span class="equipo-nombre">{{ partido.equipoLocalShow }}</span>
-                  <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" class="flag" width="28" height="19" />
-                </div>
-
-                <!-- Opciones L / E / V -->
-                <div class="opciones-centro">
-                  <span
-                    class="opcion-btn"
-                    [class.activa-local]="getPrediccion(partido.id) === 'LOCAL'"
-                    (click)="seleccionar(partido.id, 'LOCAL')"
-                    title="Local gana"
-                  >L</span>
-                  <span
-                    class="opcion-btn"
-                    [class.activa-empate]="getPrediccion(partido.id) === 'EMPATE'"
-                    (click)="seleccionar(partido.id, 'EMPATE')"
-                    title="Empate"
-                  >E</span>
-                  <span
-                    class="opcion-btn"
-                    [class.activa-visitante]="getPrediccion(partido.id) === 'VISITANTE'"
-                    (click)="seleccionar(partido.id, 'VISITANTE')"
-                    title="Visitante gana"
-                  >V</span>
-                </div>
-
-                <!-- Equipo visitante -->
-                <div class="equipo-visitante">
-                  <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow" class="flag" width="28" height="19" />
-                  <span class="equipo-nombre">{{ partido.equipoVisitanteShow }}</span>
-                </div>
-              </div>
-            }
-          </div>
+      <div class="form-group">
+        <label for="nombre">Nombre</label>
+        <input id="nombre" type="text" formControlName="nombre" placeholder="Tu nombre" autocomplete="given-name"
+          [attr.aria-invalid]="form.get('nombre')?.invalid && form.get('nombre')?.touched"
+          aria-describedby="nombre-error" />
+        @if (form.get('nombre')?.invalid && form.get('nombre')?.touched) {
+        <span id="nombre-error" class="campo-error" role="alert">
+          <i class="fas fa-circle-exclamation" aria-hidden="true" style="font-size:0.7rem"></i>
+          El nombre es obligatorio
+        </span>
         }
       </div>
 
-      <!-- Datos del participante -->
-      <div class="datos-participante">
-        <p class="datos-titulo"><i class="fas fa-user" style="font-size:0.95rem;color:var(--clr-primary-light)"></i> Tus datos</p>
-
-        @if (prediccionesCompletadas() === totalPartidos() && totalPartidos() > 0) {
-          <div class="aviso-completo">
-            <i class="fas fa-circle-check"></i>
-            ¡Completaste todas las predicciones! Ingresá tus datos y guardá.
-          </div>
-        }
-
-        <div class="form-group">
-          <label for="nombre">Nombre</label>
-          <input id="nombre" type="text" formControlName="nombre" placeholder="Tu nombre" autocomplete="given-name" />
-          @if (form.get('nombre')?.invalid && form.get('nombre')?.touched) {
-            <span class="campo-error"><i class="fas fa-circle-exclamation" style="font-size:0.7rem"></i> El nombre es obligatorio</span>
-          }
-        </div>
-
-        <div class="form-group">
-          <label for="apellido">Apellido</label>
-          <input id="apellido" type="text" formControlName="apellido" placeholder="Tu apellido" autocomplete="family-name" />
-          @if (form.get('apellido')?.invalid && form.get('apellido')?.touched) {
-            <span class="campo-error"><i class="fas fa-circle-exclamation" style="font-size:0.7rem"></i> El apellido es obligatorio</span>
-          }
-        </div>
-
-        <div class="form-group">
-          <label for="afiliado">N° de Afiliado</label>
-          <input id="afiliado" type="number" formControlName="afiliado" placeholder="Número de afiliado" min="1" autocomplete="off" />
-          @if (form.get('afiliado')?.invalid && form.get('afiliado')?.touched) {
-            <span class="campo-error"><i class="fas fa-circle-exclamation" style="font-size:0.7rem"></i> El número de afiliado es obligatorio</span>
-          }
-        </div>
-
-        <button type="submit" class="btn btn-primary" style="width:100%;margin-top:0.5em" [disabled]="guardando() || !formularioValido()">
-          @if (guardando()) {
-            <i class="fas fa-spinner fa-spin"></i> Guardando...
-          } @else {
-            <i class="fas fa-floppy-disk"></i> Guardar Planilla
-          }
-        </button>
-
-        @if (!formularioValido() && !guardando()) {
-          <p style="font-size:0.75rem;color:var(--clr-text-muted);text-align:center;margin-top:0.6em">
-            Completá todas las predicciones y tus datos para poder guardar.
-          </p>
+      <div class="form-group">
+        <label for="apellido">Apellido</label>
+        <input id="apellido" type="text" formControlName="apellido" placeholder="Tu apellido" autocomplete="family-name"
+          [attr.aria-invalid]="form.get('apellido')?.invalid && form.get('apellido')?.touched"
+          aria-describedby="apellido-error" />
+        @if (form.get('apellido')?.invalid && form.get('apellido')?.touched) {
+        <span id="apellido-error" class="campo-error" role="alert">
+          <i class="fas fa-circle-exclamation" aria-hidden="true" style="font-size:0.7rem"></i>
+          El apellido es obligatorio
+        </span>
         }
       </div>
 
-    </form>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" type="email" formControlName="email" placeholder="ejemplo@correo.com" autocomplete="email"
+          [attr.aria-invalid]="form.get('email')?.invalid && form.get('email')?.touched"
+          aria-describedby="email-error" />
+        @if (form.get('email')?.invalid && form.get('email')?.touched) {
+        <span id="email-error" class="campo-error" role="alert">
+          <i class="fas fa-circle-exclamation" aria-hidden="true" style="font-size:0.7rem"></i>
+          El email es obligatorio y debe ser válido
+        </span>
+        }
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width:100%;margin-top:0.5em"
+        [disabled]="guardando() || !formularioValido()" [attr.aria-busy]="guardando()">
+        @if (guardando()) {
+        <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
+        <span>Guardando...</span>
+        } @else {
+        <i class="fas fa-floppy-disk" aria-hidden="true"></i>
+        <span>Guardar Planilla</span>
+        }
+      </button>
+
+      @if (!formularioValido() && !guardando()) {
+      <p style="font-size:0.75rem;color:var(--clr-text-muted);text-align:center;margin-top:0.6em" aria-live="polite">
+        Completá todas las predicciones y tus datos para poder guardar.
+      </p>
+      }
+    </div>
+
+  </form>
   }
 </main>

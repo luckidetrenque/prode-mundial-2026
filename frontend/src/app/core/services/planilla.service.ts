@@ -37,4 +37,9 @@ export class PlanillaService {
   confirmar(id: number): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/${id}/confirmar`, {});
   }
+
+  // GET /api/admin/planillas/pendientes/count → cantidad de planillas sin confirmar
+  getPendientesCount(): Observable<number> {
+    return this.http.get<number>(`${this.adminUrl}/pendientes/count`);
+  }
 }

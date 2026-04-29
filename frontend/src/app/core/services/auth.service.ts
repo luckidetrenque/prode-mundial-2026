@@ -11,7 +11,6 @@ import { LoginRequest, LoginResponse, AdminUser } from '../../shared/models/auth
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-  private readonly TOKEN_KEY = 'prode_token';
   private readonly USER_KEY  = 'prode_user';
   private readonly apiUrl    = environment.apiUrl;
   private readonly platformId = inject(PLATFORM_ID);
@@ -30,9 +29,8 @@ export class AuthService {
       .pipe(
         tap(response => {
           if (isPlatformBrowser(this.platformId)) {
-            localStorage.setItem(this.TOKEN_KEY, response.token);
             const admin: AdminUser = {
-              afiliado: credenciales.afiliado,
+              email: credenciales.email,
               nombre: response.nombre,
               apellido: response.apellido
             };
@@ -44,23 +42,22 @@ export class AuthService {
   }
 
   logout(): void {
+    this.http.post(`${this.apiUrl}/auth/logout`, {}).subscribe({
+      next: () => this.limpiarEstadoLocal(),
+      error: () => this.limpiarEstadoLocal()
+    });
+  }
+
+  private limpiarEstadoLocal(): void {
     if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem(this.TOKEN_KEY);
       localStorage.removeItem(this.USER_KEY);
     }
     this.adminActual.set(null);
     this.router.navigate(['/admin/login']);
   }
 
-  getToken(): string | null {
-    if (isPlatformBrowser(this.platformId)) {
-      return localStorage.getItem(this.TOKEN_KEY);
-    }
-    return null;
-  }
-
   estaAutenticado(): boolean {
-    return this.getToken() !== null;
+    return this.adminActual() !== null;
   }
 
   private cargarUsuarioGuardado(): AdminUser | null {

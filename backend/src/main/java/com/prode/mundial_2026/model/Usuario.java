@@ -22,10 +22,7 @@ public class Usuario {
     @Column(nullable = false, length = 50)
     private String apellido;
 
-    @Column(nullable = false, unique = true)
-    private Integer afiliado;
-
-    @Column(length = 100)
+    @Column(nullable = false, unique = false, length = 100)
     private String email;
 
     @Column(name = "es_admin")

@@ -39,7 +39,7 @@ export class PlanillaComponent implements OnInit {
     this.form = this.fb.group({
       nombre:   ['', [Validators.required, Validators.maxLength(50)]],
       apellido: ['', [Validators.required, Validators.maxLength(50)]],
-      afiliado: [null, [Validators.required, Validators.min(1)]]
+      email:    ['', [Validators.required, Validators.email]]
     });
   }
 
@@ -63,6 +63,15 @@ export class PlanillaComponent implements OnInit {
   seleccionar(partidoId: number, prediccion: ResultadoPrediccion): void {
     this.predicciones.set(partidoId, prediccion);
     // Fuerza detección de cambios creando nueva referencia (para signals)
+    this._prediccionesVersion.update(v => v + 1);
+  }
+
+  autocompletar(): void {
+    const opciones: ResultadoPrediccion[] = ['LOCAL', 'EMPATE', 'VISITANTE'];
+    this.partidos.forEach(p => {
+      const random = Math.floor(Math.random() * opciones.length);
+      this.predicciones.set(p.id, opciones[random]);
+    });
     this._prediccionesVersion.update(v => v + 1);
   }
 
@@ -99,7 +108,7 @@ export class PlanillaComponent implements OnInit {
     const request = {
       nombre:   this.form.value.nombre.toUpperCase(),
       apellido: this.form.value.apellido.toUpperCase(),
-      afiliado: this.form.value.afiliado,
+      email:    this.form.value.email,
       predicciones: Array.from(this.predicciones.entries()).map(
         ([partidoId, prediccion]) => ({ partidoId, prediccion })
       )

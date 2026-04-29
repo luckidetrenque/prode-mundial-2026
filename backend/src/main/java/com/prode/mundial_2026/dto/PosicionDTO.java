@@ -10,7 +10,7 @@ public class PosicionDTO {
     private Integer posicion;
     private String nombre;
     private String apellido;
-    private Integer afiliado;
+    private String email;
     private Long codigoPlanilla;
     private Integer puntos; // cantidad de partidos acertados
     private Integer totalPartidos; // partidos con resultado cargado

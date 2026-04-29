@@ -1,5 +1,5 @@
 export interface LoginRequest {
-  afiliado: number;
+  email: string;
   password: string;
 }
 
@@ -10,7 +10,7 @@ export interface LoginResponse {
 }
 
 export interface AdminUser {
-  afiliado: number;
+  email: string;
   nombre: string;
   apellido: string;
 }

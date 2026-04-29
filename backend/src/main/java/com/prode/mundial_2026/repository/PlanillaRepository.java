@@ -15,9 +15,12 @@ public interface PlanillaRepository extends JpaRepository<Planilla, Long> {
     // Solo las planillas confirmadas aparecen en la lista pública
     List<Planilla> findByConfirmadaTrueOrderByIdAsc();
 
-    // Verifica si un afiliado ya tiene planilla (regla: una por afiliado)
-    @Query("SELECT COUNT(p) > 0 FROM Planilla p WHERE p.usuario.afiliado = :afiliado")
-    boolean existsByAfiliado(Integer afiliado);
+    @Query("SELECT COUNT(p) FROM Planilla p WHERE p.confirmada = false")
+    long countPendientes();
+
+    // Verifica si un email ya tiene planilla (regla: una por email)
+    @Query("SELECT COUNT(p) > 0 FROM Planilla p WHERE p.usuario.email = :email")
+    boolean existsByEmail(String email);
 
     // Para el admin: ver todas las planillas (confirmadas o no)
     @Query("SELECT p FROM Planilla p JOIN FETCH p.usuario ORDER BY p.id DESC")

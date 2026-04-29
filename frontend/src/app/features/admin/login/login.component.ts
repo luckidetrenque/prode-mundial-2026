@@ -14,28 +14,27 @@ import { AuthService } from '../../../core/services/auth.service';
       <div class="login-card">
 
         <div class="login-header">
-          <i class="fas fa-lock login-icon"></i>
+          <i class="fas fa-user-shield login-icon"></i>
           <h1>Acceso de Administrador</h1>
-          <p>Ingresá con tu número de afiliado y contraseña</p>
+          <p>Ingresá con tu email y contraseña</p>
         </div>
 
         <form [formGroup]="form" (ngSubmit)="login()" class="login-form">
 
           <div class="form-group">
-            <label for="afiliado">N° de Afiliado</label>
+            <label for="email">Email</label>
             <div class="input-wrap">
-              <i class="fas fa-id-card input-icon"></i>
+              <i class="fas fa-envelope input-icon"></i>
               <input
-                id="afiliado"
-                type="number"
-                formControlName="afiliado"
-                placeholder="Número de afiliado"
-                min="1"
-                autocomplete="username"
+                id="email"
+                type="email"
+                formControlName="email"
+                placeholder="ejemplo@correo.com"
+                autocomplete="email"
               />
             </div>
-            @if (form.get('afiliado')?.invalid && form.get('afiliado')?.touched) {
-              <span class="campo-error">El número de afiliado es obligatorio</span>
+            @if (form.get('email')?.invalid && form.get('email')?.touched) {
+              <span class="campo-error">El email es obligatorio y debe ser válido</span>
             }
           </div>
 
@@ -226,7 +225,7 @@ export class LoginComponent {
     private router: Router
   ) {
     this.form = this.fb.group({
-      afiliado: [null, [Validators.required, Validators.min(1)]],
+      email: ['', [Validators.required, Validators.email]],
       password:  ['',  [Validators.required]]
     });
   }
@@ -245,7 +244,7 @@ export class LoginComponent {
       error: err => {
         this.cargando.set(false);
         if (err.status === 401) {
-          this.errorMensaje.set('Número de afiliado o contraseña incorrectos.');
+          this.errorMensaje.set('Email o contraseña incorrectos.');
         } else {
           this.errorMensaje.set('Error al conectar con el servidor. Intentá más tarde.');
         }

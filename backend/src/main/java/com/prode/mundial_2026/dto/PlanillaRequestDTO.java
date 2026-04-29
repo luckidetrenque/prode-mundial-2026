@@ -15,9 +15,9 @@ public class PlanillaRequestDTO {
     @Size(max = 50)
     private String apellido;
 
-    @NotNull(message = "El número de afiliado es obligatorio")
-    @Min(value = 1, message = "El número de afiliado debe ser mayor a 0")
-    private Integer afiliado;
+    @NotBlank(message = "El email es obligatorio")
+    @Email(message = "Debe ser un email válido")
+    private String email;
 
     // ── FIX BUG #3 ────────────────────────────────────────────────────────────
     // El Mundial 2026 tiene 12 grupos de 4 equipos = 72 partidos en fase de grupos (12 x 6).

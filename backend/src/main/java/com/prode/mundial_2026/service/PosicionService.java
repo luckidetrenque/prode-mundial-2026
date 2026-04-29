@@ -54,7 +54,7 @@ public class PosicionService {
                     0, // posición provisional, la calculamos en el paso 3
                     planilla.getUsuario().getNombre(),
                     planilla.getUsuario().getApellido(),
-                    planilla.getUsuario().getAfiliado(),
+                    planilla.getUsuario().getEmail(),
                     planilla.getCodigo(),
                     puntos,
                     totalPartidos));

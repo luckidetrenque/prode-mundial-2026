@@ -95,8 +95,7 @@ export class PlanillaDetalleComponent implements OnInit {
     doc.setTextColor(60, 60, 60);
     doc.text(`Planilla N°: ${p.codigo}`, margin, 30);
     doc.text(`Participante: ${p.nombre} ${p.apellido}`, margin, 37);
-    doc.text(`Afiliado: ${p.afiliado}`, margin, 44);
-    doc.text(`Estado: ${p.confirmada ? 'CONFIRMADA' : 'PENDIENTE'}`, margin, 51);
+    doc.text(`Estado: ${p.confirmada ? 'CONFIRMADA' : 'PENDIENTE'}`, margin, 44);
 
     const tableData: any[] = [];
     
@@ -125,7 +124,7 @@ export class PlanillaDetalleComponent implements OnInit {
     });
 
     autoTable(doc, {
-      startY: 60,
+      startY: 50,
       head: [['#', 'Local', 'Predicción', 'Visitante']],
       body: tableData,
       theme: 'striped',

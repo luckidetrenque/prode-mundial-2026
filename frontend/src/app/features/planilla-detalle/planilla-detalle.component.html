@@ -23,7 +23,6 @@
       <div class="header-main">
         <div class="badge-codigo">PLANILLA #{{ planilla()!.codigo }}</div>
         <h2>{{ planilla()!.nombre }} {{ planilla()!.apellido }}</h2>
-        <p class="afiliado-text">Afiliado N° {{ planilla()!.afiliado }}</p>
       </div>
       <div class="header-status">
         <span class="status-badge" [class.confirmada]="planilla()!.confirmada">

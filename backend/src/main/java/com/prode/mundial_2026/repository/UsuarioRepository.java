@@ -8,8 +8,8 @@ import java.util.Optional;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
-    // Para autenticar al admin buscamos por número de afiliado
-    Optional<Usuario> findByAfiliado(Integer afiliado);
+    // Para autenticar al admin buscamos por email
+    Optional<Usuario> findByEmail(String email);
 
-    boolean existsByAfiliado(Integer afiliado);
+    boolean existsByEmail(String email);
 }

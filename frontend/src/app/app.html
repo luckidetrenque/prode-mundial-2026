@@ -1,25 +1,55 @@
 <!-- src/app/app.html — Layout principal de la aplicación -->
 
-<nav class="navbar">
+<nav class="navbar" role="navigation" aria-label="Navegación principal">
+
   <div class="navbar-brand">
-    <a routerLink="/home">
-      <span class="brand-icon">⚽</span>
+    <a routerLink="/home" aria-label="Prode Mundial 2026 — inicio">
+      <span class="brand-icon" aria-hidden="true">⚽</span>
       <span class="brand-text">Prode <strong>2026</strong></span>
     </a>
   </div>
 
-  <ul class="navbar-menu">
-    <li><a routerLink="/fixture"       routerLinkActive="activo">Fixture</a></li>
-    <li><a routerLink="/planilla"      routerLinkActive="activo">Planilla</a></li>
-    <li><a routerLink="/resultados"    routerLinkActive="activo">Resultados</a></li>
-    <li><a routerLink="/posiciones"    routerLinkActive="activo">Posiciones</a></li>
-    <li><a routerLink="/estadisticas"  routerLinkActive="activo">Estadísticas</a></li>
-    <li><a routerLink="/participantes" routerLinkActive="activo">Participantes</a></li>
+  <a routerLink="/admin" class="btn-admin" aria-label="Acceso al panel de administración">
+    <i class="fas fa-lock" aria-hidden="true"></i>
+    <span>Admin</span>
+    @if (pendientesCount() > 0) {
+      <span class="badge-notif" [attr.aria-label]="pendientesCount() + ' planillas pendientes'">
+        {{ pendientesCount() }}
+      </span>
+    }
+  </a>
+
+  <!-- MEJORA 5: Botón hamburguesa accesible -->
+  <button class="navbar-toggle" (click)="toggleMenu()" [attr.aria-expanded]="menuAbierto()" aria-controls="navbar-menu"
+    aria-label="Abrir menú de navegación" type="button">
+    <i class="fas" [class.fa-bars]="!menuAbierto()" [class.fa-xmark]="menuAbierto()" aria-hidden="true"></i>
+  </button>
+
+  <!-- MEJORA 5: [class.open] para animación CSS, id para aria-controls -->
+  <ul class="navbar-menu" id="navbar-menu" [class.open]="menuAbierto()" role="list">
+    <li role="listitem">
+      <a routerLink="/fixture" routerLinkActive="activo" (click)="cerrarMenu()">Fixture</a>
+    </li>
+    <li role="listitem">
+      <a routerLink="/planilla" routerLinkActive="activo" (click)="cerrarMenu()">Planilla</a>
+    </li>
+    <li role="listitem">
+      <a routerLink="/resultados" routerLinkActive="activo" (click)="cerrarMenu()">Resultados</a>
+    </li>
+    <li role="listitem">
+      <a routerLink="/posiciones" routerLinkActive="activo" (click)="cerrarMenu()">Posiciones</a>
+    </li>
+    <li role="listitem">
+      <a routerLink="/estadisticas" routerLinkActive="activo" (click)="cerrarMenu()">Estadísticas</a>
+    </li>
+    <li role="listitem">
+      <a routerLink="/participantes" routerLinkActive="activo" (click)="cerrarMenu()">Participantes</a>
+    </li>
+    <li role="listitem">
+      <a routerLink="/reglamento" routerLinkActive="activo" (click)="cerrarMenu()">Reglamento</a>
+    </li>
   </ul>
 
-  <a routerLink="/admin" class="btn-admin">
-    <i class="fas fa-lock"></i> Admin
-  </a>
 </nav>
 
 <router-outlet />
@@ -27,6 +57,8 @@
 <footer class="footer">
   <p>
     Prode Mundial 2026 &mdash; Canadá &middot; Estados Unidos &middot; México
+    <br/>
+    <a routerLink="/reglamento">Reglamento</a>
     &nbsp;|&nbsp;
     <a routerLink="/admin/login">Administración</a>
   </p>

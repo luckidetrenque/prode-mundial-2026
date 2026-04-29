@@ -1,4 +1,4 @@
-/* planilla.component.css — VERSIÓN MEJORADA */
+/* planilla.component.css — VERSIÓN MEJORADA v2 */
 
 /* ── Layout ──────────────────────────────────────────────────────────────── */
 .groups-grid { gap: 1.25em; }
@@ -10,6 +10,7 @@
   overflow: hidden;
   box-shadow: var(--shadow-sm);
   font-size: 12px;
+  background: var(--clr-surface);
 }
 
 .group-caption {
@@ -43,7 +44,7 @@
   gap: 0;
   border-bottom: 1px solid var(--clr-border);
   transition: background 0.15s;
-  cursor: pointer;
+  cursor: default;
 }
 
 .partido-row:last-child { border-bottom: none; }
@@ -100,7 +101,7 @@
   border-right: 1px solid var(--clr-border);
 }
 
-/* Botón de opción individual */
+/* ── MEJORA 1: Botón de opción — ahora es <button> real ─────────────────── */
 .opcion-btn {
   display: flex;
   align-items: center;
@@ -117,27 +118,50 @@
   transition: all 0.15s;
   background: var(--clr-surface);
   user-select: none;
+  /* Sin padding por defecto del browser */
+  padding: 0;
+  font-family: var(--font-body);
+  line-height: 1;
 }
 
-.opcion-btn:hover { border-color: var(--clr-primary); color: var(--clr-primary); background: rgba(56,120,135,0.06); }
-
-.opcion-btn.activa-local     { border-color: var(--clr-primary); background: var(--clr-primary); color: white; box-shadow: 0 2px 6px rgba(56,120,135,0.4); }
-.opcion-btn.activa-empate    { border-color: var(--clr-primary-dark); background: var(--clr-primary-dark); color: white; box-shadow: 0 2px 6px rgba(18,51,59,0.35); }
-.opcion-btn.activa-visitante { border-color: var(--clr-maroon); background: var(--clr-maroon); color: white; box-shadow: 0 2px 6px rgba(86,4,44,0.4); }
-
-/* Radio ocultos */
-input[type="radio"].visually-hidden {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-  pointer-events: none;
+.opcion-btn:hover {
+  border-color: var(--clr-primary);
+  color: var(--clr-primary);
+  background: rgba(46,158,45,0.06);
 }
 
-/* ── Barra de progreso ───────────────────────────────────────────────────── */
+/* MEJORA 1: focus-visible claro para navegación por teclado */
+.opcion-btn:focus-visible {
+  outline: 2px solid var(--clr-primary);
+  outline-offset: 2px;
+  border-color: var(--clr-primary);
+}
+
+.opcion-btn.activa-local {
+  border-color: var(--clr-primary);
+  background: var(--clr-primary);
+  color: white;
+  box-shadow: 0 2px 6px rgba(46,158,45,0.4);
+}
+
+.opcion-btn.activa-empate {
+  border-color: var(--clr-primary-dark);
+  background: var(--clr-primary-dark);
+  color: white;
+  box-shadow: 0 2px 6px rgba(18,51,59,0.35);
+}
+
+.opcion-btn.activa-visitante {
+  border-color: var(--clr-action);
+  background: var(--clr-action);
+  color: white;
+  box-shadow: 0 2px 6px rgba(192,23,29,0.4);
+}
+
+/* ── MEJORA 6: Barra de progreso sticky con --navbar-height ─────────────── */
 .progreso-wrap {
   position: sticky;
-  top: 60px;
+  top: var(--navbar-height);   /* ← antes era hardcoded 60px */
   z-index: 90;
   background: var(--clr-surface);
   padding: 0.85em 0 0.6em;
@@ -168,6 +192,44 @@ input[type="radio"].visually-hidden {
 }
 
 .progreso-count span { color: var(--clr-text-muted); font-size: 0.85rem; font-weight: 400; }
+
+.btn-auto {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.35em 0.85em;
+  border-radius: 20px;
+  border: 1.5px solid var(--clr-primary-light);
+  background: white;
+  color: var(--clr-primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-auto i {
+  color: var(--clr-primary-light);
+}
+
+.btn-auto:hover {
+  background: var(--clr-primary);
+  color: white;
+  border-color: var(--clr-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(46,158,45,0.2);
+}
+
+.btn-auto:hover i {
+  color: white;
+  animation: magic-sparkle 0.6s ease infinite alternate;
+}
+
+@keyframes magic-sparkle {
+  from { transform: scale(1); opacity: 0.8; }
+  to { transform: scale(1.2) rotate(15deg); opacity: 1; }
+}
 
 .barra-track {
   height: 6px;
@@ -244,12 +306,12 @@ input[type="radio"].visually-hidden {
   font-family: var(--font-display);
   font-size: 3rem;
   font-weight: 700;
-  color: var(--clr-maroon);
+  color: var(--clr-action);
   letter-spacing: 2px;
   margin: 0.25em 0 0.15em;
   padding: 0.15em 0.6em;
   background: var(--clr-surface-alt);
-  border: 2px dashed var(--clr-maroon);
+  border: 2px dashed var(--clr-action);
   border-radius: var(--radius-md);
 }
 

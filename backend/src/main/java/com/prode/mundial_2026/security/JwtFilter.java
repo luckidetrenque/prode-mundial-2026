@@ -29,22 +29,23 @@ public class JwtFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
+        String token = null;
+        if (request.getCookies() != null) {
+            for (var cookie : request.getCookies()) {
+                if ("prode_token".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                    break;
+                }
+            }
+        }
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (token == null || !jwtUtil.esTokenValido(token)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = authHeader.substring(7);
-
-        if (!jwtUtil.esTokenValido(token)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        Integer afiliado = jwtUtil.extraerAfiliado(token);
-        Usuario admin = usuarioRepository.findByAfiliado(afiliado).orElse(null);
+        String email = jwtUtil.extraerEmail(token);
+        Usuario admin = usuarioRepository.findByEmail(email).orElse(null);
 
         if (admin == null || !admin.getEsAdmin()) {
             filterChain.doFilter(request, response);

@@ -26,7 +26,7 @@ import { PlanillaResponse } from '../../shared/models/planilla.model';
           <input
             type="text"
             class="buscador"
-            placeholder="Buscar por nombre, apellido o afiliado..."
+            placeholder="Buscar por nombre o apellido..."
             (input)="filtrar($event)"
           />
           <span class="total-badge">{{ planillasFiltradas().length }} participantes</span>
@@ -39,7 +39,6 @@ import { PlanillaResponse } from '../../shared/models/planilla.model';
           <thead>
             <tr>
               <th>Nombre y Apellido</th>
-              <th>Afiliado N°</th>
               <th>Planilla N°</th>
               <th>Acciones</th>
             </tr>
@@ -48,7 +47,6 @@ import { PlanillaResponse } from '../../shared/models/planilla.model';
             @for (p of planillasFiltradas(); track p.codigo) {
               <tr>
                 <td>{{ p.nombre }} {{ p.apellido }}</td>
-                <td>{{ p.afiliado }}</td>
                 <td>{{ p.codigo }}</td>
                 <td class="acciones-td">
                   <a [routerLink]="['/planillas', p.codigo]" title="Ver planilla" class="btn-accion">
@@ -97,8 +95,7 @@ export class ParticipantesComponent implements OnInit {
     this.planillasFiltradas.set(
       this.planillas().filter(p =>
         p.nombre.toLowerCase().includes(termino)   ||
-        p.apellido.toLowerCase().includes(termino) ||
-        p.afiliado.toString().includes(termino)
+        p.apellido.toLowerCase().includes(termino)
       )
     );
   }

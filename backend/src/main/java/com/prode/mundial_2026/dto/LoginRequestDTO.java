@@ -8,8 +8,8 @@ import lombok.Data;
 public class LoginRequestDTO {
 
     // @NotNull → Spring valida que estos campos vengan en el JSON
-    @NotNull(message = "El número de afiliado es obligatorio")
-    private Integer afiliado;
+    @NotNull(message = "El email es obligatorio")
+    private String email;
 
     @NotNull(message = "La contraseña es obligatoria")
     private String password;

@@ -34,31 +34,40 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
 
       @if (!cargando() && partidos().length > 0) {
 
-        <!-- Resumen de progreso -->
-        <div class="resumen-strip">
-          <div class="resumen-item">
-            <span class="resumen-num">{{ partidos().length }}</span>
-            <span class="resumen-label">Partidos</span>
-          </div>
-          <div class="resumen-sep"></div>
-          <div class="resumen-item">
-            <span class="resumen-num">{{ resultadosGuardados().size }}</span>
-            <span class="resumen-label">Cargados</span>
-          </div>
-          <div class="resumen-sep"></div>
-          <div class="resumen-item">
-            <span class="resumen-num">{{ partidos().length - resultadosGuardados().size }}</span>
-            <span class="resumen-label">Pendientes</span>
-          </div>
-          <div class="resumen-sep"></div>
-          <div class="resumen-item resumen-barra-wrap">
-            <div class="mini-barra-track">
-              <div
-                class="mini-barra-fill"
-                [style.width.%]="partidos().length ? (resultadosGuardados().size / partidos().length) * 100 : 0"
-              ></div>
+        <!-- Resumen de progreso (Dashboard style) -->
+        <div class="stats-overview">
+          <div class="overview-card">
+            <i class="fas fa-futbol"></i>
+            <div class="overview-data">
+              <span class="overview-num">{{ partidos().length }}</span>
+              <span class="overview-label">Partidos Totales</span>
             </div>
-            <span class="resumen-label">Progreso</span>
+          </div>
+          
+          <div class="overview-card">
+            <i class="fas fa-check-double"></i>
+            <div class="overview-data">
+              <span class="overview-num">{{ resultadosGuardados().size }}</span>
+              <span class="overview-label">Resultados Cargados</span>
+            </div>
+          </div>
+
+          <div class="overview-card">
+            <i class="fas fa-hourglass-half"></i>
+            <div class="overview-data">
+              <span class="overview-num">{{ partidos().length - resultadosGuardados().size }}</span>
+              <span class="overview-label">Resultados Pendientes</span>
+            </div>
+          </div>
+
+          <div class="overview-card">
+            <i class="fas fa-chart-pie"></i>
+            <div class="overview-data">
+              <span class="overview-num">
+                {{ (partidos().length ? (resultadosGuardados().size / partidos().length * 100) : 0) | number:'1.0-0' }}%
+              </span>
+              <span class="overview-label">Progreso General</span>
+            </div>
           </div>
         </div>
 
@@ -173,64 +182,65 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
     </main>
   `,
   styles: [`
-    /* ── Resumen strip ───────────────────────────────────────────────────── */
-    .resumen-strip {
-      display: flex;
-      align-items: center;
-      background: var(--clr-primary-dark);
+    /* ── Overview Dashboard (Estadisticas style) ─────────────────────────── */
+    .stats-overview {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1em;
+      margin-bottom: 2em;
+    }
+
+    .overview-card {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
       border-radius: var(--radius-lg);
-      padding: 1em 1.5em;
-      margin-bottom: 1.5em;
-      gap: 0;
-    }
-
-    .resumen-item {
+      padding: 1.25em;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      flex: 1;
-      gap: 0.15em;
+      gap: 1em;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
     }
 
-    .resumen-num {
-      font-family: var(--font-display);
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: var(--clr-accent);
-      line-height: 1;
+    .overview-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--clr-primary-light);
     }
 
-    .resumen-label {
-      font-size: 0.7rem;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: rgba(255,255,255,0.55);
-    }
-
-    .resumen-sep {
-      width: 1px;
-      height: 40px;
-      background: rgba(255,255,255,0.12);
+    .overview-card i {
+      font-size: 1.8rem;
+      color: var(--clr-primary);
+      background: var(--clr-surface-alt);
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
       flex-shrink: 0;
     }
 
-    .resumen-barra-wrap { gap: 0.4em; }
-
-    .mini-barra-track {
-      width: 100%;
-      max-width: 80px;
-      height: 6px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 3px;
-      overflow: hidden;
+    .overview-data {
+      display: flex;
+      flex-direction: column;
     }
 
-    .mini-barra-fill {
-      height: 100%;
-      border-radius: 3px;
-      background: var(--clr-accent);
-      transition: width 0.4s ease;
+    .overview-num {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--clr-primary-dark);
+      line-height: 1.1;
+    }
+
+    .overview-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--clr-text-muted);
+      margin-top: 2px;
     }
 
     /* ── Filtro grupos ───────────────────────────────────────────────────── */
@@ -448,7 +458,8 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
     }
 
     /* ── Responsive ──────────────────────────────────────────────────────── */
-    @media (max-width: 700px) {
+    @media (max-width: 800px) {
+      .stats-overview { grid-template-columns: repeat(2, 1fr); }
       .partido-row {
         grid-template-columns: 24px 1fr 80px 1fr auto;
         padding: 0.5em 0.6em;
@@ -456,11 +467,10 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
       }
 
       .equipo-txt { font-size: 0.7rem; }
-      .resumen-strip { padding: 0.85em 1em; }
-      .resumen-num { font-size: 1.3rem; }
     }
 
     @media (max-width: 500px) {
+      .stats-overview { grid-template-columns: 1fr; }
       .equipo-txt { display: none; }
       .partido-row { grid-template-columns: 20px auto 80px auto auto; }
       .partido-accion { min-width: 70px; }

@@ -9,7 +9,7 @@ export interface PrediccionItem {
 export interface PlanillaRequest {
   nombre: string;
   apellido: string;
-  afiliado: number;
+  email: string;
   predicciones: PrediccionItem[];
 }
 
@@ -18,7 +18,7 @@ export interface PlanillaResponse {
   codigo: number;
   nombre: string;
   apellido: string;
-  afiliado: number;
+  email: string;
   confirmada: boolean;
   mensaje: string | null;
   predicciones?: PrediccionItem[];

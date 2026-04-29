@@ -29,9 +29,9 @@ public class JwtUtil {
     // El JwtFilter compara la versión del token contra la versión actual del
     // usuario — si no coinciden, el token se rechaza aunque no haya expirado.
     // ─────────────────────────────────────────────────────────────────────────
-    public String generarToken(Integer afiliado, int tokenVersion) {
+    public String generarToken(String email, int tokenVersion) {
         return Jwts.builder()
-                .subject(afiliado.toString())
+                .subject(email)
                 .claim("tv", tokenVersion)          // tv = token version
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
@@ -39,8 +39,8 @@ public class JwtUtil {
                 .compact();
     }
 
-    public Integer extraerAfiliado(String token) {
-        return Integer.parseInt(getClaims(token).getSubject());
+    public String extraerEmail(String token) {
+        return getClaims(token).getSubject();
     }
 
     // Extrae la versión del token del payload

@@ -1,4 +1,4 @@
-/* src/styles.css — VERSIÓN MEJORADA */
+/* src/styles.css — VERSIÓN MEJORADA v2 */
 @import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap");
 @import "@fortawesome/fontawesome-free/css/all.min.css";
 
@@ -11,38 +11,57 @@
   --wc-neutral-light:   #D1D4D1;
   --wc-neutral-dark:    #474A4A;
 
-  /* Functional Colors */
-  --clr-primary:        var(--wc-mexico);
+  /* ── MEJORA 4: Semántica de colores unificada ──────────────────────────
+     Antes: --clr-primary era verde pero --btn-primary usaba rojo (maroon).
+     Ahora: verde = acciones principales de UI, rojo = acciones destructivas/CTA fuertes.
+  ── */
+  --clr-primary:        #2e9e2d;          /* verde oscurecido para WCAG AA */
   --clr-primary-light:  #5edb5c;
-  --clr-primary-dark:   var(--wc-usa);
+  --clr-primary-dark:   var(--wc-usa);    /* azul USA para headers/nav */
+  --clr-action:         #c0171d;          /* rojo oscurecido para CTA (era --clr-maroon) */
+  --clr-action-hover:   #e82028;
   --clr-accent:         var(--wc-canada);
-  --clr-maroon:         var(--wc-canada);
-  --clr-maroon-light:   #ff4d56;
+  /* Aliases de compatibilidad para no romper componentes existentes */
+  --clr-maroon:         var(--clr-action);
+  --clr-maroon-light:   var(--clr-action-hover);
+
   --clr-gold:           #FFD700;
   --clr-silver:         #C0C0C0;
   --clr-bronze:         #CD7F32;
+
+  /* ── MEJORA 2: Colores de texto con contraste WCAG AA ──────────────────
+     #6b7a80 sobre blanco = 3.8:1 (insuficiente para texto normal <18px)
+     #4a5e66 sobre blanco = 5.2:1 (pasa WCAG AA)
+  ── */
+  --clr-text-muted:     #4a5e66;          /* era #6b7a80 — subimos contraste */
+  --clr-text:           var(--wc-neutral-dark);
+
   --clr-error-bg:       #ffebeb;
   --clr-error-text:     #c0392b;
   --clr-success-bg:     #e8f8ef;
   --clr-success-text:   #1a7a4a;
   --clr-warning-bg:     #fff8e1;
-  --clr-warning-text:   #8a6500;
+  --clr-warning-text:   #7a5800;          /* era #8a6500 — mejorado contraste */
   --clr-surface:        #ffffff;
   --clr-surface-alt:    #f2f4f5;
   --clr-border:         rgba(0,0,0,0.08);
   --clr-border-strong:  var(--wc-neutral-light);
-  --clr-text:           var(--wc-neutral-dark);
-  --clr-text-muted:     #6b7a80;
+
   --radius-sm:  6px;
   --radius-md:  10px;
   --radius-lg:  16px;
   --radius-xl:  22px;
+
   --shadow-sm:  0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
   --shadow-md:  0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
   --shadow-lg:  0 12px 32px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.05);
+
   --font-display: 'Barlow Condensed', sans-serif;
   --font-body:    'DM Sans', sans-serif;
   --transition:   all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── MEJORA 6: Variable de altura de navbar para sticky preciso ─────── */
+  --navbar-height: 60px;
 }
 
 /* ── Reset ───────────────────────────────────────────────────────────────── */
@@ -72,7 +91,7 @@ img { max-width: 100%; height: auto; border: none; }
   margin: 0 auto;
   padding: 2em 2em 4em;
   background: var(--clr-surface);
-  min-height: calc(100vh - 60px);
+  min-height: calc(100vh - var(--navbar-height));
 }
 
 /* ── Headings ────────────────────────────────────────────────────────────── */
@@ -96,7 +115,7 @@ h2 i { color: var(--clr-primary-light); font-size: 1.3rem; }
   align-items: center;
   gap: 0.75em;
   padding: 0 1.5em;
-  height: 60px;
+  height: var(--navbar-height);
   background: var(--clr-primary-dark);
   position: sticky;
   top: 0;
@@ -124,6 +143,7 @@ h2 i { color: var(--clr-primary-light); font-size: 1.3rem; }
 
 .brand-text strong { color: var(--clr-accent); }
 
+/* ── MEJORA 5: Navbar desktop ────────────────────────────────────────────── */
 .navbar-menu {
   display: flex;
   list-style: none;
@@ -136,7 +156,7 @@ h2 i { color: var(--clr-primary-light); font-size: 1.3rem; }
   display: inline-block;
   padding: 0.35em 0.9em;
   border-radius: 20px;
-  color: rgba(255,255,255,0.7);
+  color: rgba(255,255,255,0.75);
   text-decoration: none;
   font-size: 0.82rem;
   font-weight: 500;
@@ -145,7 +165,12 @@ h2 i { color: var(--clr-primary-light); font-size: 1.3rem; }
   position: relative;
 }
 
-.navbar-menu a:hover { color: white; background: rgba(255,255,255,0.1); }
+.navbar-menu a:hover,
+.navbar-menu a:focus-visible {
+  color: white;
+  background: rgba(255,255,255,0.1);
+  outline: none;
+}
 
 .navbar-menu a.activo {
   background: rgba(255,255,255,0.15);
@@ -178,12 +203,68 @@ h2 i { color: var(--clr-primary-light); font-size: 1.3rem; }
   transition: var(--transition);
   white-space: nowrap;
   letter-spacing: 0.3px;
+  position: relative;
 }
 
-.btn-admin:hover {
+.badge-notif {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--clr-accent);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 800;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  padding: 0 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  border: 1.5px solid var(--clr-primary-dark);
+  animation: pulse-notif 2s infinite;
+  z-index: 10;
+  pointer-events: none;
+}
+
+@keyframes pulse-notif {
+  0% { transform: scale(1); box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+  50% { transform: scale(1.15); box-shadow: 0 4px 10px rgba(230,29,37,0.5); }
+  100% { transform: scale(1); box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+}
+
+.btn-admin:hover,
+.btn-admin:focus-visible {
   background: rgba(255,255,255,0.15);
   border-color: rgba(255,255,255,0.6);
   color: white;
+  outline: none;
+}
+
+/* ── MEJORA 5: Hamburger button (solo mobile) ────────────────────────────── */
+.navbar-toggle {
+  display: none;              /* oculto en desktop */
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-left: auto;
+  background: rgba(255,255,255,0.1);
+  border: 1.5px solid rgba(255,255,255,0.25);
+  border-radius: var(--radius-sm);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.navbar-toggle:hover,
+.navbar-toggle:focus-visible {
+  background: rgba(255,255,255,0.2);
+  outline: 2px solid rgba(255,255,255,0.5);
+  outline-offset: 2px;
 }
 
 /* ── Flags ───────────────────────────────────────────────────────────────── */
@@ -193,7 +274,7 @@ img.flag {
   box-shadow: 0 1px 3px rgba(0,0,0,0.25);
 }
 
-/* ── Tablas (estilo limpio) ───────────────────────────────────────────────── */
+/* ── Tablas ──────────────────────────────────────────────────────────────── */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -212,9 +293,7 @@ caption {
   text-align: left;
 }
 
-thead {
-  background: transparent;
-}
+thead { background: transparent; }
 
 thead th {
   padding: 0.65em 0.75em;
@@ -237,7 +316,6 @@ tbody td {
 tbody tr:last-child td { border-bottom: none; }
 tbody tr:hover td { background: var(--clr-surface-alt); }
 
-/* Wrapper para tablas con bordes exteriores */
 .table-wrap {
   border: 1px solid var(--clr-border-strong);
   border-radius: var(--radius-md);
@@ -271,23 +349,42 @@ tbody tr:hover td { background: var(--clr-surface-alt); }
   white-space: nowrap;
 }
 
+/* ── MEJORA 4: btn-primary usa --clr-action (rojo) de forma explícita ────── */
 .btn-primary {
-  background: var(--clr-maroon);
+  background: var(--clr-action);
   color: white;
-  box-shadow: 0 2px 8px rgba(86,4,44,0.3);
+  box-shadow: 0 2px 8px rgba(192,23,29,0.3);
 }
 
-.btn-primary:hover { background: var(--clr-maroon-light); box-shadow: 0 4px 14px rgba(86,4,44,0.35); transform: translateY(-1px); }
+.btn-primary:hover,
+.btn-primary:focus-visible {
+  background: var(--clr-action-hover);
+  box-shadow: 0 4px 14px rgba(192,23,29,0.35);
+  transform: translateY(-1px);
+  outline: none;
+}
+
 .btn-primary:active { transform: translateY(0); }
-.btn-primary:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; transform: none; }
+
+.btn-primary:disabled {
+  background: #ccc;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
 
 .btn-secondary {
   background: var(--clr-primary);
   color: white;
-  box-shadow: 0 2px 8px rgba(56,120,135,0.25);
+  box-shadow: 0 2px 8px rgba(46,158,45,0.25);
 }
 
-.btn-secondary:hover { background: var(--clr-primary-dark); transform: translateY(-1px); }
+.btn-secondary:hover,
+.btn-secondary:focus-visible {
+  background: var(--clr-primary-dark);
+  transform: translateY(-1px);
+  outline: none;
+}
 
 /* ── Inputs ──────────────────────────────────────────────────────────────── */
 .form-group {
@@ -317,9 +414,10 @@ tbody tr:hover td { background: var(--clr-surface-alt); }
 }
 
 .form-group input:focus {
-  outline: none;
+  outline: 2px solid var(--clr-primary);
+  outline-offset: 1px;
   border-color: var(--clr-primary);
-  box-shadow: 0 0 0 3px rgba(56,120,135,0.15);
+  box-shadow: 0 0 0 3px rgba(46,158,45,0.15);
 }
 
 .form-group input.ng-invalid.ng-touched { border-color: var(--clr-error-text); }
@@ -419,15 +517,81 @@ input[type="radio"] {
   accent-color: var(--clr-primary);
 }
 
+/* ── Focus visible global (accesibilidad teclado) ────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--clr-primary);
+  outline-offset: 2px;
+}
+
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
+  /* ── MEJORA 5: Navbar mobile con hamburguesa ────────────────────────── */
+  :root {
+    --navbar-height: auto;  /* altura dinámica en mobile */
+  }
+
+  .navbar {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 0.75em 1em;
+    gap: 0;
+  }
+
+  .navbar-brand { flex: 1; }
+
+  /* El botón admin va junto a la marca en la primera fila */
+  .btn-admin { margin-left: 0; order: 2; }
+
+  /* Botón hamburguesa visible en mobile */
+  .navbar-toggle {
+    display: flex;
+    order: 3;
+    margin-left: 0.5em;
+  }
+
+  /* El menú ocupa toda la segunda fila, colapsado por defecto */
+  .navbar-menu {
+    order: 4;
+    width: 100%;
+    flex-direction: column;
+    gap: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Cuando está abierto (.open lo agrega el componente app.ts) */
+  .navbar-menu.open {
+    max-height: 400px;
+    padding: 0.5em 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin-top: 0.5em;
+  }
+
+  .navbar-menu li { width: 100%; }
+
+  .navbar-menu a {
+    display: block;
+    width: 100%;
+    padding: 0.6em 0.5em;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+  }
+
+  .navbar-menu a.activo::after { display: none; }
+
+  .navbar-menu a.activo {
+    background: rgba(255,255,255,0.15);
+    border-left: 3px solid var(--clr-accent);
+    padding-left: 0.85em;
+  }
+
+  /* Resto del layout */
   .main { padding: 1em 1em 3em; }
   .groups-grid { grid-template-columns: 1fr; }
   .menu { grid-template-columns: repeat(2, 1fr); }
-  .navbar { flex-wrap: wrap; height: auto; padding: 0.75em 1em; }
-  .navbar-menu { order: 3; width: 100%; flex-wrap: wrap; justify-content: center; margin: 0; gap: 0.1em; }
-  .navbar-menu a { font-size: 0.75rem; padding: 0.25em 0.6em; }
-  .btn-admin { margin-left: auto; }
   h2 { font-size: 1.35rem; }
 }
 

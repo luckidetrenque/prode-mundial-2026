@@ -85,7 +85,6 @@ import { Posicion } from '../../shared/models/posicion.model';
               <tr>
                 <th class="col-pos">#</th>
                 <th class="col-nombre">Participante</th>
-                <th class="col-afil">Afiliado</th>
                 <th class="col-planilla">Planilla</th>
                 <th class="col-pts">Puntos</th>
               </tr>
@@ -104,7 +103,6 @@ import { Posicion } from '../../shared/models/posicion.model';
                   <td class="col-nombre">
                     <span class="nombre-participante">{{ pos.nombre }} {{ pos.apellido }}</span>
                   </td>
-                  <td class="col-afil col-muted">{{ pos.afiliado }}</td>
                   <td class="col-planilla">
                     <a [routerLink]="['/planillas', pos.codigoPlanilla]" class="link-planilla" title="Ver planilla">
                       {{ pos.codigoPlanilla }}
@@ -375,8 +373,7 @@ export class PosicionesComponent implements OnInit {
     this.termino = (evento.target as HTMLInputElement).value.toLowerCase();
     this._posicionesFiltradas = this.posiciones().filter(p =>
       p.nombre.toLowerCase().includes(this.termino)   ||
-      p.apellido.toLowerCase().includes(this.termino) ||
-      p.afiliado.toString().includes(this.termino)
+      p.apellido.toLowerCase().includes(this.termino)
     );
     this.paginaActual.set(1);
   }
