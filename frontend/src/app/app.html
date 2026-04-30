@@ -1,4 +1,4 @@
-<!-- src/app/app.html — Layout principal de la aplicación -->
+<!-- src/app/app.html — MEJORADO CON TOAST CONTAINER -->
 
 <nav class="navbar" role="navigation" aria-label="Navegación principal">
 
@@ -19,13 +19,11 @@
     }
   </a>
 
-  <!-- MEJORA 5: Botón hamburguesa accesible -->
   <button class="navbar-toggle" (click)="toggleMenu()" [attr.aria-expanded]="menuAbierto()" aria-controls="navbar-menu"
     aria-label="Abrir menú de navegación" type="button">
     <i class="fas" [class.fa-bars]="!menuAbierto()" [class.fa-xmark]="menuAbierto()" aria-hidden="true"></i>
   </button>
 
-  <!-- MEJORA 5: [class.open] para animación CSS, id para aria-controls -->
   <ul class="navbar-menu" id="navbar-menu" [class.open]="menuAbierto()" role="list">
     <li role="listitem">
       <a routerLink="/fixture" routerLinkActive="activo" (click)="cerrarMenu()">Fixture</a>
@@ -51,6 +49,9 @@
   </ul>
 
 </nav>
+
+<!-- Toast Container Global -->
+<app-toast-container />
 
 <router-outlet />
 

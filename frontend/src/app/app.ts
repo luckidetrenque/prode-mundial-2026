@@ -1,13 +1,15 @@
+// src/app/app.ts — MEJORADO CON TOAST CONTAINER
 import { Component, signal, HostListener, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { PlanillaService } from './core/services/planilla.service';
 import { AuthService } from './core/services/auth.service';
 import { switchMap, of, catchError, timer } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { ToastContainerComponent } from './shared/components/toast-container/toast-container.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ToastContainerComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -41,7 +43,6 @@ export class App {
       }),
       takeUntilDestroyed()
     ).subscribe(count => {
-      console.log('Planillas pendientes:', count);
       this.pendientesCount.set(count);
     });
   }

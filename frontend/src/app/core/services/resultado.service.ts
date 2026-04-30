@@ -1,4 +1,4 @@
-// src/app/core/services/resultado.service.ts
+// src/app/core/services/resultado.service.ts — MEJORADO
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -20,5 +20,24 @@ export class ResultadoService {
   // PUT /api/resultados/:partidoId → carga o actualiza un resultado (solo admin)
   guardar(partidoId: number, resultado: string): Observable<Resultado> {
     return this.http.put<Resultado>(`${this.apiUrl}/${partidoId}`, { resultado });
+  }
+
+  // DELETE /api/resultados/grupo/:grupo → resetea todos los resultados de un grupo (solo admin)
+  resetearGrupo(grupo: string): Observable<{ mensaje: string; eliminados: number }> {
+    return this.http.delete<{ mensaje: string; eliminados: number }>(
+      `${this.apiUrl}/grupo/${grupo}`
+    );
+  }
+
+  // DELETE /api/resultados/reset-all → resetea TODOS los resultados (solo admin, con precaución)
+  resetearTodos(): Observable<{ mensaje: string; eliminados: number }> {
+    return this.http.delete<{ mensaje: string; eliminados: number }>(
+      `${this.apiUrl}/reset-all`
+    );
+  }
+
+  // DELETE /api/resultados/:partidoId → elimina un resultado específico (solo admin)
+  eliminar(partidoId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${partidoId}`);
   }
 }

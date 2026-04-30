@@ -7,3 +7,4 @@ export * from './planilla.service';
 export * from './posicion.service';
 export * from './resultado.service';
 export * from './estadistica.service';
+export * from './toast.service';

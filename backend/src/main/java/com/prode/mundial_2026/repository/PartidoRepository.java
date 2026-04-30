@@ -25,5 +25,7 @@ public interface PartidoRepository extends JpaRepository<Partido, Long> {
             "ORDER BY p.numero ASC")
     List<Partido> findAllWithEquipos();
 
+    List<Partido> findByGrupo(String grupo);
+
     boolean existsByNumero(Integer numero);
 }
