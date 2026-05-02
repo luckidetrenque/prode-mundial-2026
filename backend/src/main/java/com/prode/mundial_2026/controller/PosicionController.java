@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// Sin cambios en la interfaz HTTP — el fix es interno al service/repository.
+// El endpoint sigue siendo GET /api/posiciones y devuelve List<PosicionDTO>.
 @RestController
 @RequestMapping("/api/posiciones")
 @RequiredArgsConstructor
@@ -15,7 +17,6 @@ public class PosicionController {
 
     private final PosicionService posicionService;
 
-    // GET /api/posiciones → devuelve la tabla de posiciones calculada
     @GetMapping
     public ResponseEntity<List<PosicionDTO>> obtenerPosiciones() {
         return ResponseEntity.ok(posicionService.calcularPosiciones());

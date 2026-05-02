@@ -1,4 +1,7 @@
-export type ResultadoPrediccion = 'LOCAL' | 'EMPATE' | 'VISITANTE';
+// FIX #16: ResultadoPrediccion movido a common.model.ts
+// Se re-exporta acá para no romper imports existentes en el proyecto.
+import type { ResultadoPrediccion } from './common.model';
+export type { ResultadoPrediccion };
 
 export interface PrediccionItem {
   partidoId: number;

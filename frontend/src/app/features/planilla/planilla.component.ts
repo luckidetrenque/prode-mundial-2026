@@ -1,5 +1,8 @@
-// planilla.component.ts — VERSIÓN MEJORADA con mejor validación y feedback
-import { Component, OnInit, signal, inject } from '@angular/core';
+// planilla.component.ts
+// FIX #17: Se elimina el hack _selVersion + Map no reactivo.
+// Ahora las predicciones se guardan en un signal<Record<number, ResultadoPrediccion>>
+// que Angular detecta automáticamente en los templates sin trucos adicionales.
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { PartidoService } from '../../core/services/partido.service';
@@ -10,11 +13,9 @@ import { PlanillaResponse, ResultadoPrediccion } from '../../shared/models/plani
 
 const GRUPOS_2026 = ['A','B','C','D','E','F','G','H','I','J','K','L'];
 
-// Validador personalizado de email más estricto
 function emailValidator(control: any) {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  const valid = emailRegex.test(control.value);
-  return valid ? null : { invalidEmail: true };
+  return emailRegex.test(control.value) ? null : { invalidEmail: true };
 }
 
 @Component({
@@ -36,8 +37,18 @@ export class PlanillaComponent implements OnInit {
   partidos: Partido[] = [];
   grupos = GRUPOS_2026;
 
-  // Mapa interno de predicciones: partidoId → resultado
-  private predicciones = new Map<number, ResultadoPrediccion>();
+  /**
+   * FIX #17: Las predicciones se almacenan en un signal<Record<number, ResultadoPrediccion>>.
+   *
+   * Problema anterior: Map<number, string> no es reactivo — Angular no detecta
+   * cambios internos al Map, por eso existía el hack _selVersion que forzaba
+   * un re-render manual incrementando un signal auxiliar en cada mutación.
+   *
+   * Solución: Record (objeto plano) SÍ es compatible con la detección de cambios
+   * de Angular cuando se reemplaza la referencia completa con signal.update().
+   * No se necesitan signals auxiliares ni void calls.
+   */
+  private prediccionesSignal = signal<Record<number, ResultadoPrediccion>>({});
 
   form: FormGroup;
 
@@ -48,7 +59,7 @@ export class PlanillaComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       nombre:   ['', [
-        Validators.required, 
+        Validators.required,
         Validators.minLength(2),
         Validators.maxLength(50),
         Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)
@@ -59,7 +70,7 @@ export class PlanillaComponent implements OnInit {
         Validators.maxLength(50),
         Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)
       ]],
-      email:    ['', [Validators.required, emailValidator]]
+      email: ['', [Validators.required, emailValidator]]
     });
   }
 
@@ -68,7 +79,6 @@ export class PlanillaComponent implements OnInit {
       next: partidos => {
         this.partidos = partidos.filter(p => p.fase === 'GRUPOS');
         this.cargando.set(false);
-        
         if (this.partidos.length === 0) {
           this.toastService.warning('No hay partidos disponibles en este momento.');
         }
@@ -85,83 +95,80 @@ export class PlanillaComponent implements OnInit {
     return this.partidos.filter(p => p.grupo === grupo);
   }
 
+  // FIX #17: reemplaza la referencia del objeto para disparar reactividad
   seleccionar(partidoId: number, prediccion: ResultadoPrediccion): void {
-    // Si ya estaba seleccionado, lo deselecciona (toggle)
-    if (this.predicciones.get(partidoId) === prediccion) {
-      this.predicciones.delete(partidoId);
-    } else {
-      this.predicciones.set(partidoId, prediccion);
-    }
-    this._prediccionesVersion.update(v => v + 1);
+    this.prediccionesSignal.update(actual => {
+      const copia = { ...actual };
+      if (copia[partidoId] === prediccion) {
+        delete copia[partidoId]; // toggle: deselecciona si ya estaba activo
+      } else {
+        copia[partidoId] = prediccion;
+      }
+      return copia;
+    });
   }
 
   autocompletar(): void {
     const opciones: ResultadoPrediccion[] = ['LOCAL', 'EMPATE', 'VISITANTE'];
     let completados = 0;
-    
-    this.partidos.forEach(p => {
-      if (!this.predicciones.has(p.id)) {
-        const random = Math.floor(Math.random() * opciones.length);
-        this.predicciones.set(p.id, opciones[random]);
-        completados++;
-      }
+
+    this.prediccionesSignal.update(actual => {
+      const copia = { ...actual };
+      this.partidos.forEach(p => {
+        if (!copia[p.id]) {
+          copia[p.id] = opciones[Math.floor(Math.random() * opciones.length)];
+          completados++;
+        }
+      });
+      return copia;
     });
-    
-    this._prediccionesVersion.update(v => v + 1);
-    
+
     if (completados > 0) {
-      this.toastService.success(`¡Listo! Se completaron ${completados} predicción${completados !== 1 ? 'es' : ''} automáticamente.`);
+      this.toastService.success(
+        `¡Listo! Se completaron ${completados} predicción${completados !== 1 ? 'es' : ''} automáticamente.`
+      );
     } else {
       this.toastService.info('Ya tenés todas las predicciones completas.');
     }
   }
 
-  // Signal auxiliar para forzar re-render al cambiar el mapa
-  private _prediccionesVersion = signal(0);
-
+  // FIX #17: computed signals leen prediccionesSignal reactivamente — sin hacks
   getPrediccion(partidoId: number): ResultadoPrediccion | null {
-    void this._prediccionesVersion();
-    return this.predicciones.get(partidoId) ?? null;
+    return this.prediccionesSignal()[partidoId] ?? null;
   }
 
   prediccionSeleccionada(partidoId: number): boolean {
-    void this._prediccionesVersion();
-    return this.predicciones.has(partidoId);
+    return !!this.prediccionesSignal()[partidoId];
   }
 
-  prediccionesCompletadas(): number {
-    void this._prediccionesVersion();
-    return this.predicciones.size;
-  }
+  prediccionesCompletadas = computed(() =>
+    Object.keys(this.prediccionesSignal()).length
+  );
 
   totalPartidos(): number { return this.partidos.length; }
 
-  formularioValido(): boolean {
-    void this._prediccionesVersion();
-    return this.form.valid && this.predicciones.size === this.partidos.length;
-  }
+  formularioValido = computed(() =>
+    this.form.valid &&
+    Object.keys(this.prediccionesSignal()).length === this.partidos.length
+  );
 
-  // Helper para mostrar errores específicos
   getErrorMensaje(campo: string): string {
     const control = this.form.get(campo);
     if (!control || !control.errors || !control.touched) return '';
-
-    if (control.errors['required']) return `El ${campo} es obligatorio`;
-    if (control.errors['minlength']) return `Mínimo ${control.errors['minlength'].requiredLength} caracteres`;
-    if (control.errors['maxlength']) return `Máximo ${control.errors['maxlength'].requiredLength} caracteres`;
-    if (control.errors['pattern']) return `Solo se permiten letras y espacios`;
+    if (control.errors['required'])   return `El ${campo} es obligatorio`;
+    if (control.errors['minlength'])  return `Mínimo ${control.errors['minlength'].requiredLength} caracteres`;
+    if (control.errors['maxlength'])  return `Máximo ${control.errors['maxlength'].requiredLength} caracteres`;
+    if (control.errors['pattern'])    return `Solo se permiten letras y espacios`;
     if (control.errors['invalidEmail']) return `El email no es válido`;
-    
     return 'Campo inválido';
   }
 
   guardar(): void {
-    // Validación extra antes de enviar
-    if (this.predicciones.size !== this.partidos.length) {
+    const pred = this.prediccionesSignal();
+    if (Object.keys(pred).length !== this.partidos.length) {
       this.toastService.warning('Completá todas las predicciones antes de guardar.');
       return;
     }
-
     if (!this.form.valid) {
       this.form.markAllAsTouched();
       this.toastService.error('Revisá los datos del formulario. Hay campos con errores.');
@@ -175,9 +182,10 @@ export class PlanillaComponent implements OnInit {
       nombre:   this.form.value.nombre.trim().toUpperCase(),
       apellido: this.form.value.apellido.trim().toUpperCase(),
       email:    this.form.value.email.trim().toLowerCase(),
-      predicciones: Array.from(this.predicciones.entries()).map(
-        ([partidoId, prediccion]) => ({ partidoId, prediccion })
-      )
+      predicciones: Object.entries(pred).map(([partidoId, prediccion]) => ({
+        partidoId: Number(partidoId),
+        prediccion
+      }))
     };
 
     this.planillaService.guardar(request).subscribe({
@@ -185,13 +193,9 @@ export class PlanillaComponent implements OnInit {
         this.planillaGuardada.set(response);
         this.guardando.set(false);
         this.toastService.success('¡Planilla guardada exitosamente!', 6000);
-        
-        // Scroll suave al mensaje de éxito
         setTimeout(() => {
-          const exitoElement = document.querySelector('.planilla-exito');
-          if (exitoElement) {
-            exitoElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
+          document.querySelector('.planilla-exito')
+            ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 100);
       },
       error: err => {
@@ -205,12 +209,9 @@ export class PlanillaComponent implements OnInit {
 
   nuevaPlanilla(): void {
     this.planillaGuardada.set(null);
-    this.predicciones.clear();
-    this._prediccionesVersion.update(v => v + 1);
+    this.prediccionesSignal.set({});
     this.form.reset();
     this.toastService.info('Formulario reiniciado. Podés cargar una nueva planilla.');
-    
-    // Scroll al inicio
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }

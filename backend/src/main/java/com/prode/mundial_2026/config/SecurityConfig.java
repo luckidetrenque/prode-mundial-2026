@@ -32,42 +32,43 @@ public class SecurityConfig {
     private final JwtFilter jwtFilter;
     private final LoginRateLimitFilter loginRateLimitFilter;
 
-    // ── FIX SEG #2 ────────────────────────────────────────────────────────────
-    // Ahora admite múltiples orígenes separados por coma en application.properties.
-    // Ejemplo: cors.allowed-origins=http://localhost:4200,https://midominio.com
-    // ─────────────────────────────────────────────────────────────────────────
     @Value("${cors.allowed-origins}")
     private String allowedOriginsRaw;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(AbstractHttpConfigurer::disable)
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                // Públicos
-                .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/auth/logout").permitAll()
-                .requestMatchers(HttpMethod.GET,  "/api/partidos/**").permitAll()
-                .requestMatchers(HttpMethod.GET,  "/api/resultados/**").permitAll()
-                .requestMatchers(HttpMethod.GET,  "/api/posiciones/**").permitAll()
-                .requestMatchers(HttpMethod.GET,  "/api/estadisticas/**").permitAll()
-                .requestMatchers(HttpMethod.GET,  "/api/planillas/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/planillas").permitAll()
-                // Admin
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/resultados/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/planillas/*/confirmar").hasRole("ADMIN")
-                // Resto requiere autenticación
-                .anyRequest().authenticated())
-            // ── FIX SEG #5 ──────────────────────────────────────────────────
-            // LoginRateLimitFilter va ANTES de JwtFilter para cortar
-            // intentos de fuerza bruta antes de cualquier procesamiento.
-            // ────────────────────────────────────────────────────────────────
-            .addFilterBefore(loginRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/logout").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/partidos/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/resultados/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/posiciones/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/estadisticas/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/planillas/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/planillas").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/resultados/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/planillas/*/confirmar").hasRole("ADMIN")
+                        .anyRequest().authenticated())
+                /**
+                 * FIX #15: El orden de addFilterBefore importa.
+                 * Ambos filtros se agregaban "before UsernamePasswordAuthenticationFilter"
+                 * sin garantía de orden entre ellos.
+                 *
+                 * Orden correcto garantizado:
+                 * 1. LoginRateLimitFilter (corta brute force ANTES de cualquier procesamiento)
+                 * 2. JwtFilter (autentica el token)
+                 * 3. UsernamePasswordAuthenticationFilter (Spring Security)
+                 *
+                 * Se logra encadenando: loginRateLimitFilter before JwtFilter,
+                 * y JwtFilter before UsernamePasswordAuthenticationFilter.
+                 */
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(loginRateLimitFilter, JwtFilter.class);
 
         return http.build();
     }
@@ -76,7 +77,6 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // Parsea la lista de orígenes separados por coma
         List<String> origins = Arrays.stream(allowedOriginsRaw.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
@@ -84,9 +84,21 @@ public class SecurityConfig {
 
         config.setAllowedOrigins(origins);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
+
+        /**
+         * FIX #9: allowedHeaders("*") con allowCredentials(true) es inválido
+         * según la spec CORS y algunos browsers lo rechazan.
+         * Se listan los headers explícitamente necesarios.
+         */
+        config.setAllowedHeaders(List.of(
+                "Authorization",
+                "Content-Type",
+                "X-Requested-With",
+                "Accept",
+                "Origin",
+                "Access-Control-Request-Method",
+                "Access-Control-Request-Headers"));
         config.setAllowCredentials(true);
-        // Expone el header Authorization para que el frontend pueda leerlo si lo necesita
         config.setExposedHeaders(List.of("Authorization"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

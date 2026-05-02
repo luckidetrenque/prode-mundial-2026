@@ -1,73 +1,74 @@
 package com.prode.mundial_2026.service;
 
 import com.prode.mundial_2026.dto.PosicionDTO;
-import com.prode.mundial_2026.model.Planilla;
-import com.prode.mundial_2026.model.Prediccion;
-import com.prode.mundial_2026.repository.PlanillaRepository;
-import com.prode.mundial_2026.repository.PrediccionRepository;
-import com.prode.mundial_2026.repository.ResultadoRepository;
+import com.prode.mundial_2026.repository.PosicionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class PosicionService {
 
-    private final PlanillaRepository planillaRepository;
-    private final PrediccionRepository prediccionRepository;
-    private final ResultadoRepository resultadoRepository;
+    private final PosicionRepository posicionRepository;
 
+    /**
+     * FIX #14: El algoritmo anterior ejecutaba 1 query por planilla confirmada
+     * para cargar sus predicciones (problema N+1).
+     * Con 500 planillas y 72 partidos → 500 queries por cada request a /posiciones.
+     *
+     * Solución: una única query SQL agregada en PosicionRepository que calcula
+     * los aciertos directamente en la DB con un JOIN entre predicciones y
+     * resultados.
+     * La DB hace el trabajo pesado en O(n) con índices, no la JVM.
+     *
+     * Flujo nuevo:
+     * 1. Una query trae { usuarioId, nombre, apellido, email, codigoPlanilla,
+     * puntos }
+     * agrupado por planilla, filtrando solo confirmadas.
+     * 2. Una segunda query cuenta el total de resultados cargados.
+     * 3. Se asignan posiciones en memoria (lista ya ordenada por puntos DESC).
+     */
     public List<PosicionDTO> calcularPosiciones() {
 
-        // 1. Traemos todos los resultados reales cargados hasta ahora
-        // Los convertimos a un Map<partidoId, resultado> para acceso O(1)
-        Map<Long, Prediccion.ResultadoPrediccion> resultadosMap = new HashMap<>();
-        resultadoRepository.findAllWithPartido()
-                .forEach(r -> resultadosMap.put(r.getPartido().getId(), r.getResultado()));
-
-        int totalPartidos = resultadosMap.size(); // partidos con resultado cargado
-
+        // Query 1: total de partidos con resultado cargado
+        int totalPartidos = posicionRepository.countResultadosCargados();
         if (totalPartidos == 0) {
             return Collections.emptyList();
         }
 
-        // 2. Para cada planilla confirmada, calculamos los puntos
-        List<PosicionDTO> posiciones = new ArrayList<>();
+        // Query 2: puntos por planilla (JOIN predicciones ∩ resultados, agrupado)
+        List<Object[]> rows = posicionRepository.calcularPuntajesPorPlanilla();
 
-        for (Planilla planilla : planillaRepository.findByConfirmadaTrueOrderByIdAsc()) {
-
-            List<Prediccion> predicciones = prediccionRepository.findByPlanillaIdWithPartido(planilla.getId());
-
-            int puntos = 0;
-            for (Prediccion pred : predicciones) {
-                Long partidoId = pred.getPartido().getId();
-                // Sumamos 1 punto si la predicción coincide con el resultado real
-                if (resultadosMap.containsKey(partidoId) &&
-                        resultadosMap.get(partidoId) == pred.getPrediccion()) {
-                    puntos++;
-                }
-            }
+        List<PosicionDTO> posiciones = new ArrayList<>(rows.size());
+        for (Object[] row : rows) {
+            String nombre = (String) row[0];
+            String apellido = (String) row[1];
+            String email = (String) row[2];
+            Long codigoPlanilla = (Long) row[3];
+            Long puntos = (Long) row[4]; // COUNT del JOIN
 
             posiciones.add(new PosicionDTO(
-                    0, // posición provisional, la calculamos en el paso 3
-                    planilla.getUsuario().getNombre(),
-                    planilla.getUsuario().getApellido(),
-                    planilla.getUsuario().getEmail(),
-                    planilla.getCodigo(),
-                    puntos,
+                    0,
+                    nombre,
+                    apellido,
+                    email,
+                    codigoPlanilla,
+                    puntos.intValue(),
                     totalPartidos));
         }
 
-        // 3. Ordenamos por puntos de mayor a menor
+        // Ordenar por puntos DESC (la query ya lo hace, pero reforzamos aquí)
         posiciones.sort((a, b) -> b.getPuntos() - a.getPuntos());
 
-        // 4. Asignamos posiciones (los empatados comparten la misma)
+        // Asignar posiciones con empates compartidos
         int pos = 1;
         for (int i = 0; i < posiciones.size(); i++) {
             if (i > 0 && posiciones.get(i).getPuntos() < posiciones.get(i - 1).getPuntos()) {
-                pos = i + 1; // nueva posición solo si los puntos son distintos
+                pos = i + 1;
             }
             posiciones.get(i).setPosicion(pos);
         }

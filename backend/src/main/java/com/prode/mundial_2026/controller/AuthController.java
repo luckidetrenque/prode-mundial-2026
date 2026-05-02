@@ -7,6 +7,7 @@ import com.prode.mundial_2026.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -20,15 +21,25 @@ public class AuthController {
 
     private final AuthService authService;
 
-    // POST /api/auth/login
+    /**
+     * FIX #7: El flag "secure" de la cookie estaba hardcodeado a false.
+     * Ahora se lee desde application.properties para que en producción
+     * (HTTPS) se pueda activar con app.cookie.secure=true sin tocar código.
+     * Valor por defecto: false (seguro para desarrollo local).
+     */
+    @Value("${app.cookie.secure:false}")
+    private boolean cookieSecure;
+
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO request,
+    public ResponseEntity<LoginResponseDTO> login(
+            @Valid @RequestBody LoginRequestDTO request,
             HttpServletResponse response) {
+
         LoginResponseDTO authResponse = authService.login(request);
 
         ResponseCookie cookie = ResponseCookie.from("prode_token", authResponse.getToken())
                 .httpOnly(true)
-                .secure(false) // Cambiar a true en producción (HTTPS)
+                .secure(cookieSecure) // FIX #7: configurable por entorno
                 .path("/")
                 .maxAge(24 * 60 * 60) // 1 día
                 .sameSite("Lax")
@@ -39,23 +50,19 @@ public class AuthController {
         return ResponseEntity.ok(authResponse);
     }
 
-    // ── FIX SEG #1 ────────────────────────────────────────────────────────────
-    // POST /api/auth/logout → invalida el JWT actual incrementando tokenVersion.
-    // El frontend ya borra el token de localStorage en auth.service.ts;
-    // este endpoint asegura que el token no pueda reutilizarse en el servidor.
-    //
-    // Requiere estar autenticado (el JwtFilter ya extrajo al admin del token).
-    // Si el token ya era inválido, Spring devuelve 403 antes de llegar aquí.
-    // ─────────────────────────────────────────────────────────────────────────
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@AuthenticationPrincipal Usuario admin, HttpServletResponse response) {
+    public ResponseEntity<Void> logout(
+            @AuthenticationPrincipal Usuario admin,
+            HttpServletResponse response) {
+
         if (admin != null) {
             authService.logout(admin.getEmail());
         }
 
+        // FIX #7: mismo flag para la cookie de borrado
         ResponseCookie cookie = ResponseCookie.from("prode_token", "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(cookieSecure)
                 .path("/")
                 .maxAge(0)
                 .sameSite("Lax")

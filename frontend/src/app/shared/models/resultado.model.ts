@@ -1,7 +1,8 @@
-import { ResultadoPrediccion } from './planilla.model';
+// FIX #3: El backend devuelve ResultadoDTO que NO incluye el campo id.
+// Se elimina para evitar confusión y accesos erróneos a un campo undefined.
+import { ResultadoPrediccion } from './common.model';
 
 export interface Resultado {
-  id: number;
   partido: {
     id: number;
     numero: number;
