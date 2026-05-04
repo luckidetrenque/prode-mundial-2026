@@ -150,7 +150,7 @@ interface PaginatedResponse {
     .contador-chip.activo { background: var(--clr-primary); color: white; }
     .total-pendientes { font-size: 0.82rem; color: var(--clr-text-muted); display: flex; align-items: center; gap: 0.4em; white-space: nowrap; }
 
-    .planillas-grid { display: grid; grid-template-columns: 1fr; gap: 0.75em; margin-bottom: 1.5em; }
+    .planillas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75em; margin-bottom: 1.5em; }
 
     .planilla-card { display: grid; grid-template-columns: 20px 36px 1fr auto; align-items: center; gap: 0.6em; background: var(--clr-surface); border: 1.5px solid var(--clr-border); border-radius: var(--radius-md); padding: 0.85em 0.9em; cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-sm); }
     .planilla-card:hover { border-color: var(--clr-primary-light); box-shadow: var(--shadow-md); }

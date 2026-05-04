@@ -166,9 +166,21 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
                       <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" class="flag" width="26" height="17" />
                     </div>
                     <div class="opciones-resultado">
-                      <button class="opcion-btn" [class.activa-local]="getSeleccion(partido.id) === 'LOCAL'" (click)="seleccionarResultado(partido.id, 'LOCAL')" title="Local gana">L</button>
-                      <button class="opcion-btn" [class.activa-empate]="getSeleccion(partido.id) === 'EMPATE'" (click)="seleccionarResultado(partido.id, 'EMPATE')" title="Empate">E</button>
-                      <button class="opcion-btn" [class.activa-visitante]="getSeleccion(partido.id) === 'VISITANTE'" (click)="seleccionarResultado(partido.id, 'VISITANTE')" title="Visitante gana">V</button>
+                      <button class="opcion-btn" 
+                        [class.activa-local]="getSeleccion(partido.id) === 'LOCAL'" 
+                        (click)="seleccionarResultado(partido.id, 'LOCAL')" 
+                        [disabled]="(resultadosGuardados().has(partido.id) && editando() !== partido.id) || guardando() === partido.id"
+                        title="Local gana">L</button>
+                      <button class="opcion-btn" 
+                        [class.activa-empate]="getSeleccion(partido.id) === 'EMPATE'" 
+                        (click)="seleccionarResultado(partido.id, 'EMPATE')" 
+                        [disabled]="(resultadosGuardados().has(partido.id) && editando() !== partido.id) || guardando() === partido.id"
+                        title="Empate">E</button>
+                      <button class="opcion-btn" 
+                        [class.activa-visitante]="getSeleccion(partido.id) === 'VISITANTE'" 
+                        (click)="seleccionarResultado(partido.id, 'VISITANTE')" 
+                        [disabled]="(resultadosGuardados().has(partido.id) && editando() !== partido.id) || guardando() === partido.id"
+                        title="Visitante gana">V</button>
                     </div>
                     <div class="partido-equipo partido-equipo--visit">
                       <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow" class="flag" width="26" height="17" />

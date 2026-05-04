@@ -49,6 +49,30 @@
   </ul>
 
 </nav>
+  
+@if (breadcrumbRootLabel()) {
+  <div class="breadcrumb-outer">
+    <div class="breadcrumb-inner">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li>
+            <a [routerLink]="breadcrumbRootLink()">
+              @if (breadcrumbRootLabel() === 'Inicio') { <i class="fas fa-home" aria-hidden="true"></i> }
+              @else { <i class="fas fa-gauge-high" aria-hidden="true"></i> }
+              <span>{{ breadcrumbRootLabel() }}</span>
+            </a>
+          </li>
+          <li class="separator">
+            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+          </li>
+          <li class="current" aria-current="page">
+            {{ breadcrumbPageLabel() }}
+          </li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+}
 
 <!-- Toast Container Global -->
 <app-toast-container />

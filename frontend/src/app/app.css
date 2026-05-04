@@ -24,3 +24,62 @@
   color: var(--clr-primary-dark);
   text-decoration: underline;
 }
+
+/* ── Breadcrumb ─────────────────────────────────────────────────────────── */
+.breadcrumb-outer {
+  background: white;
+  border-bottom: 1px solid var(--clr-border);
+}
+
+.breadcrumb-inner {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 0.75em 2em;
+}
+
+.breadcrumb ol {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.breadcrumb li {
+  display: flex;
+  align-items: center;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.breadcrumb a {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  color: var(--clr-primary);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.breadcrumb a:hover {
+  color: var(--clr-primary-dark);
+  text-decoration: underline;
+}
+
+.breadcrumb .separator {
+  color: var(--clr-text-muted);
+  font-size: 0.6rem;
+  opacity: 0.6;
+}
+
+.breadcrumb .current {
+  color: var(--clr-text-muted);
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .breadcrumb-inner {
+    padding: 0.6em 1em;
+  }
+}
