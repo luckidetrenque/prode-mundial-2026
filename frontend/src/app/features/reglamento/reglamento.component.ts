@@ -521,7 +521,7 @@ export class ReglamentoComponent {
       numero: 1,
       titulo: 'Partidos',
       icono: 'fa-futbol',
-      contenido: `Son los <strong>cuarenta y ocho (48) partidos</strong> que se jugarán en la fase de grupos
+      contenido: `Son los <strong>setenta y dos (72) partidos</strong> que se jugarán en la fase de grupos
         del Mundial de Fútbol 2026, iniciando el día
         <strong>jueves 11 de junio de 2026</strong> y culminando el día
         <strong>jueves 2 de julio de 2026</strong>.
@@ -533,13 +533,12 @@ export class ReglamentoComponent {
       icono: 'fa-list-check',
       contenido: `La planilla se deberá completar desde la sección
         <a href="/planilla" title="Cargar planilla">Planilla</a> del sitio web.
-        La misma cuenta con los 48 partidos de la fase de grupos y solamente se podrá marcar
+        La misma cuenta con los 72 partidos de la fase de grupos y solamente se podrá marcar
         como resultado válido: equipo <strong>Local (L)</strong>, equipo <strong>Visitante (V)</strong>
         o <strong>Empate (E)</strong> por cada partido.
         Deberá contar con la totalidad de los partidos marcados, nombre, apellido y correo electrónico
         del participante.`,
-      destacado: `Los partidos que no sean marcados serán computados como <strong>Nulos</strong>.
-        Se admite <strong>más de una planilla</strong> por participante.`
+      destacado: `Se admite <strong>más de una planilla</strong> por participante. Día y hora de finalización de inscripción: <strong>10/06/2026 - 14:00 horas</strong>.`
     },
     {
       numero: 3,
@@ -556,7 +555,7 @@ export class ReglamentoComponent {
       contenido: `Para confirmar la planilla, se deberá presentar el <strong>número único de
         identificación</strong> generado por el sistema al momento de guardarla.`,
       destacado: `Las planillas se confirmarán <strong>ineludiblemente</strong> hasta el día previo
-        al inicio del torneo. Las planillas enviadas fuera de término <strong>no serán tomadas en cuenta</strong>.`
+        al inicio del torneo (10/06/2026 - 14:00 horas). Las planillas enviadas fuera de término no serán confirmadas por lo tanto <strong>no serán tomadas en cuenta</strong>.`
     },
     {
       numero: 5,
@@ -592,7 +591,7 @@ export class ReglamentoComponent {
       titulo: 'Premios',
       icono: 'fa-gift',
       contenido: `<strong>Primer Puesto:</strong> El participante que acierte la mayor cantidad
-        de partidos entre los 48 jugados en fase de grupos gana el
+        de partidos entre los 72 jugados en fase de grupos gana el
         <strong>80% del pozo recaudado</strong>. En caso de empate el monto se divide
         en partes iguales entre los ganadores.<br><br>
         <strong>Segundo Puesto:</strong> El participante siguiente al Primer Puesto gana el

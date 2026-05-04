@@ -39,6 +39,12 @@ import { RouterLink } from '@angular/router';
           <p>Ingresá tus predicciones para la fase de grupos</p>
         </a>
 
+        <a routerLink="/participantes" class="nav-card">
+          <i class="fas fa-user-group nav-card__icon"></i>
+          <h3>Participantes</h3>
+          <p>Listado de todos los participantes confirmados</p>
+        </a>
+
         <a routerLink="/resultados" class="nav-card">
           <i class="fas fa-futbol nav-card__icon"></i>
           <h3>Resultados</h3>
@@ -55,12 +61,6 @@ import { RouterLink } from '@angular/router';
           <i class="fas fa-chart-simple nav-card__icon"></i>
           <h3>Estadísticas</h3>
           <p>Distribución de votos por partido</p>
-        </a>
-
-        <a routerLink="/participantes" class="nav-card">
-          <i class="fas fa-user-group nav-card__icon"></i>
-          <h3>Participantes</h3>
-          <p>Listado de todos los participantes confirmados</p>
         </a>
 
       </section>

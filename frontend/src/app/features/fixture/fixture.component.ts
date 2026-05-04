@@ -13,16 +13,14 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
   imports: [CommonModule, DatePipe, ShortCountryPipe],
   template: `
     <main class="main">
-      <h2><i class="fas fa-calendar-days"></i> Fixture — Copa del Mundo 2026</h2>
+      <h2><i class="fas fa-calendar-days"></i> Fixture de la Copa del Mundo 2026</h2>
 
       <p class="subtitulo">
-        <i class="fas fa-location-dot" style="color:var(--clr-primary-light);font-size:0.8rem"></i>
-        Canadá · Estados Unidos · México
-        &nbsp;·&nbsp;
-        <strong>11 jun – 19 jul 2026</strong>
+        <i class="fas fa-circle-info" style="color:var(--clr-primary-light);font-size:0.8rem"></i>
+        Calendario completo de los <strong>72 partidos</strong> de la fase de grupos.
       </p>
 
-      <!-- Filtro de fases -->
+      <!-- Filtro de fases (Oculto temporalmente)
       <div class="fase-tabs">
         @for (fase of fases; track fase.valor) {
           <button
@@ -38,6 +36,7 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
           </button>
         }
       </div>
+      -->
 
       @if (cargando()) {
         <div class="spinner-container"><div class="spinner"></div></div>
@@ -46,7 +45,7 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
       <!-- Vista grupos -->
       @if (!cargando() && filtroActual() === 'GRUPOS') {
 
-        <!-- Sub-filtro de grupo -->
+        <!-- Sub-filtro de grupo (Oculto temporalmente)
         <div class="filtro-grupos">
           <button class="btn-grupo" [class.activo]="grupoActivo() === null" (click)="grupoActivo.set(null)">
             Todos
@@ -57,6 +56,7 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
             </button>
           }
         </div>
+        -->
 
         <div class="groups-grid">
           @for (grupo of gruposMostrados(); track grupo) {

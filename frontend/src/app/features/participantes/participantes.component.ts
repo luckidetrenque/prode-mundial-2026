@@ -12,6 +12,10 @@ import { PlanillaResponse } from '../../shared/models/planilla.model';
   template: `
     <main class="main">
       <h2><i class="fas fa-user-group"></i> Participantes Confirmados</h2>
+      <p class="subtitulo">
+        <i class="fas fa-circle-info" style="color:var(--clr-primary-light);font-size:0.8rem"></i>
+        Listado de todos los participantes que han confirmado su planilla.
+      </p>
 
       @if (cargando()) {
         <div class="spinner-container"><div class="spinner"></div></div>

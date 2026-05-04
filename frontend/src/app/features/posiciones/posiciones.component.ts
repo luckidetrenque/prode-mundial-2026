@@ -12,6 +12,10 @@ import { Posicion } from '../../shared/models/posicion.model';
   template: `
     <main class="main">
       <h2><i class="fas fa-trophy"></i> Tabla de Posiciones</h2>
+      <p class="subtitulo">
+        <i class="fas fa-circle-info" style="color:var(--clr-primary-light);font-size:0.8rem"></i>
+        Clasificación general de los participantes basada en los aciertos obtenidos.
+      </p>
 
       @if (cargando()) {
         <div class="spinner-container"><div class="spinner"></div></div>

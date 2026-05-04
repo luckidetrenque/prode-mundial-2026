@@ -14,6 +14,10 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
   template: `
     <main class="main">
       <h2><i class="fas fa-futbol" aria-hidden="true"></i> Resultados de los Partidos</h2>
+      <p class="subtitulo">
+        <i class="fas fa-circle-info" style="color:var(--clr-primary-light);font-size:0.8rem"></i>
+        Consultá los resultados oficiales de los partidos de la fase de grupos.
+      </p>
 
       @if (cargando()) {
         <div class="spinner-container" role="status" aria-label="Cargando datos...">

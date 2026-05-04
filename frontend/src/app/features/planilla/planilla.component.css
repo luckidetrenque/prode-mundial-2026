@@ -16,9 +16,37 @@
 .group-caption {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.4em;
   padding: 0.6em 1em;
   background: linear-gradient(to right, var(--wc-usa), #3a4bb0);
+}
+
+.caption-left {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.btn-reset-grupo {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 0.75rem;
+}
+
+.btn-reset-grupo:hover {
+  background: white;
+  color: var(--wc-usa);
+  transform: rotate(-45deg);
 }
 
 .group-letter {
@@ -172,8 +200,16 @@
 .progreso-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
+  gap: 0.75em;
   margin-bottom: 0.5em;
+}
+
+.progreso-info {
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
 }
 
 .progreso-label {
@@ -224,6 +260,33 @@
 .btn-auto:hover i {
   color: white;
   animation: magic-sparkle 0.6s ease infinite alternate;
+}
+
+.btn-reset-all {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid var(--clr-border-strong);
+  background: white;
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 0.75rem;
+}
+
+.btn-reset-all:hover:not(:disabled) {
+  background: var(--clr-error-bg);
+  color: var(--clr-error-text);
+  border-color: var(--clr-error-text);
+  transform: translateY(-1px);
+}
+
+.btn-reset-all:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
 @keyframes magic-sparkle {

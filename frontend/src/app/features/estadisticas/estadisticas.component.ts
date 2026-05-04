@@ -11,6 +11,10 @@ import { EstadisticaPartido } from '../../shared/models/estadistica.model';
   template: `
     <main class="main">
       <h2><i class="fas fa-chart-simple"></i> Estadísticas de Apuestas</h2>
+      <p class="subtitulo">
+        <i class="fas fa-circle-info" style="color:var(--clr-primary-light);font-size:0.8rem"></i>
+        Análisis detallado de la distribución de votos y tendencias por cada partido.
+      </p>
 
       @if (cargando()) {
         <div class="spinner-container"><div class="spinner"></div></div>
@@ -92,7 +96,7 @@ import { EstadisticaPartido } from '../../shared/models/estadistica.model';
 
                 <!-- Local -->
                 <div class="barra-row">
-                  <span class="barra-label">{{ stat.equipoLocal }} ({{ stat.votosLocal }})</span>
+                  <span class="barra-label">({{ stat.votosLocal }}) {{ stat.equipoLocal }}</span>
                   <div class="barra-track">
                     <div
                       class="barra-fill barra-local"
@@ -104,7 +108,7 @@ import { EstadisticaPartido } from '../../shared/models/estadistica.model';
 
                 <!-- Empate -->
                 <div class="barra-row">
-                  <span class="barra-label">Empate ({{ stat.votosEmpate }})</span>
+                  <span class="barra-label">({{ stat.votosEmpate }}) Empate</span>
                   <div class="barra-track">
                     <div
                       class="barra-fill barra-empate"
@@ -116,7 +120,7 @@ import { EstadisticaPartido } from '../../shared/models/estadistica.model';
 
                 <!-- Visitante -->
                 <div class="barra-row">
-                  <span class="barra-label">{{ stat.equipoVisitante }} ({{ stat.votosVisitante }})</span>
+                  <span class="barra-label">({{ stat.votosVisitante }}) {{ stat.equipoVisitante }}</span>
                   <div class="barra-track">
                     <div
                       class="barra-fill barra-visitante"

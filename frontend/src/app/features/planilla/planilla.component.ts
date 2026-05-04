@@ -132,6 +132,27 @@ export class PlanillaComponent implements OnInit {
     }
   }
 
+  resetearPlanilla(): void {
+    if (Object.keys(this.prediccionesSignal()).length === 0) return;
+    this.prediccionesSignal.set({});
+    this.toastService.info('Se han borrado todas tus predicciones.');
+  }
+
+  resetearGrupo(grupo: string): void {
+    const idsGrupo = this.getPartidosPorGrupo(grupo).map(p => p.id);
+    this.prediccionesSignal.update(actual => {
+      const copia = { ...actual };
+      idsGrupo.forEach(id => delete copia[id]);
+      return copia;
+    });
+    this.toastService.info(`Grupo ${grupo} reiniciado.`);
+  }
+
+  grupoCompletado(grupo: string): boolean {
+    const partidos = this.getPartidosPorGrupo(grupo);
+    return partidos.length > 0 && partidos.every(p => this.prediccionSeleccionada(p.id));
+  }
+
   // FIX #17: computed signals leen prediccionesSignal reactivamente — sin hacks
   getPrediccion(partidoId: number): ResultadoPrediccion | null {
     return this.prediccionesSignal()[partidoId] ?? null;

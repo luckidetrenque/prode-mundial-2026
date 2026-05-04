@@ -26,10 +26,16 @@
 
   <ul class="navbar-menu" id="navbar-menu" [class.open]="menuAbierto()" role="list">
     <li role="listitem">
+      <a routerLink="/reglamento" routerLinkActive="activo" (click)="cerrarMenu()">Reglamento</a>
+    </li>
+    <li role="listitem">
       <a routerLink="/fixture" routerLinkActive="activo" (click)="cerrarMenu()">Fixture</a>
     </li>
     <li role="listitem">
       <a routerLink="/planilla" routerLinkActive="activo" (click)="cerrarMenu()">Planilla</a>
+    </li>
+    <li role="listitem">
+      <a routerLink="/participantes" routerLinkActive="activo" (click)="cerrarMenu()">Participantes</a>
     </li>
     <li role="listitem">
       <a routerLink="/resultados" routerLinkActive="activo" (click)="cerrarMenu()">Resultados</a>
@@ -39,12 +45,6 @@
     </li>
     <li role="listitem">
       <a routerLink="/estadisticas" routerLinkActive="activo" (click)="cerrarMenu()">Estadísticas</a>
-    </li>
-    <li role="listitem">
-      <a routerLink="/participantes" routerLinkActive="activo" (click)="cerrarMenu()">Participantes</a>
-    </li>
-    <li role="listitem">
-      <a routerLink="/reglamento" routerLinkActive="activo" (click)="cerrarMenu()">Reglamento</a>
     </li>
   </ul>
 
