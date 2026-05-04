@@ -99,7 +99,7 @@ GET  /api/planillas         → planillas confirmadas
 GET  /api/planillas/{code}  → ver planilla por código
 GET  /api/resultados        → resultados cargados
 GET  /api/posiciones        → tabla de posiciones
-GET  /api/estadisticas      → estadísticas de apuestas
+GET  /api/estadisticas      → estadísticas de predicciones
 
 # Admin (requieren Bearer token en el header Authorization)
 POST /api/auth/login               → obtener token JWT

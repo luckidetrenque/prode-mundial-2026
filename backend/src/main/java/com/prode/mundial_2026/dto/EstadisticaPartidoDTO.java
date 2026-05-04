@@ -1,4 +1,4 @@
-// Estadísticas de apuestas para un partido (para el gráfico de barras)
+// Estadísticas de predicciones para un partido (para el gráfico de barras)
 package com.prode.mundial_2026.dto;
 
 import lombok.Data;
