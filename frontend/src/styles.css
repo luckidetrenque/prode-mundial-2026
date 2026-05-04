@@ -60,7 +60,14 @@
   --font-body:    'DM Sans', sans-serif;
   --transition:   all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* ── MEJORA 6: Variable de altura de navbar para sticky preciso ─────── */
+  /* ── MEJORA 7: Sistema de espaciado consistente ─────────────────────── */
+  --spacing-xs:   0.25rem;  /* 4px */
+  --spacing-sm:   0.5rem;   /* 8px */
+  --spacing-md:   1rem;     /* 16px */
+  --spacing-lg:   1.5rem;   /* 24px */
+  --spacing-xl:   2rem;     /* 32px */
+  --spacing-2xl:  3rem;     /* 48px */
+
   --navbar-height: 60px;
 }
 
@@ -89,7 +96,7 @@ img { max-width: 100%; height: auto; border: none; }
 .main {
   max-width: 1024px;
   margin: 0 auto;
-  padding: 2em 2em 4em;
+  padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-2xl);
   background: var(--clr-surface);
   min-height: calc(100vh - var(--navbar-height));
 }
@@ -101,10 +108,10 @@ h2 {
   font-weight: 700;
   letter-spacing: 0.5px;
   color: var(--clr-primary-dark);
-  margin-bottom: 1.25em;
+  margin-bottom: var(--spacing-md);
   display: flex;
   align-items: center;
-  gap: 0.5em;
+  gap: var(--spacing-sm);
 }
 
 h2 i { color: var(--clr-primary-light); font-size: 1.3rem; }
@@ -296,7 +303,7 @@ caption {
 thead { background: transparent; }
 
 thead th {
-  padding: 0.65em 0.75em;
+  padding: var(--spacing-sm) var(--spacing-md);
   font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -307,7 +314,7 @@ thead th {
 }
 
 tbody td {
-  padding: 0.65em 0.75em;
+  padding: var(--spacing-md);
   border-bottom: 1px solid var(--clr-border);
   color: var(--clr-text);
   vertical-align: middle;
@@ -589,9 +596,9 @@ input[type="radio"] {
   }
 
   /* Resto del layout */
-  .main { padding: 1em 1em 3em; }
-  .groups-grid { grid-template-columns: 1fr; }
-  .menu { grid-template-columns: repeat(2, 1fr); }
+  .main { padding: var(--spacing-md) var(--spacing-md) var(--spacing-xl); }
+  .groups-grid { grid-template-columns: 1fr; gap: var(--spacing-md); }
+  .menu { grid-template-columns: repeat(2, 1fr); gap: var(--spacing-md); }
   h2 { font-size: 1.35rem; }
 }
 

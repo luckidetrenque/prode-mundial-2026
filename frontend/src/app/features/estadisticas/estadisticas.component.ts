@@ -10,7 +10,7 @@ import { EstadisticaPartido } from '../../shared/models/estadistica.model';
   imports: [CommonModule],
   template: `
     <main class="main">
-      <h2><i class="fas fa-chart-simple"></i> Estadísticas de Apuestas</h2>
+      <h2><i class="fas fa-chart-simple"></i> Estadísticas de Predicciones</h2>
       <p class="subtitulo">
         <i class="fas fa-circle-info" style="color:var(--clr-primary-light);font-size:0.8rem"></i>
         Análisis detallado de la distribución de votos y tendencias por cada partido.
@@ -66,11 +66,21 @@ import { EstadisticaPartido } from '../../shared/models/estadistica.model';
 
         <!-- Filtro de grupo -->
         <div class="filtro-grupos">
-          <button class="btn-grupo" [class.activo]="grupoActivo() === null" (click)="grupoActivo.set(null)">
+          <button
+            type="button"
+            class="btn-grupo"
+            [class.activo]="grupoActivo() === null"
+            (click)="grupoActivo.set(null)"
+          >
             Todos
           </button>
           @for (g of grupos; track g) {
-            <button class="btn-grupo" [class.activo]="grupoActivo() === g" (click)="grupoActivo.set(g)">
+            <button
+              type="button"
+              class="btn-grupo"
+              [class.activo]="grupoActivo() === g"
+              (click)="grupoActivo.set(g)"
+            >
               {{ g }}
             </button>
           }
@@ -207,31 +217,49 @@ import { EstadisticaPartido } from '../../shared/models/estadistica.model';
       margin-top: 2px;
     }
 
-    /* ── Filtro grupos ───────────────────────────────────────────────────── */
+    /* ── Filtro grupos (Estilo Resultados) ───────────────────────────────── */
     .filtro-grupos {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.4em;
+      gap: 0.35em;
       margin-bottom: 1.5em;
-      padding: 0.5em;
-      background: var(--clr-surface-alt);
-      border-radius: 30px;
     }
 
     .btn-grupo {
-      padding: 0.4em 1em;
-      border: 1px solid transparent;
-      border-radius: 20px;
-      background: transparent;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border: 1.2px solid var(--clr-border-strong);
+      border-radius: 50%;
+      background: var(--clr-surface);
       color: var(--clr-text-muted);
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
       transition: var(--transition);
+      font-family: var(--font-body);
+      padding: 0;
     }
 
-    .btn-grupo:hover { color: var(--clr-primary); background: rgba(0,0,0,0.03); }
-    .btn-grupo.activo { background: var(--clr-primary); color: white; box-shadow: 0 2px 6px rgba(60,172,59,0.3); }
+    /* El botón "Todos" es el único que mantiene forma de cápsula por el texto */
+    .btn-grupo:first-child {
+      width: auto;
+      padding: 0 1.25em;
+      border-radius: 20px;
+    }
+
+    .btn-grupo:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
+    .btn-grupo:focus-visible { outline: 2px solid var(--clr-primary); outline-offset: 2px; }
+    
+    /* Estado activo (Seleccionado como el grupo B de la imagen) */
+    .btn-grupo.activo { 
+      background: var(--clr-primary); 
+      color: white; 
+      border-color: var(--clr-primary);
+      box-shadow: 0 0 0 2px white, 0 0 0 4px var(--clr-primary); /* Efecto de doble anillo de la imagen */
+    }
 
     /* ── Grid de cards ───────────────────────────────────────────────────── */
     .stats-grid {
@@ -377,6 +405,10 @@ export class EstadisticasComponent implements OnInit {
     const activo = this.grupoActivo();
     if (!activo) return this.estadisticas();
     return this.estadisticas().filter(s => s.grupo === activo);
+  }
+
+  grupoCompleto(grupo: string): boolean {
+    return this.estadisticas().some(s => s.grupo === grupo);
   }
 
   getPct(votos: number, total: number): number {

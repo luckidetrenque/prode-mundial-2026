@@ -19,6 +19,11 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
         Consultá los resultados oficiales de los partidos de la fase de grupos.
       </p>
 
+      <div class="referencia-estados">
+        <span class="ref-item"><i class="fas fa-check-circle" style="color:var(--clr-success-text)"></i> Finalizado</span>
+        <span class="ref-item"><i class="fas fa-clock" style="color:var(--clr-text-muted)"></i> Pendiente</span>
+      </div>
+
       @if (cargando()) {
         <div class="spinner-container" role="status" aria-label="Cargando datos...">
           <div class="spinner"></div>
@@ -171,12 +176,12 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
                     <!-- Indicador de estado del partido -->
                     <div class="partido-accion">
                       @if (resultadosGuardados().has(partido.id)) {
-                        <span class="badge-guardado" role="status">
-                          <i class="fas fa-check" aria-hidden="true"></i> Finalizado
+                        <span class="badge-status badge-finalizado" title="Finalizado">
+                          <i class="fas fa-check" aria-hidden="true"></i>
                         </span>
                       } @else {
-                        <span class="badge-pendiente" role="status">
-                          <i class="fas fa-clock" aria-hidden="true"></i> Pendiente
+                        <span class="badge-status badge-pendiente" title="Pendiente">
+                          <i class="fas fa-clock" aria-hidden="true"></i>
                         </span>
                       }
                     </div>
@@ -254,6 +259,26 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
       margin-top: 2px;
     }
 
+    /* ── Referencia de estados ───────────────────────────────────────────── */
+    .referencia-estados {
+      display: flex;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-lg);
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: var(--clr-surface-alt);
+      border-radius: var(--radius-md);
+      width: fit-content;
+    }
+
+    .ref-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--clr-text-muted);
+    }
+
     /* ── Filtro grupos ───────────────────────────────────────────────────── */
     .filtro-grupos {
       display: flex;
@@ -311,17 +336,23 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
       color: var(--clr-text-muted);
     }
 
-    /* ── Lista de partidos ───────────────────────────────────────────────── */
+    /* ── Lista de partidos (Grid de 2 columnas) ──────────────────────────── */
     .partidos-lista {
-      display: flex;
-      flex-direction: column;
-      gap: 0.45em;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-sm);
+    }
+
+    @media (max-width: 900px) {
+      .partidos-lista {
+        grid-template-columns: 1fr;
+      }
     }
 
     /* ── Fila de partido ─────────────────────────────────────────────────── */
     .partido-row {
       display: grid;
-      grid-template-columns: 28px 1fr 90px 1fr auto;
+      grid-template-columns: 28px 1fr 90px 1fr 40px;
       align-items: center;
       gap: 0.6em;
       padding: 0.65em 0.85em;
@@ -413,52 +444,54 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
       opacity: 0.3;
     }
 
-    .partido-accion { min-width: 100px; display: flex; justify-content: flex-end; }
+    .partido-accion { display: flex; justify-content: center; }
 
-    /* Badges de estado */
-    .badge-guardado {
-      display: inline-flex;
+    /* Badges de estado (Iconos circulares) */
+    .badge-status {
+      display: flex;
       align-items: center;
-      gap: 0.35em;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
       font-size: 0.75rem;
-      font-weight: 600;
+      border: 1px solid transparent;
+      transition: var(--transition);
+    }
+
+    .badge-finalizado {
       color: var(--clr-success-text);
       background: var(--clr-success-bg);
-      padding: 0.35em 0.75em;
-      border-radius: var(--radius-sm);
-      border: 1px solid rgba(26,122,74,0.2);
+      border-color: rgba(26,122,74,0.2);
     }
 
     .badge-pendiente {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35em;
-      font-size: 0.75rem;
-      font-weight: 600;
       color: var(--clr-text-muted);
       background: var(--clr-surface-alt);
-      padding: 0.35em 0.75em;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--clr-border-strong);
+      border-color: var(--clr-border-strong);
     }
 
     /* ── Responsive ──────────────────────────────────────────────────────── */
-    @media (max-width: 800px) {
+    @media (max-width: 1024px) {
       .stats-overview { grid-template-columns: repeat(2, 1fr); }
-      .partido-row {
-        grid-template-columns: 24px 1fr 80px 1fr auto;
-        padding: 0.5em 0.6em;
-        gap: 0.4em;
-      }
-
-      .equipo-txt { font-size: 0.7rem; }
     }
 
-    @media (max-width: 500px) {
+    @media (max-width: 800px) {
+      .partido-row {
+        grid-template-columns: 24px 1fr 80px 1fr 34px;
+        padding: 0.5em var(--spacing-sm);
+        gap: 0.4em;
+      }
+      .equipo-txt { font-size: 0.72rem; }
+      .badge-status { width: 22px; height: 22px; font-size: 0.65rem; }
+    }
+
+    @media (max-width: 550px) {
       .stats-overview { grid-template-columns: 1fr; }
       .equipo-txt { display: none; }
-      .partido-row { grid-template-columns: 20px auto 80px auto auto; }
-      .partido-accion { min-width: 70px; }
+      .partido-row { grid-template-columns: 20px auto 80px auto 30px; }
+      .badge-status { width: 20px; height: 20px; font-size: 0.6rem; }
+      .referencia-estados { width: 100%; justify-content: center; }
     }
   `]
 })

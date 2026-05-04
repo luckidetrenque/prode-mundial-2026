@@ -80,9 +80,11 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
                   @for (partido of getPartidosPorGrupo(grupo); track partido.id) {
                     <tr [class.partido-jugado]="esJugado(partido)">
                       <td class="th-num col-muted">{{ partido.numero }}</td>
-                      <td class="td-equipo td-equipo--local">
-                        <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" class="flag" width="22" height="14" />
-                        <span class="equipo-txt">{{ partido.equipoLocalShow | shortCountry }}</span>
+                      <td class="td-equipo">
+                        <div class="equipo-vertical">
+                          <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" class="flag" width="20" height="13" />
+                          <span class="equipo-txt">{{ partido.equipoLocalShow | shortCountry }}</span>
+                        </div>
                       </td>
                       <td class="th-center">
                         @if (esJugado(partido)) {
@@ -92,10 +94,17 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
                         }
                       </td>
                       <td class="td-equipo">
-                        <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow" class="flag" width="22" height="14" />
-                        <span class="equipo-txt">{{ partido.equipoVisitanteShow | shortCountry }}</span>
+                        <div class="equipo-vertical">
+                          <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow" class="flag" width="20" height="13" />
+                          <span class="equipo-txt">{{ partido.equipoVisitanteShow | shortCountry }}</span>
+                        </div>
                       </td>
-                      <td class="th-date col-muted">{{ partido.fechaHora | date:'dd/MM HH:mm' }}</td>
+                      <td class="th-date col-muted">
+                        <div class="date-vertical">
+                          <span>{{ partido.fechaHora | date:'dd/MM' }}</span>
+                          <span class="time-txt">{{ partido.fechaHora | date:'HH:mm' }}</span>
+                        </div>
+                      </td>
                       <td class="th-sede col-muted">{{ formatEstadio(partido.sede) }}</td>
                     </tr>
                   }
@@ -260,32 +269,60 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
       color: rgba(255,255,255,0.7);
     }
 
-    .tabla-grupo { margin: 0; }
-    .tabla-grupo thead th { background: #f8fafb; border-bottom: 1px solid var(--clr-border-strong); }
+    .tabla-grupo { margin: 0; table-layout: fixed; }
+    .tabla-grupo thead th { 
+      background: #f8fafb; 
+      border-bottom: 1px solid var(--clr-border-strong);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      font-size: 0.65rem;
+    }
 
-    /* Columnas */
-    .th-num   { width: 28px; text-align: center; }
-    .th-center { text-align: center; width: 36px; }
-    .th-date  { width: 80px; white-space: nowrap; }
-    .th-sede  { min-width: 80px; }
-    .col-muted { font-size: 0.75rem; color: var(--clr-text-muted); }
+    .tabla-grupo tbody td {
+      padding: var(--spacing-sm);
+      font-size: 0.78rem;
+    }
 
-    .td-equipo {
+    /* Columnas optimizadas */
+    .th-num   { width: 22px; text-align: center; }
+    .th-center { text-align: center; width: 28px; }
+    .th-date  { width: 45px; text-align: center; }
+    .th-sede  { width: 85px; line-height: 1.1; white-space: normal !important; }
+    .col-muted { color: var(--clr-text-muted); }
+
+    .date-vertical {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 0.5em;
+      line-height: 1.1;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .time-txt {
+      font-size: 0.65rem;
+      font-weight: 400;
+      opacity: 0.8;
+    }
+
+    .equipo-vertical {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
     }
 
     .equipo-txt {
-      font-size: 0.75rem;
-      font-weight: 600;
+      font-size: 0.65rem;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.2px;
+      letter-spacing: 0.1px;
       color: var(--wc-neutral-dark);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 120px;
+      max-width: 65px;
+      line-height: 1;
+      margin-top: 2px;
     }
 
     /* Badges */

@@ -84,19 +84,58 @@ export class PlanillaDetalleComponent implements OnInit {
 
     const doc = new jsPDF();
     const margin = 14;
+    const pageWidth = doc.internal.pageSize.width;
+    
+    // --- Header / Top Bar ---
+    // Barra superior decorativa (Usa el azul de USA como base)
+    doc.setFillColor(42, 57, 141); // #2a398d
+    doc.rect(0, 0, pageWidth, 25, 'F');
+    
+    // Título en blanco sobre la barra
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(22);
+    doc.setTextColor(255, 255, 255);
+    doc.text('PRODE MUNDIAL 2026', margin, 17);
 
-    // Título
-    doc.setFontSize(20);
-    doc.setTextColor(134, 18, 51); // Color institucional (bordó)
-    doc.text('PRODE MUNDIAL 2026', margin, 20);
-
-    // Subtítulo / Info Planilla
+    // --- Información de la Planilla ---
+    doc.setTextColor(40, 40, 40);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    
+    // Bloque Izquierdo: Datos del Participante
+    doc.setFont('helvetica', 'bold');
+    doc.text('PARTICIPANTE', margin, 35);
+    doc.setFont('helvetica', 'normal');
     doc.setFontSize(12);
-    doc.setTextColor(60, 60, 60);
-    doc.text(`Planilla N°: ${p.codigo}`, margin, 30);
-    doc.text(`Participante: ${p.nombre} ${p.apellido}`, margin, 37);
-    doc.text(`Estado: ${p.confirmada ? 'CONFIRMADA' : 'PENDIENTE'}`, margin, 44);
+    doc.text(`${p.nombre} ${p.apellido}`, margin, 44);
+    
+    // Bloque Derecho: Detalle de la Planilla
+    const rightCol = pageWidth - 80;
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('DETALLE DE REGISTRO', rightCol, 35);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Número de Planilla:`, rightCol, 42);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(192, 23, 29); // Rojo Canada
+    doc.text(`${p.codigo}`, rightCol + 35, 42);
+    
+    doc.setTextColor(40, 40, 40);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Estado:`, rightCol, 48);
+    if (p.confirmada) {
+      doc.setTextColor(60, 172, 59); // Verde Mexico
+      doc.text('CONFIRMADA', rightCol + 15, 48);
+    } else {
+      doc.setTextColor(150, 150, 150);
+      doc.text('PENDIENTE', rightCol + 15, 48);
+    }
 
+    // Línea divisoria
+    doc.setDrawColor(220, 220, 220);
+    doc.line(margin, 55, pageWidth - margin, 55);
+
+    // --- Tabla de Partidos ---
     const tableData: any[] = [];
     
     this.grupos.forEach(grupo => {
@@ -104,7 +143,17 @@ export class PlanillaDetalleComponent implements OnInit {
       
       // Fila de encabezado de grupo
       tableData.push([
-        { content: `GRUPO ${grupo}`, colSpan: 4, styles: { fillColor: [56, 120, 135], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center' } }
+        { 
+          content: `GRUPO ${grupo}`, 
+          colSpan: 4, 
+          styles: { 
+            fillColor: [240, 240, 240], 
+            textColor: [42, 57, 141], 
+            fontStyle: 'bold', 
+            halign: 'center',
+            fontSize: 10
+          } 
+        }
       ]);
 
       partidosGrupo.forEach(partido => {
@@ -115,51 +164,75 @@ export class PlanillaDetalleComponent implements OnInit {
         else if (pred === 'VISITANTE') predText = 'VISITANTE (V)';
 
         tableData.push([
-          partido.numero,
-          partido.equipoLocalShow,
-          predText,
-          partido.equipoVisitanteShow
+          { content: partido.numero, styles: { halign: 'center' } },
+          { content: partido.equipoLocalShow, styles: { halign: 'right' } },
+          { content: predText, styles: { halign: 'center', fontStyle: 'bold' } },
+          { content: partido.equipoVisitanteShow, styles: { halign: 'left' } }
         ]);
       });
     });
 
     autoTable(doc, {
-      startY: 50,
-      head: [['#', 'Local', 'Predicción', 'Visitante']],
+      startY: 60,
+      head: [['#', 'Equipo Local', 'Tu Predicción', 'Equipo Visitante']],
       body: tableData,
-      theme: 'striped',
-      headStyles: { fillColor: [134, 18, 51] },
-      styles: { fontSize: 9 },
+      theme: 'grid',
+      headStyles: { 
+        fillColor: [42, 57, 141], 
+        textColor: [255, 255, 255],
+        halign: 'center'
+      },
+      styles: { 
+        fontSize: 8,
+        cellPadding: 2
+      },
       columnStyles: {
         0: { cellWidth: 10 },
-        1: { halign: 'right', cellWidth: 50 },
-        2: { halign: 'center', fontStyle: 'bold', cellWidth: 40 },
-        3: { halign: 'left', cellWidth: 50 }
+        1: { cellWidth: 60 },
+        2: { cellWidth: 40 },
+        3: { cellWidth: 60 }
       },
       didParseCell: (data) => {
-        // Estilo condicional para la predicción
+        // Colorear el texto de la predicción según el resultado
         if (data.section === 'body' && data.column.index === 2) {
-          const text = data.cell.text[0];
-          if (text.includes('LOCAL')) data.cell.styles.textColor = [56, 120, 135];
-          if (text.includes('EMPATE')) data.cell.styles.textColor = [18, 51, 59];
-          if (text.includes('VISITANTE')) data.cell.styles.textColor = [134, 18, 51];
+          const text = data.cell.text[0] || '';
+          if (text.includes('LOCAL')) data.cell.styles.textColor = [42, 57, 141];
+          if (text.includes('EMPATE')) data.cell.styles.textColor = [100, 100, 100];
+          if (text.includes('VISITANTE')) data.cell.styles.textColor = [192, 23, 29];
         }
       }
     });
 
-    // Footer
+    // --- Footer y Numeración ---
     const pageCount = (doc as any).internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
-      doc.setFontSize(8);
-      doc.setTextColor(150);
+      
+      // Slogan del torneo
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'italic');
+      doc.setTextColor(100, 100, 100);
+      const slogan = 'Canadá · Estados Unidos · México 2026';
+      doc.text(slogan, pageWidth / 2, doc.internal.pageSize.height - 15, { align: 'center' });
+
+      // Info de página
+      doc.setFontSize(7);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(150, 150, 150);
       doc.text(
-        `Documento generado el ${new Date().toLocaleString()} - Página ${i} de ${pageCount}`,
+        `Generado el ${new Date().toLocaleString()} - Página ${i} de ${pageCount}`,
         margin,
         doc.internal.pageSize.height - 10
       );
+      
+      doc.text(
+        'Prode Mundial 2026 - Sitio Oficial',
+        pageWidth - margin,
+        doc.internal.pageSize.height - 10,
+        { align: 'right' }
+      );
     }
 
-    doc.save(`planilla_${p.codigo}_${p.apellido}.pdf`);
+    doc.save(`Prode_2026_Planilla_${p.codigo}_${p.apellido}.pdf`);
   }
 }

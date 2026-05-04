@@ -26,35 +26,40 @@ import { PlanillaResponse } from '../../shared/models/planilla.model';
       }
 
       @if (!cargando() && planillas().length > 0) {
-        <div class="buscador-wrap">
-          <input
-            type="text"
-            class="buscador"
-            placeholder="Buscar por nombre o apellido..."
-            (input)="filtrar($event)"
-          />
-          <span class="total-badge">{{ planillasFiltradas().length }} participantes</span>
-        </div>
-
         <table class="tabla-participantes">
           <caption>
             Total confirmados al {{ hoy | date:'dd/MM/yyyy' }}: {{ planillas().length }}
           </caption>
           <thead>
             <tr>
-              <th>Nombre y Apellido</th>
-              <th>Planilla N°</th>
-              <th>Acciones</th>
+              <th class="col-nombre">
+                <div class="header-nombre-content">
+                  <span class="header-label">Nombre y Apellido</span>
+                  <div class="buscador-inline">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <input
+                      type="text"
+                      class="buscador-input"
+                      placeholder="Buscar..."
+                      (input)="filtrar($event)"
+                    />
+                  </div>
+                  <span class="total-chip">
+                    ({{ planillasFiltradas().length }} participantes)
+                  </span>
+                </div>
+              </th>
+              <th style="width: 150px;">Planilla N°</th>
             </tr>
           </thead>
           <tbody>
             @for (p of planillasFiltradas(); track p.codigo) {
               <tr>
                 <td>{{ p.nombre }} {{ p.apellido }}</td>
-                <td>{{ p.codigo }}</td>
-                <td class="acciones-td">
-                  <a [routerLink]="['/planillas', p.codigo]" title="Ver planilla" class="btn-accion">
-                    <i class="fas fa-magnifying-glass"></i>
+                <td>
+                  <a [routerLink]="['/planillas', p.codigo]" class="link-planilla" title="Ver planilla">
+                    {{ p.codigo }}
+                    <i class="fas fa-arrow-up-right-from-square" style="font-size:0.6rem;opacity:0.6"></i>
                   </a>
                 </td>
               </tr>
@@ -65,13 +70,79 @@ import { PlanillaResponse } from '../../shared/models/planilla.model';
     </main>
   `,
   styles: [`
-    .buscador-wrap { display: flex; align-items: center; gap: 1em; margin-bottom: 1em; }
-    .buscador { flex: 1; padding: 0.5em 0.75em; border: 1px solid #ccc; border-radius: 20px; font-size: 0.9rem; }
-    .buscador:focus { outline: none; border-color: var(--clr-primary-light); }
-    .total-badge { background: var(--clr-primary-light); color: white; padding: 0.3em 0.75em; border-radius: 12px; font-size: 0.8rem; font-weight: bold; white-space: nowrap; }
-    .tabla-participantes td:first-child { text-align: left; }
-    .acciones-td { text-align: center; }
-    .btn-accion { color: var(--clr-primary); font-size: 1rem; margin: 0 0.2em; }
+    .tabla-participantes { width: 100%; border-collapse: collapse; margin-top: var(--spacing-sm); }
+    .tabla-participantes th { 
+      background: var(--clr-surface-alt); 
+      color: var(--clr-text-muted); 
+      font-size: 0.68rem; 
+      text-transform: uppercase; 
+      letter-spacing: 0.8px;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-bottom: 1.5px solid var(--clr-border-strong);
+      text-align: center;
+    }
+    .tabla-participantes th.col-nombre { text-align: left; }
+    
+    .header-nombre-content {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+    }
+
+    .header-label { flex-shrink: 0; }
+
+    .buscador-inline {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid var(--clr-border-strong);
+      border-radius: 4px;
+      padding: 0 var(--spacing-sm);
+      gap: var(--spacing-xs);
+      flex: 1;
+      max-width: 160px;
+      height: 24px;
+    }
+
+    .buscador-inline i { font-size: 0.65rem; color: var(--clr-text-muted); }
+
+    .buscador-input {
+      background: transparent;
+      border: none;
+      width: 100%;
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      color: var(--clr-text);
+      padding: 0;
+      height: 100%;
+      outline: none;
+    }
+
+    .total-chip {
+      font-size: 0.62rem;
+      color: var(--clr-text-muted);
+      white-space: nowrap;
+      text-transform: none;
+      letter-spacing: normal;
+      font-weight: 500;
+    }
+
+    .tabla-participantes td { padding: var(--spacing-md); border-bottom: 1px solid var(--clr-border); font-size: 0.9rem; }
+    .tabla-participantes td:first-child { text-align: left; font-weight: 500; }
+    .tabla-participantes td:last-child { text-align: center; }
+
+    .link-planilla {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35em;
+      font-size: 0.85rem;
+      color: var(--clr-primary);
+      font-weight: 600;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .link-planilla:hover { color: var(--clr-primary-dark); transform: translateX(2px); }
   `]
 })
 export class ParticipantesComponent implements OnInit {
