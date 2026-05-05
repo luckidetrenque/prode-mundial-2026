@@ -14,3 +14,10 @@
 -- Columna token_version: necesaria para la invalidación de JWT en logout.
 -- Hibernate a veces falla al agregar columnas nuevas con ddl-auto=update en PostgreSQL.
 ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS token_version INTEGER NOT NULL DEFAULT 0;
+
+-- Columna multiplicador para partidos destacados (Puntos x2)
+ALTER TABLE partidos ADD COLUMN IF NOT EXISTS multiplicador INTEGER NOT NULL DEFAULT 1;
+
+-- Actualización de partidos destacados según requerimiento del usuario
+UPDATE partidos SET multiplicador = 2 WHERE numero IN (1, 26, 30, 4, 11, 57, 65, 64, 43, 44, 70, 22);
+UPDATE partidos SET multiplicador = 1 WHERE numero NOT IN (1, 26, 30, 4, 11, 57, 65, 64, 43, 44, 70, 22);

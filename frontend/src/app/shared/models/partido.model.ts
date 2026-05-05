@@ -13,4 +13,5 @@ export interface Partido {
   jornada: number | null;   // 1, 2 o 3
   fechaHora: string;        // ISO 8601: "2026-06-11T16:00:00"
   sede: string;
-}
+  multiplicador: number;
+}

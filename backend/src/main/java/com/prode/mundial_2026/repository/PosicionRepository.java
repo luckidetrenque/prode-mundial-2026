@@ -39,11 +39,12 @@ public interface PosicionRepository extends JpaRepository<Planilla, Long> {
                 u.apellido,
                 u.email,
                 pl.codigo,
-                COUNT(pr.id) AS puntos
+                SUM(p.multiplicador) AS puntos
             FROM Planilla pl
             JOIN pl.usuario u
             JOIN pl.predicciones pr
-            JOIN Resultado r ON r.partido = pr.partido
+            JOIN pr.partido p
+            JOIN Resultado r ON r.partido = p
             WHERE pl.confirmada = true
               AND pr.prediccion = r.resultado
             GROUP BY pl.id, u.nombre, u.apellido, u.email, pl.codigo

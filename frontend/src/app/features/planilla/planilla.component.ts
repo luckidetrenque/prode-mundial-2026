@@ -2,8 +2,10 @@
 // FIX #17: Se elimina el hack _selVersion + Map no reactivo.
 // Ahora las predicciones se guardan en un signal<Record<number, ResultadoPrediccion>>
 // que Angular detecta automáticamente en los templates sin trucos adicionales.
-import { Component, OnInit, signal, computed, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { startWith } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { PartidoService } from '../../core/services/partido.service';
 import { PlanillaService } from '../../core/services/planilla.service';
@@ -14,6 +16,7 @@ import { PlanillaResponse, ResultadoPrediccion } from '../../shared/models/plani
 const GRUPOS_2026 = ['A','B','C','D','E','F','G','H','I','J','K','L'];
 
 function emailValidator(control: any) {
+  if (!control.value) return null;
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   return emailRegex.test(control.value) ? null : { invalidEmail: true };
 }
@@ -51,6 +54,8 @@ export class PlanillaComponent implements OnInit {
   private prediccionesSignal = signal<Record<number, ResultadoPrediccion>>({});
 
   form: FormGroup;
+  private formValidezSignal = signal(false);
+  private destroyRef = inject(DestroyRef);
 
   constructor(
     private fb: FormBuilder,
@@ -62,15 +67,24 @@ export class PlanillaComponent implements OnInit {
         Validators.required,
         Validators.minLength(2),
         Validators.maxLength(50),
-        Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)
+        // Regex más permisivo para nombres (admite guiones, apóstrofes, puntos y espacios)
+        Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-\.\']+$/)
       ]],
       apellido: ['', [
         Validators.required,
         Validators.minLength(2),
         Validators.maxLength(50),
-        Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)
+        Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-\.\']+$/)
       ]],
       email: ['', [Validators.required, emailValidator]]
+    });
+
+    // Escuchamos los cambios de estado del formulario para que el signal computed reaccione
+    this.form.statusChanges.pipe(
+      startWith(this.form.status),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(status => {
+      this.formValidezSignal.set(status === 'VALID');
     });
   }
 
@@ -97,13 +111,13 @@ export class PlanillaComponent implements OnInit {
 
   // FIX #17: reemplaza la referencia del objeto para disparar reactividad
   seleccionar(partidoId: number, prediccion: ResultadoPrediccion): void {
+    const id = Number(partidoId);
     this.prediccionesSignal.update(actual => {
       const copia = { ...actual };
-      if (copia[partidoId] === prediccion) {
-        delete copia[partidoId]; // toggle: deselecciona si ya estaba activo
-      } else {
-        copia[partidoId] = prediccion;
-      }
+      // MEJORA: No hacemos toggle si es la misma opción. 
+      // Si el usuario hace click en lo que ya está seleccionado, queda seleccionado.
+      // Esto evita confusiones y el "a veces se marca y otras no".
+      copia[id] = prediccion;
       return copia;
     });
   }
@@ -155,23 +169,30 @@ export class PlanillaComponent implements OnInit {
 
   // FIX #17: computed signals leen prediccionesSignal reactivamente — sin hacks
   getPrediccion(partidoId: number): ResultadoPrediccion | null {
-    return this.prediccionesSignal()[partidoId] ?? null;
+    return this.prediccionesSignal()[Number(partidoId)] ?? null;
   }
 
   prediccionSeleccionada(partidoId: number): boolean {
-    return !!this.prediccionesSignal()[partidoId];
+    return !!this.prediccionesSignal()[Number(partidoId)];
   }
 
-  prediccionesCompletadas = computed(() =>
-    Object.keys(this.prediccionesSignal()).length
-  );
+  prediccionesCompletadas = computed(() => {
+    const pred = this.prediccionesSignal();
+    // Contamos solo las predicciones de partidos que realmente existen en nuestro listado
+    return this.partidos.filter(p => !!pred[p.id]).length;
+  });
 
   totalPartidos(): number { return this.partidos.length; }
 
-  formularioValido = computed(() =>
-    this.form.valid &&
-    Object.keys(this.prediccionesSignal()).length === this.partidos.length
-  );
+  formularioValido = computed(() => {
+    const formValid = this.formValidezSignal(); // Dependencia reactiva del formulario
+    const pred = this.prediccionesSignal();
+    // Verificamos que CADA partido del listado tenga una predicción
+    const partidosCompletos = this.partidos.length > 0 && 
+                             this.partidos.every(p => !!pred[p.id]);
+    
+    return formValid && partidosCompletos;
+  });
 
   getErrorMensaje(campo: string): string {
     const control = this.form.get(campo);

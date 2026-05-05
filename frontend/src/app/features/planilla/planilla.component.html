@@ -91,7 +91,14 @@
         </div>
 
         @for (partido of getPartidosPorGrupo(grupo); track partido.id) {
-        <div class="partido-row" [class.seleccionado]="prediccionSeleccionada(partido.id)">
+        <div class="partido-row" [class.seleccionado]="prediccionSeleccionada(partido.id)" [class.destacado]="partido.multiplicador > 1">
+          <!-- Multiplicador (solo si es > 1) -->
+          @if (partido.multiplicador > 1) {
+            <span class="multi-badge" title="Este partido vale DOBLE puntaje">
+              <i class="fas fa-bolt" aria-hidden="true"></i>x2
+            </span>
+          }
+
           <!-- Número -->
           <span class="partido-num" aria-hidden="true">{{ partido.numero }}</span>
 
@@ -196,10 +203,11 @@
       </button>
 
       @if (!formularioValido() && !guardando()) {
-      <p style="font-size:0.75rem;color:var(--clr-text-muted);text-align:center;margin-top:0.6em" aria-live="polite">
-        Completá todas las predicciones y tus datos para poder guardar.
-      </p>
-      }
+      <p class="ayuda-validon" aria-live="polite">
+        @if (prediccionesCompletadas() < totalPartidos()) { Faltan completar {{ totalPartidos() -
+          prediccionesCompletadas() }} predicciones. } @else if (form.invalid) { Revisá los datos de Nombre, Apellido y
+          Email. } @else { Completá todos los campos para guardar. } </p>
+          }
     </div>
 
   </form>

@@ -19,4 +19,5 @@ public class PartidoDTO {
     private Integer jornada;
     private LocalDateTime fechaHora;
     private String sede;
-}
+    private Integer multiplicador;
+}

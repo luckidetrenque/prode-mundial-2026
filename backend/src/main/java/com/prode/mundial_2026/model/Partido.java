@@ -49,6 +49,9 @@ public class Partido {
     @Column(length = 50)
     private String sede; // "Los Angeles", "Mexico City", etc.
 
+    @Column(nullable = false)
+    private Integer multiplicador = 1; // 1 por defecto, 2 para partidos destacados
+
     // Enum anidado: define los valores válidos para "fase"
     public enum FasePartido {
         GRUPOS,

@@ -55,6 +55,7 @@ public class PartidoController {
         dto.setJornada(p.getJornada());
         dto.setFechaHora(p.getFechaHora());
         dto.setSede(p.getSede());
+        dto.setMultiplicador(p.getMultiplicador());
         return dto;
     }
 }

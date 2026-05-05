@@ -225,7 +225,7 @@
 .grupo-estado { font-size: 0.75rem; color: var(--clr-text-muted); }
 
 /* ── Lista de partidos ───────────────────────────────────────────────────── */
-.partidos-lista { display: flex; flex-direction: column; gap: 0.45em; }
+.partidos-lista { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1em; }
 
 .partido-row {
   display: grid;
@@ -295,28 +295,28 @@
 
 /* ── Acciones ────────────────────────────────────────────────────────────── */
 .partido-accion {
-  min-width: 140px;
+  min-width: 80px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 0.4em;
+  gap: 0.5em;
 }
 
 .btn-guardar, .btn-guardar-edit {
   display: inline-flex;
   align-items: center;
-  gap: 0.35em;
-  padding: 0.4em 0.85em;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: 50%;
   background: var(--clr-maroon);
   color: white;
-  font-size: 0.78rem;
-  font-weight: 600;
+  font-size: 0.85rem;
   cursor: pointer;
   transition: var(--transition);
-  font-family: var(--font-body);
-  white-space: nowrap;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
 }
 
 .btn-guardar:hover:not(:disabled) { background: var(--clr-maroon-light); transform: translateY(-1px); }
@@ -330,8 +330,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   border: 1.5px solid var(--clr-border-strong);
   background: white;
@@ -346,22 +346,23 @@
 .badge-guardado {
   display: inline-flex;
   align-items: center;
-  gap: 0.35em;
-  font-size: 0.75rem;
-  font-weight: 600;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  font-size: 0.85rem;
   color: var(--clr-success-text);
   background: var(--clr-success-bg);
-  padding: 0.35em 0.75em;
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(26,122,74,0.2);
+  border-radius: 50%;
+  border: 1px solid rgba(26,122,74,0.25);
+  transition: var(--transition);
 }
 
 .btn-editar {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   border: 1.5px solid var(--clr-primary);
   background: white;
@@ -369,7 +370,7 @@
   cursor: pointer;
   transition: var(--transition);
   padding: 0;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
 }
 
 .btn-editar:hover { background: var(--clr-primary); color: white; transform: scale(1.1); }
