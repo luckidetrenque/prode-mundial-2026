@@ -249,6 +249,72 @@ h2 i { color: var(--clr-primary-light); font-size: 1.3rem; }
   outline: none;
 }
 
+/* ── Countdown Navbar ────────────────────────────────────────────────────── */
+.countdown-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.35em 0.85em;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: white;
+  margin-left: auto; /* Empuja hacia la derecha */
+}
+
+.countdown-nav i {
+  color: var(--clr-gold);
+  font-size: 0.85rem;
+  animation: pulse-clock 2s infinite;
+}
+
+.countdown-content {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.countdown-label {
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 700;
+}
+
+.countdown-timer {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.countdown-nav.expirado {
+  background: rgba(230, 29, 37, 0.2);
+  border-color: rgba(230, 29, 37, 0.4);
+}
+
+.countdown-nav.expirado i,
+.countdown-nav.expirado .countdown-timer {
+  color: #ff9a9e;
+}
+
+@keyframes pulse-clock {
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+/* Link deshabilitado */
+.nav-link-disabled {
+  display: inline-block;
+  padding: 0.35em 0.9em;
+  color: rgba(255, 255, 255, 0.3) !important;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: not-allowed;
+}
+
 /* ── MEJORA 5: Hamburger button (solo mobile) ────────────────────────────── */
 .navbar-toggle {
   display: none;              /* oculto en desktop */
@@ -545,9 +611,15 @@ input[type="radio"] {
   }
 
   .navbar-brand { flex: 1; }
-
-  /* El botón admin va junto a la marca en la primera fila */
   .btn-admin { margin-left: 0; order: 2; }
+
+  .countdown-nav {
+    order: 5;
+    width: 100%;
+    margin: 0.5em 0;
+    justify-content: center;
+    background: rgba(0,0,0,0.15);
+  }
 
   /* Botón hamburguesa visible en mobile */
   .navbar-toggle {

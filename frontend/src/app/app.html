@@ -9,6 +9,14 @@
     </a>
   </div>
 
+  <div class="countdown-nav" [class.expirado]="tiempoExpirado()" title="Tiempo restante para cargar y confirmar planillas">
+    <i class="fas fa-clock" aria-hidden="true"></i>
+    <div class="countdown-content">
+      <span class="countdown-label">Cierra en:</span>
+      <span class="countdown-timer">{{ countdownText() }}</span>
+    </div>
+  </div>
+
   <a routerLink="/admin" class="btn-admin" aria-label="Acceso al panel de administración">
     <i class="fas fa-lock" aria-hidden="true"></i>
     <span>Admin</span>
@@ -32,7 +40,11 @@
       <a routerLink="/fixture" routerLinkActive="activo" (click)="cerrarMenu()">Fixture</a>
     </li>
     <li role="listitem">
-      <a routerLink="/planilla" routerLinkActive="activo" (click)="cerrarMenu()">Planilla</a>
+      @if (!tiempoExpirado()) {
+        <a routerLink="/planilla" routerLinkActive="activo" (click)="cerrarMenu()">Planilla</a>
+      } @else {
+        <span class="nav-link-disabled" title="El plazo de carga ha finalizado">Planilla</span>
+      }
     </li>
     <li role="listitem">
       <a routerLink="/participantes" routerLinkActive="activo" (click)="cerrarMenu()">Participantes</a>

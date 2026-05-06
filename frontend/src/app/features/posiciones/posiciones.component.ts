@@ -195,16 +195,16 @@ import { Posicion } from '../../shared/models/posicion.model';
       display: flex;
       flex-direction: column;
       gap: 2px;
-      max-height: 48px;
+      max-height: 52px;
       overflow-y: auto;
       margin-bottom: var(--spacing-xs);
       padding: 0 var(--spacing-xs);
+      /* Ocultar scrollbar */
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
     
-    /* Scrollbar minimalista para el podio */
-    .podio-nombres-scroll::-webkit-scrollbar { width: 3px; }
-    .podio-nombres-scroll::-webkit-scrollbar-track { background: transparent; }
-    .podio-nombres-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
+    .podio-nombres-scroll::-webkit-scrollbar { display: none; }
 
     .podio-nombre { display: block; font-size: 0.72rem; font-weight: 600; color: var(--clr-text); line-height: 1.2; }
     .podio-puntos { display: block; font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: var(--clr-primary); }

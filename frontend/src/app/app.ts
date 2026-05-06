@@ -42,6 +42,11 @@ export class App {
   /** Signal para la cantidad de planillas pendientes */
   pendientesCount = signal(0);
 
+  /** Countdown signals */
+  countdownText = signal('');
+  tiempoExpirado = signal(false);
+  private deadline = new Date('2026-06-10T14:00:00-03:00');
+
   /** Breadcrumb signals */
   breadcrumbRootLabel = signal<string | null>(null);
   breadcrumbRootLink  = signal<string | null>(null);
@@ -102,6 +107,30 @@ export class App {
       takeUntilDestroyed()
     ).subscribe(count => {
       this.pendientesCount.set(count);
+    });
+
+    /** 
+     * Timer para el countdown (se actualiza cada segundo)
+     */
+    timer(0, 1000).pipe(
+      takeUntilDestroyed()
+    ).subscribe(() => {
+      const ahora = new Date();
+      const diff = this.deadline.getTime() - ahora.getTime();
+
+      if (diff <= 0) {
+        this.countdownText.set('¡Tiempo agotado!');
+        this.tiempoExpirado.set(true);
+        return;
+      }
+
+      const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const horas = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const segundos = Math.floor((diff % (1000 * 60)) / 1000);
+
+      this.countdownText.set(`${dias}d ${horas}h ${minutos}m ${segundos}s`);
+      this.tiempoExpirado.set(false);
     });
   }
 

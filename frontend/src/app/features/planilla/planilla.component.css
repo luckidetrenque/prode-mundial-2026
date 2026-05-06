@@ -73,6 +73,7 @@
   border-bottom: 1px solid var(--clr-border);
   transition: background 0.15s;
   cursor: default;
+  position: relative;
 }
 
 .partido-row:last-child { border-bottom: none; }
@@ -94,8 +95,8 @@
 
 .multi-badge {
   position: absolute;
-  left: -2px;
-  top: -2px;
+  left: 26px;
+  top: 12px;
   background: #ffc107;
   color: #856404;
   font-size: 0.58rem;
@@ -114,6 +115,15 @@
   font-size: 0.65rem;
   color: #d4a017; /* Oro un poco más oscuro para el rayo */
   filter: drop-shadow(0 0 1px rgba(0,0,0,0.1));
+}
+
+.progreso-nota {
+  font-size: 0.72rem;
+  color: var(--clr-text-muted);
+  margin-top: 0.4em;
+  display: flex;
+  align-items: center;
+  gap: 0.35em;
 }
 
 /* Número de partido */

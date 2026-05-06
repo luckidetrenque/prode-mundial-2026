@@ -473,6 +473,44 @@ interface ArticuloReglamento {
       border-radius: 20px;
     }
 
+.btn-auto {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.4em 0.9em;
+  border: 1.5px solid var(--clr-border-strong);
+  border-radius: 20px;
+  background: var(--clr-surface);
+  color: var(--clr-text);
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: var(--transition);
+  cursor: pointer;
+  user-select: none;
+}
+
+.btn-auto:hover,
+.btn-auto:focus-visible {
+  border-color: var(--clr-primary);
+  color: var(--clr-primary);
+  background: rgba(46,158,45,0.05);
+  outline: none;
+}
+
+.btn-auto i {
+  font-size: 0.9rem;
+  color: var(--clr-primary);
+  flex-shrink: 0;
+}
+
+.btn-auto span {
+  font-family: var(--font-display);
+  letter-spacing: 0.3px;
+  font-weight: 600;
+}
+
+
     /* ── Responsive ──────────────────────────────────────────────────────── */
     @media (max-width: 768px) {
       .reglamento-hero {
@@ -521,10 +559,10 @@ export class ReglamentoComponent {
       numero: 1,
       titulo: 'Partidos',
       icono: 'fa-futbol',
-      contenido: `Son los <strong>setenta y dos (72) partidos</strong> que se jugarán en la fase de grupos
+      contenido: `Son los <strong>SETENTA Y DOS (72) partidos</strong> que se jugarán en la fase de grupos
         del Mundial de Fútbol 2026, iniciando el día
         <strong>jueves 11 de junio de 2026</strong> y culminando el día
-        <strong>jueves 2 de julio de 2026</strong>.
+        <strong>jueves 28 de junio de 2026</strong>.
         El torneo se disputará en estadios de <strong>Canadá, Estados Unidos y México</strong>.`
     },
     {
@@ -533,10 +571,15 @@ export class ReglamentoComponent {
       icono: 'fa-list-check',
       contenido: `La planilla se deberá completar desde la sección
         <a href="/planilla" title="Cargar planilla">Planilla</a> del sitio web.
-        La misma cuenta con los 72 partidos de la fase de grupos y solamente se podrá marcar
+        La misma cuenta con los <strong>SETENTA Y DOS (72) partidos</strong> de la fase de grupos y solamente se podrá marcar
         como resultado válido: equipo <strong>Local (L)</strong>, equipo <strong>Visitante (V)</strong>
-        o <strong>Empate (E)</strong> por cada partido.
-        Deberá contar con la totalidad de los partidos marcados, nombre, apellido y correo electrónico
+        o <strong>Empate (E)</strong> por cada partido o haciendo click en el botón
+      <button type="button" class="btn-auto" (click)="autocompletar()" aria-label="Completar automáticamente">
+        <i class="fas fa-dice-d6" aria-hidden="true"></i>
+        <span>Me la juego</span>
+      </button>
+        que asigna un resultado aleatorio.
+        Para guardar la planilla, se deberá contar con la totalidad de los partidos marcados, nombre, apellido y correo electrónico
         del participante.`,
       destacado: `Se admite <strong>más de una planilla</strong> por participante. Día y hora de finalización de inscripción: <strong>10/06/2026 - 14:00 horas</strong>.`
     },
@@ -544,7 +587,7 @@ export class ReglamentoComponent {
       numero: 3,
       titulo: 'Valor',
       icono: 'fa-dollar-sign',
-      contenido: `La planilla tiene un valor de <strong>pesos a confirmar</strong> que deberá ser
+      contenido: `La planilla tiene un valor de <strong>PESOS CINCO MIL ($5.000)</strong> que deberá ser
         abonado de manera previa o al momento de confirmar la misma.
         Los medios de pago habilitados serán informados oportunamente.`
     },
@@ -572,7 +615,7 @@ export class ReglamentoComponent {
       contenido: `Serán considerados los <strong>resultados oficiales de la FIFA</strong> del
         Mundial 2026. Los resultados podrán seguirse en tiempo real en la sección
         <a href="/resultados" title="Resultados">Resultados</a> del sitio web,
-        y la tabla de posiciones se actualizará automáticamente.`
+        y la tabla de <a href="/posiciones" title="Posiciones">Posiciones</a> se actualizará automáticamente.`
     },
     {
       numero: 7,
@@ -582,20 +625,24 @@ export class ReglamentoComponent {
         que mayor cantidad de puntos acumule. En caso de empate serán considerados ganadores
         todos los participantes que hayan igualado dicha puntuación.<br><br>
         Será considerado ganador en el <strong>Segundo Puesto</strong> el o los participantes
-        que acierten la mayor cantidad de puntos detrás del Primer Puesto.`,
-      destacado: `Cada predicción correcta vale <strong>1 punto</strong>.
-        No se asignan puntos parciales por empates en la predicción.`
+        que acierten la mayor cantidad de puntos detrás del Primer Puesto.<br><br>
+        Será considerado ganador en el <strong>Tercer Puesto</strong> el o los participantes
+        que acierten la mayor cantidad de puntos detrás del Segundo Puesto.`,
+      destacado: `Cada predicción correcta vale <strong>1 punto</strong> o <strong>2 puntos</strong> si se trata de un partido con multiplicador X2.`
     },
     {
       numero: 8,
       titulo: 'Premios',
       icono: 'fa-gift',
       contenido: `<strong>Primer Puesto:</strong> El participante que acierte la mayor cantidad
-        de partidos entre los 72 jugados en fase de grupos gana el
-        <strong>80% del pozo recaudado</strong>. En caso de empate el monto se divide
+        de partidos entre los <strong>SETENTA Y DOS (72) partidos</strong> jugados en fase de grupos gana el
+        <strong>60% del pozo recaudado</strong>. En caso de empate el monto se divide
         en partes iguales entre los ganadores.<br><br>
         <strong>Segundo Puesto:</strong> El participante siguiente al Primer Puesto gana el
-        <strong>20% del pozo recaudado</strong>. En caso de empate el monto se divide
+        <strong>30% del pozo recaudado</strong>. En caso de empate el monto se divide
+        en partes iguales entre los ganadores.<br><br>
+        <strong>Tercer Puesto:</strong> El participante siguiente al Segundo Puesto gana el
+        <strong>10% del pozo recaudado</strong>. En caso de empate el monto se divide
         en partes iguales entre los ganadores.`
     },
     {

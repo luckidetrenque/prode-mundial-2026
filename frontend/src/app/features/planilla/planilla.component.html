@@ -69,6 +69,10 @@
       <div class="barra-fill" [class.completa]="prediccionesCompletadas() === totalPartidos()"
         [style.width.%]="totalPartidos() ? (prediccionesCompletadas() / totalPartidos()) * 100 : 0"></div>
     </div>
+    <p class="progreso-nota">
+      <i class="fas fa-bolt" style="color:#d4a017;font-size:0.7rem"></i>
+      Los partidos con <strong>X2</strong> duplican el punto si acertás el resultado.
+    </p>
   </div>
 
   <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
@@ -91,48 +95,50 @@
         </div>
 
         @for (partido of getPartidosPorGrupo(grupo); track partido.id) {
-        <div class="partido-row" [class.seleccionado]="prediccionSeleccionada(partido.id)" [class.destacado]="partido.multiplicador > 1">
-          <!-- Multiplicador (solo si es > 1) -->
+        <div style="position:relative">
           @if (partido.multiplicador > 1) {
-            <span class="multi-badge" title="Este partido vale DOBLE puntaje">
-              <i class="fas fa-bolt" aria-hidden="true"></i>x2
-            </span>
+          <span class="multi-badge" title="Este partido vale DOBLE puntaje">
+            <i class="fas fa-bolt" aria-hidden="true"></i>x2
+          </span>
           }
+          <div class="partido-row" [class.seleccionado]="prediccionSeleccionada(partido.id)"
+            [class.destacado]="partido.multiplicador > 1">
 
-          <!-- Número -->
-          <span class="partido-num" aria-hidden="true">{{ partido.numero }}</span>
+            <!-- Número -->
+            <span class="partido-num" aria-hidden="true">{{ partido.numero }}</span>
 
-          <!-- Equipo local -->
-          <div class="equipo-local">
-            <span class="equipo-nombre">{{ partido.equipoLocalShow }}</span>
-            <img [src]="partido.equipoLocalBandera" [alt]="'Bandera de ' + partido.equipoLocalShow" class="flag"
-              width="28" height="19" />
-          </div>
+            <!-- Equipo local -->
+            <div class="equipo-local">
+              <span class="equipo-nombre">{{ partido.equipoLocalShow }}</span>
+              <img [src]="partido.equipoLocalBandera" [alt]="'Bandera de ' + partido.equipoLocalShow" class="flag"
+                width="28" height="19" />
+            </div>
 
-          <!-- MEJORA 1: Opciones L / E / V como <button> con aria-pressed y aria-label -->
-          <div class="opciones-centro" role="group"
-            [attr.aria-label]="'Predicción para ' + partido.equipoLocalShow + ' vs ' + partido.equipoVisitanteShow + ' — partido ' + partido.numero">
-            <button type="button" class="opcion-btn" [class.activa-local]="getPrediccion(partido.id) === 'LOCAL'"
-              [attr.aria-pressed]="getPrediccion(partido.id) === 'LOCAL'"
-              [attr.aria-label]="'Gana ' + partido.equipoLocalShow + ' (local)'"
-              (click)="seleccionar(partido.id, 'LOCAL')">L</button>
-            <button type="button" class="opcion-btn" [class.activa-empate]="getPrediccion(partido.id) === 'EMPATE'"
-              [attr.aria-pressed]="getPrediccion(partido.id) === 'EMPATE'" aria-label="Empate"
-              (click)="seleccionar(partido.id, 'EMPATE')">E</button>
-            <button type="button" class="opcion-btn"
-              [class.activa-visitante]="getPrediccion(partido.id) === 'VISITANTE'"
-              [attr.aria-pressed]="getPrediccion(partido.id) === 'VISITANTE'"
-              [attr.aria-label]="'Gana ' + partido.equipoVisitanteShow + ' (visitante)'"
-              (click)="seleccionar(partido.id, 'VISITANTE')">V</button>
-          </div>
+            <!-- MEJORA 1: Opciones L / E / V como <button> con aria-pressed y aria-label -->
+            <div class="opciones-centro" role="group"
+              [attr.aria-label]="'Predicción para ' + partido.equipoLocalShow + ' vs ' + partido.equipoVisitanteShow + ' — partido ' + partido.numero">
+              <button type="button" class="opcion-btn" [class.activa-local]="getPrediccion(partido.id) === 'LOCAL'"
+                [attr.aria-pressed]="getPrediccion(partido.id) === 'LOCAL'"
+                [attr.aria-label]="'Gana ' + partido.equipoLocalShow + ' (local)'"
+                (click)="seleccionar(partido.id, 'LOCAL')">L</button>
+              <button type="button" class="opcion-btn" [class.activa-empate]="getPrediccion(partido.id) === 'EMPATE'"
+                [attr.aria-pressed]="getPrediccion(partido.id) === 'EMPATE'" aria-label="Empate"
+                (click)="seleccionar(partido.id, 'EMPATE')">E</button>
+              <button type="button" class="opcion-btn"
+                [class.activa-visitante]="getPrediccion(partido.id) === 'VISITANTE'"
+                [attr.aria-pressed]="getPrediccion(partido.id) === 'VISITANTE'"
+                [attr.aria-label]="'Gana ' + partido.equipoVisitanteShow + ' (visitante)'"
+                (click)="seleccionar(partido.id, 'VISITANTE')">V</button>
+            </div>
 
-          <!-- Equipo visitante -->
-          <div class="equipo-visitante">
-            <img [src]="partido.equipoVisitanteBandera" [alt]="'Bandera de ' + partido.equipoVisitanteShow" class="flag"
-              width="28" height="19" />
-            <span class="equipo-nombre">{{ partido.equipoVisitanteShow }}</span>
-          </div>
-        </div>
+            <!-- Equipo visitante -->
+            <div class="equipo-visitante">
+              <img [src]="partido.equipoVisitanteBandera" [alt]="'Bandera de ' + partido.equipoVisitanteShow"
+                class="flag" width="28" height="19" />
+              <span class="equipo-nombre">{{ partido.equipoVisitanteShow }}</span>
+            </div>
+          </div> <!-- cierre partido-row -->
+        </div> <!-- cierre wrapper relativo -->
         }
       </div>
       }
