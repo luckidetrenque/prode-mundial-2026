@@ -19,6 +19,7 @@ public class PlanillaService {
         private final PlanillaRepository planillaRepository;
         private final UsuarioRepository usuarioRepository;
         private final PartidoRepository partidoRepository;
+        private final EmailService emailService; // NUEVO
 
         @Transactional
         public PlanillaResponseDTO guardarPlanilla(PlanillaRequestDTO request) {
@@ -36,25 +37,10 @@ public class PlanillaService {
 
                 Planilla planilla = new Planilla();
                 planilla.setUsuario(usuario);
-
-                /**
-                 * FIX #12: System.currentTimeMillis() como código único era inseguro.
-                 *
-                 * Problemas del enfoque anterior:
-                 * 1. Race condition: dos requests en el mismo milisegundo generaban
-                 * el mismo código → excepción de constraint en DB.
-                 * 2. Predecible: cualquiera podía adivinar códigos de otros participantes
-                 * basándose en el timestamp Unix.
-                 *
-                 * Solución: número aleatorio de 8 dígitos con verificación de unicidad.
-                 * Si colisiona (muy improbable con pocos miles de planillas), reintenta.
-                 * Para mayor escala se recomienda una secuencia de DB (SEQUENCE de PostgreSQL).
-                 */
                 planilla.setCodigo(generarCodigoUnico());
                 planilla.setConfirmada(false);
 
                 for (PlanillaRequestDTO.PrediccionItemDTO item : request.getPredicciones()) {
-                        // FIX #11: lanza BusinessException tipada en lugar de RuntimeException genérica
                         Partido partido = partidoRepository.findById(item.getPartidoId())
                                         .orElseThrow(() -> new BusinessException.PartidoNotFoundException(
                                                         item.getPartidoId()));
@@ -80,7 +66,6 @@ public class PlanillaService {
         }
 
         public PlanillaResponseDTO obtenerPorCodigo(Long codigo) {
-                // FIX #11: excepción tipada con mensaje controlado
                 Planilla planilla = planillaRepository
                                 .findByCodigo(codigo)
                                 .orElseThrow(() -> new BusinessException.PlanillaNotFoundException(codigo));
@@ -122,7 +107,6 @@ public class PlanillaService {
 
         @Transactional
         public void confirmarPlanilla(Long codigo) {
-                // FIX #11: excepción tipada
                 Planilla planilla = planillaRepository
                                 .findByCodigo(codigo)
                                 .orElseThrow(() -> new BusinessException.PlanillaNotFoundException(codigo));
@@ -132,17 +116,17 @@ public class PlanillaService {
                 }
 
                 planilla.setConfirmada(true);
-                // @Transactional hace dirty-checking automático
+                // @Transactional hace dirty-checking automático — no hace falta save()
+
+                // Enviamos los emails de forma asíncrona.
+                // Se hace DENTRO de la transacción para que las predicciones estén cargadas
+                // en el contexto de Hibernate antes del commit.
+                // EmailService usa @Async, así que retorna inmediatamente y no bloquea.
+                emailService.enviarEmailsConfirmacion(planilla);
         }
 
-        /**
-         * FIX #12: Genera un código numérico de 8 dígitos único.
-         * Reintenta hasta 5 veces en caso de colisión (extremadamente improbable).
-         * Si tras 5 intentos persiste la colisión, lanza excepción controlada.
-         */
         private Long generarCodigoUnico() {
                 for (int intento = 0; intento < 5; intento++) {
-                        // Rango: 10_000_000 a 99_999_999 (8 dígitos)
                         long codigo = ThreadLocalRandom.current().nextLong(10_000_000L, 100_000_000L);
                         if (!planillaRepository.existsByCodigo(codigo)) {
                                 return codigo;

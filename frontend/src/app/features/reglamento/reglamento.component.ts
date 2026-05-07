@@ -19,15 +19,15 @@ interface ArticuloReglamento {
       <!-- Hero del reglamento -->
       <div class="reglamento-hero">
         <div class="hero-badge">
-          <i class="fas fa-scale-balanced" aria-hidden="true"></i>
-          Reglamento Oficial
+          <i class="fas fa-circle-info" aria-hidden="true"></i>
+          Guía de Participación
         </div>
         <h2 class="hero-titulo">
-          <i class="fas fa-book-open" aria-hidden="true"></i>
-          Bases y Condiciones
+          <i class="fas fa-clipboard-list" aria-hidden="true"></i>
+          ¿Cómo Participar?
         </h2>
         <p class="hero-subtitulo">
-          Prode Mundial 2026 — Fase de Grupos<br>
+          Seguí estos pasos para sumarte al Prode Mundial 2026<br>
           <strong>Canadá · Estados Unidos · México</strong>
         </p>
         <div class="hero-fechas">
@@ -58,11 +58,11 @@ interface ArticuloReglamento {
       </div>
 
       <!-- Índice rápido -->
-      <nav class="indice-rapido" aria-label="Índice del reglamento">
-        <p class="indice-titulo"><i class="fas fa-list-ol" aria-hidden="true"></i> Ir al artículo</p>
+      <nav class="indice-rapido" aria-label="Índice de la guía">
+        <p class="indice-titulo"><i class="fas fa-shoe-prints" aria-hidden="true"></i> Pasos a seguir</p>
         <div class="indice-links">
           @for (art of articulos; track art.numero) {
-            <button type="button" (click)="scrollTo('art-' + art.numero)" class="indice-link" [attr.aria-label]="'Ir al artículo ' + art.numero">
+            <button type="button" (click)="scrollTo('art-' + art.numero)" class="indice-link" [attr.aria-label]="'Ir al paso ' + art.numero">
               <span class="indice-num">{{ art.numero }}</span>
               <span class="indice-text">{{ art.titulo }}</span>
             </button>
@@ -83,13 +83,13 @@ interface ArticuloReglamento {
                 <i [class]="'fas ' + art.icono"></i>
               </div>
               <div class="articulo-meta">
-                <span class="articulo-num">Artículo {{ art.numero }}</span>
+                <span class="articulo-num">Paso {{ art.numero }}</span>
                 <h3 class="articulo-titulo" [id]="'titulo-art-' + art.numero">{{ art.titulo }}</h3>
               </div>
             </div>
 
             <div class="articulo-body">
-              <p [innerHTML]="art.contenido"></p>
+              <div [innerHTML]="art.contenido"></div>
               @if (art.destacado) {
                 <div class="articulo-destacado" role="note">
                   <i class="fas fa-circle-info" aria-hidden="true"></i>
@@ -385,18 +385,19 @@ interface ArticuloReglamento {
       padding: 1.25em 1.5em;
     }
 
-    .articulo-body p {
+    .articulo-body ::ng-deep p {
       font-size: 0.9rem;
       line-height: 1.75;
       color: var(--clr-text);
+      margin-bottom: 0.5em;
     }
 
-    .articulo-body p strong {
+    .articulo-body ::ng-deep strong {
       color: var(--clr-primary-dark);
       font-weight: 700;
     }
 
-    .articulo-body p a {
+    .articulo-body ::ng-deep a {
       color: var(--clr-primary);
       text-decoration: underline;
       text-underline-offset: 2px;
@@ -424,7 +425,7 @@ interface ArticuloReglamento {
       margin-top: 0.1em;
     }
 
-    .articulo-destacado strong {
+    .articulo-destacado ::ng-deep strong {
       font-weight: 700;
     }
 
@@ -477,29 +478,21 @@ interface ArticuloReglamento {
   display: inline-flex;
   align-items: center;
   gap: 0.4em;
-  padding: 0.4em 0.9em;
+  padding: 0.2em 0.6em;
   border: 1.5px solid var(--clr-border-strong);
   border-radius: 20px;
   background: var(--clr-surface);
   color: var(--clr-text);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 500;
   text-decoration: none;
   transition: var(--transition);
-  cursor: pointer;
+  cursor: default;
   user-select: none;
 }
 
-.btn-auto:hover,
-.btn-auto:focus-visible {
-  border-color: var(--clr-primary);
-  color: var(--clr-primary);
-  background: rgba(46,158,45,0.05);
-  outline: none;
-}
-
 .btn-auto i {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: var(--clr-primary);
   flex-shrink: 0;
 }
@@ -557,101 +550,68 @@ export class ReglamentoComponent {
   readonly articulos: ArticuloReglamento[] = [
     {
       numero: 1,
-      titulo: 'Partidos',
-      icono: 'fa-futbol',
-      contenido: `Son los <strong>SETENTA Y DOS (72) partidos</strong> que se jugarán en la fase de grupos
-        del Mundial de Fútbol 2026, iniciando el día
-        <strong>jueves 11 de junio de 2026</strong> y culminando el día
-        <strong>jueves 28 de junio de 2026</strong>.
-        El torneo se disputará en estadios de <strong>Canadá, Estados Unidos y México</strong>.`
+      titulo: 'Completar Pronósticos',
+      icono: 'fa-pencil',
+      contenido: `
+        <p>Ingresá a la sección <a href="/planilla">Planilla</a> para comenzar. Deberás cargar tus predicciones para los <strong>72 partidos</strong> de la fase de grupos del Mundial 2026.</p>
+        <p>Por cada partido, podés elegir entre tres opciones:</p>
+        <ul>
+          <li><strong>Local (L)</strong>: Gana el primer equipo.</li>
+          <li><strong>Empate (E)</strong>: El partido termina igualado.</li>
+          <li><strong>Visitante (V)</strong>: Gana el segundo equipo.</li>
+        </ul>
+        <p>Si no te decidís, podés usar el botón <strong>"Me la juego"</strong> para completar resultados de forma aleatoria.</p>
+      `
     },
     {
       numero: 2,
-      titulo: 'Planilla',
-      icono: 'fa-list-check',
-      contenido: `La planilla se deberá completar desde la sección
-        <a href="/planilla" title="Cargar planilla">Planilla</a> del sitio web.
-        La misma cuenta con los <strong>SETENTA Y DOS (72) partidos</strong> de la fase de grupos y solamente se podrá marcar
-        como resultado válido: equipo <strong>Local (L)</strong>, equipo <strong>Visitante (V)</strong>
-        o <strong>Empate (E)</strong> por cada partido o haciendo click en el botón
-      <button type="button" class="btn-auto" (click)="autocompletar()" aria-label="Completar automáticamente">
-        <i class="fas fa-dice-d6" aria-hidden="true"></i>
-        <span>Me la juego</span>
-      </button>
-        que asigna un resultado aleatorio.
-        Para guardar la planilla, se deberá contar con la totalidad de los partidos marcados, nombre, apellido y correo electrónico
-        del participante.`,
-      destacado: `Se admite <strong>más de una planilla</strong> por participante. Día y hora de finalización de inscripción: <strong>10/06/2026 - 14:00 horas</strong>.`
+      titulo: 'Guardar y Obtener Código',
+      icono: 'fa-floppy-disk',
+      contenido: `
+        <p>Una vez completados todos los campos y tus datos personales (Nombre, Apellido y Email), hacé clic en <strong>Guardar Planilla</strong>.</p>
+        <p>El sistema generará automáticamente un <strong>código único de identificación</strong> (ej: #1234). Guardá este número, ya que es el comprobante indispensable para tu participación.</p>
+      `
     },
     {
       numero: 3,
-      titulo: 'Valor',
-      icono: 'fa-dollar-sign',
-      contenido: `La planilla tiene un valor de <strong>PESOS CINCO MIL ($5.000)</strong> que deberá ser
-        abonado de manera previa o al momento de confirmar la misma.
-        Los medios de pago habilitados serán informados oportunamente.`
+      titulo: 'Confirmación',
+      icono: 'fa-circle-check',
+      contenido: `
+        <p>Para que tu planilla entra oficialmente en juego y empieces a sumar puntos, debe ser <strong>confirmada por el administrador</strong>.</p>
+        <p>Deberás presentar tu número único de identificación al administrador para finalizar el proceso de confirmación.</p>
+      `,
+      destacado: `El plazo máximo para confirmar planillas es el <strong>10/06/2026 a las 14:00 hs</strong>. Pasado ese horario, no se admitirán nuevas confirmaciones.`
     },
     {
       numero: 4,
-      titulo: 'Confirmación de Planillas',
-      icono: 'fa-circle-check',
-      contenido: `Para confirmar la planilla, se deberá presentar el <strong>número único de
-        identificación</strong> generado por el sistema al momento de guardarla.`,
-      destacado: `Las planillas se confirmarán <strong>ineludiblemente</strong> hasta el día previo
-        al inicio del torneo (10/06/2026 - 14:00 horas). Las planillas enviadas fuera de término no serán confirmadas por lo tanto <strong>no serán tomadas en cuenta</strong>.`
+      titulo: 'Sistema de Puntos',
+      icono: 'fa-chart-line',
+      contenido: `
+        <p>A medida que se jueguen los partidos, sumarás puntos de la siguiente manera:</p>
+        <ul>
+          <li><strong>1 Punto</strong>: Por cada resultado acertado (Local, Empate o Visitante).</li>
+          <li><strong>2 Puntos</strong>: En partidos especiales marcados con el multiplicador <strong>X2</strong>.</li>
+        </ul>
+      `,
+      destacado: `No es necesario acertar el marcador exacto (goles), solo quién gana o si empatan.`
     },
     {
       numero: 5,
-      titulo: 'Publicación de Planillas',
-      icono: 'fa-users',
-      contenido: `Las planillas debidamente confirmadas se publicarán en la sección
-        <a href="/participantes" title="Participantes confirmados">Participantes</a> del sitio web
-        una vez cerrado el período de inscripción.`
+      titulo: 'Resultados y Ranking',
+      icono: 'fa-ranking-star',
+      contenido: `
+        <p>Los resultados se actualizan automáticamente al finalizar cada encuentro según la información oficial de la FIFA.</p>
+        <p>Podrás seguir tu posición en el ranking general en tiempo real desde la sección <a href="/posiciones">Posiciones</a>.</p>
+      `
     },
     {
       numero: 6,
-      titulo: 'Resultados',
-      icono: 'fa-chart-simple',
-      contenido: `Serán considerados los <strong>resultados oficiales de la FIFA</strong> del
-        Mundial 2026. Los resultados podrán seguirse en tiempo real en la sección
-        <a href="/resultados" title="Resultados">Resultados</a> del sitio web,
-        y la tabla de <a href="/posiciones" title="Posiciones">Posiciones</a> se actualizará automáticamente.`
-    },
-    {
-      numero: 7,
-      titulo: 'Ganadores',
-      icono: 'fa-trophy',
-      contenido: `Será considerado ganador en el <strong>Primer Puesto</strong> el participante
-        que mayor cantidad de puntos acumule. En caso de empate serán considerados ganadores
-        todos los participantes que hayan igualado dicha puntuación.<br><br>
-        Será considerado ganador en el <strong>Segundo Puesto</strong> el o los participantes
-        que acierten la mayor cantidad de puntos detrás del Primer Puesto.<br><br>
-        Será considerado ganador en el <strong>Tercer Puesto</strong> el o los participantes
-        que acierten la mayor cantidad de puntos detrás del Segundo Puesto.`,
-      destacado: `Cada predicción correcta vale <strong>1 punto</strong> o <strong>2 puntos</strong> si se trata de un partido con multiplicador X2.`
-    },
-    {
-      numero: 8,
-      titulo: 'Premios',
-      icono: 'fa-gift',
-      contenido: `<strong>Primer Puesto:</strong> El participante que acierte la mayor cantidad
-        de partidos entre los <strong>SETENTA Y DOS (72) partidos</strong> jugados en fase de grupos gana el
-        <strong>60% del pozo recaudado</strong>. En caso de empate el monto se divide
-        en partes iguales entre los ganadores.<br><br>
-        <strong>Segundo Puesto:</strong> El participante siguiente al Primer Puesto gana el
-        <strong>30% del pozo recaudado</strong>. En caso de empate el monto se divide
-        en partes iguales entre los ganadores.<br><br>
-        <strong>Tercer Puesto:</strong> El participante siguiente al Segundo Puesto gana el
-        <strong>10% del pozo recaudado</strong>. En caso de empate el monto se divide
-        en partes iguales entre los ganadores.`
-    },
-    {
-      numero: 9,
-      titulo: 'Entrega de Premios',
-      icono: 'fa-hand-holding-dollar',
-      contenido: `Los premios serán entregados dentro de los <strong>5 días hábiles</strong>
-        posteriores a la finalización de la fase de grupos del Mundial 2026.
-        La fecha y modalidad exacta de entrega será comunicada por los canales oficiales.`
+      titulo: 'Transparencia',
+      icono: 'fa-eye',
+      contenido: `
+        <p>Para garantizar la transparencia del juego, una vez que inicie el torneo y se cierre la inscripción, todas las planillas confirmadas serán publicadas en este sitio, siendo <strong>públicas</strong>.</p>
+        <p>En la sección <a href="/participantes">Participantes</a>, todos podrán ver y auditar los pronósticos de los demás jugadores.</p>
+      `
     }
   ];
 }

@@ -2,16 +2,20 @@ package com.prode.mundial_2026;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import io.github.cdimascio.dotenv.Dotenv;
 
 /**
  * FIX #6: @EnableScheduling necesario para que el @Scheduled de
  * LoginRateLimitFilter.limpiarContadoresExpirados() se ejecute.
- * Sin esta anotación, el método existe pero Spring nunca lo invoca.
+ *
+ * @EnableAsync necesario para que EmailService.enviarEmailsConfirmacion()
+ * se ejecute en un hilo separado sin bloquear la respuesta HTTP del admin.
  */
 @SpringBootApplication
 @EnableScheduling
+@EnableAsync
 public class Mundial2026Application {
 
 	public static void main(String[] args) {
