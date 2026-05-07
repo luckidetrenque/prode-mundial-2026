@@ -49,7 +49,7 @@
           </div>
 
           @for (partido of getPartidosPorGrupo(grupo); track partido.id) {
-            <div class="partido-row view-mode">
+            <div class="partido-row view-mode" [class.fila-acierto]="esAcierto(partido.id)">
               <!-- Número -->
               <span class="partido-num">{{ partido.numero }}</span>
 

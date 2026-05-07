@@ -3,7 +3,9 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { PlanillaService } from '../../core/services/planilla.service';
 import { PartidoService } from '../../core/services/partido.service';
+import { ResultadoService } from '../../core/services/resultado.service';
 import { PlanillaResponse, ResultadoPrediccion } from '../../shared/models/planilla.model';
+import { Resultado } from '../../shared/models/resultado.model';
 import { Partido } from '../../shared/models/partido.model';
 import { forkJoin } from 'rxjs';
 import jsPDF from 'jspdf';
@@ -23,6 +25,7 @@ export class PlanillaDetalleComponent implements OnInit {
   cargando = signal(true);
   planilla = signal<PlanillaResponse | null>(null);
   partidos = signal<Partido[]>([]);
+  resultados = signal<Resultado[]>([]);
   errorMensaje = signal<string | null>(null);
   grupos = GRUPOS_2026;
 
@@ -36,10 +39,19 @@ export class PlanillaDetalleComponent implements OnInit {
     return map;
   });
 
+  // Mapa de resultados reales: partidoId -> ResultadoPrediccion
+  resultadosMap = computed(() => {
+    const res = this.resultados();
+    const map = new Map<number, ResultadoPrediccion>();
+    res.forEach(item => map.set(item.partido.id, item.resultado));
+    return map;
+  });
+
   constructor(
     private route: ActivatedRoute,
     private planillaService: PlanillaService,
-    private partidoService: PartidoService
+    private partidoService: PartidoService,
+    private resultadoService: ResultadoService
   ) {}
 
   ngOnInit(): void {
@@ -52,14 +64,16 @@ export class PlanillaDetalleComponent implements OnInit {
       return;
     }
 
-    // Cargamos planilla y partidos en paralelo para asegurar consistencia
+    // Cargamos planilla, partidos y resultados en paralelo
     forkJoin({
       planilla: this.planillaService.obtener(codigo),
-      partidos: this.partidoService.getPartidos()
+      partidos: this.partidoService.getPartidos(),
+      resultados: this.resultadoService.getResultados()
     }).subscribe({
-      next: ({ planilla, partidos }) => {
+      next: ({ planilla, partidos, resultados }) => {
         this.planilla.set(planilla);
         this.partidos.set(partidos.filter(p => p.fase === 'GRUPOS'));
+        this.resultados.set(resultados);
         this.cargando.set(false);
       },
       error: (err) => {
@@ -76,6 +90,16 @@ export class PlanillaDetalleComponent implements OnInit {
 
   getPrediccion(partidoId: number): ResultadoPrediccion | null {
     return this.prediccionesMap().get(partidoId) ?? null;
+  }
+
+  getResultadoReal(partidoId: number): ResultadoPrediccion | null {
+    return this.resultadosMap().get(partidoId) ?? null;
+  }
+
+  esAcierto(partidoId: number): boolean {
+    const pred = this.getPrediccion(partidoId);
+    const real = this.getResultadoReal(partidoId);
+    return pred !== null && real !== null && pred === real;
   }
 
   descargarPDF(): void {
@@ -158,16 +182,19 @@ export class PlanillaDetalleComponent implements OnInit {
 
       partidosGrupo.forEach(partido => {
         const pred = this.getPrediccion(partido.id);
+        const acierto = this.esAcierto(partido.id);
+        const rowStyles = acierto ? { fillColor: [235, 247, 235] } : {}; // Verde muy claro
+
         let predText = '-';
         if (pred === 'LOCAL') predText = 'LOCAL (L)';
         else if (pred === 'EMPATE') predText = 'EMPATE (E)';
         else if (pred === 'VISITANTE') predText = 'VISITANTE (V)';
 
         tableData.push([
-          { content: partido.numero, styles: { halign: 'center' } },
-          { content: partido.equipoLocalShow, styles: { halign: 'right' } },
-          { content: predText, styles: { halign: 'center', fontStyle: 'bold' } },
-          { content: partido.equipoVisitanteShow, styles: { halign: 'left' } }
+          { content: partido.numero, styles: { halign: 'center', ...rowStyles } },
+          { content: partido.equipoLocalShow, styles: { halign: 'right', ...rowStyles } },
+          { content: predText, styles: { halign: 'center', fontStyle: 'bold', ...rowStyles } },
+          { content: partido.equipoVisitanteShow, styles: { halign: 'left', ...rowStyles } }
         ]);
       });
     });

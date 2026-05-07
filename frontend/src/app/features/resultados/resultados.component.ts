@@ -421,23 +421,23 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
 
     .opcion-btn.activa-local {
       border-color: var(--clr-primary);
-      background: var(--clr-primary);
-      color: white;
-      box-shadow: 0 2px 6px rgba(46,158,45,0.35);
+      background-color: rgba(46, 158, 45, 0.15);
+      color: var(--clr-primary);
+      box-shadow: 0 2px 6px rgba(46,158,45,0.2);
     }
 
     .opcion-btn.activa-empate {
       border-color: var(--clr-primary-dark);
-      background: var(--clr-primary-dark);
-      color: white;
-      box-shadow: 0 2px 6px rgba(18,51,59,0.3);
+      background-color: rgba(42, 57, 141, 0.12);
+      color: var(--clr-primary-dark);
+      box-shadow: 0 2px 6px rgba(42,57,141,0.15);
     }
 
     .opcion-btn.activa-visitante {
       border-color: var(--clr-action);
-      background: var(--clr-action);
-      color: white;
-      box-shadow: 0 2px 6px rgba(192,23,29,0.35);
+      background-color: rgba(192, 23, 29, 0.12);
+      color: var(--clr-action);
+      box-shadow: 0 2px 6px rgba(192,23,29,0.2);
     }
 
     .opcion-btn.opaca {
