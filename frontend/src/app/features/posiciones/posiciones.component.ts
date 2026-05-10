@@ -401,20 +401,20 @@ import { Posicion } from '../../shared/models/posicion.model';
 })
 export class PosicionesComponent implements OnInit {
 
-  cargando      = signal(true);
-  posiciones    = signal<Posicion[]>([]);
-  paginaActual  = signal(1);
+  cargando = signal(true);
+  posiciones = signal<Posicion[]>([]);
+  paginaActual = signal(1);
   readonly POR_PAGINA = 20;
 
   // Podio agrupado por los 3 primeros puestos reales
   podio = computed(() => {
     const all = this.posiciones();
     if (all.length === 0) return [];
-    
+
     // Obtenemos los 3 primeros niveles de puntos únicos
     const puntosUnicos = [...new Set(all.map(p => p.puntos))].sort((a, b) => b - a);
     const top3Puntos = puntosUnicos.slice(0, 3);
-    
+
     return top3Puntos.map((pts, index) => ({
       posicion: index + 1,
       puntos: pts,
@@ -427,7 +427,7 @@ export class PosicionesComponent implements OnInit {
   private _posicionesProcesadas: Posicion[] = []; // Data con ranking recalculado
   _posicionesFiltradas: Posicion[] = []; // Data para la tabla
 
-  constructor(private posicionService: PosicionService) {}
+  constructor(private posicionService: PosicionService) { }
 
   ngOnInit(): void {
     this.posicionService.getPosiciones().subscribe({
@@ -443,11 +443,11 @@ export class PosicionesComponent implements OnInit {
   private procesarRanking(): void {
     // 1. Ordenar por puntos (desc)
     const sorted = [...this._posicionesOriginales].sort((a, b) => b.puntos - a.puntos);
-    
+
     // 2. Aplicar Dense Ranking (1, 1, 2, 3, 3, 4...)
     let currentRank = 0;
     let lastPoints = -1;
-    
+
     this._posicionesProcesadas = sorted.map(p => {
       if (p.puntos !== lastPoints) {
         currentRank++;

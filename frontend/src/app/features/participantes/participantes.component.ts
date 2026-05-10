@@ -1,5 +1,5 @@
 // src/app/features/participantes/participantes.component.ts
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PlanillaService } from '../../core/services/planilla.service';
@@ -53,7 +53,7 @@ import { PlanillaResponse } from '../../shared/models/planilla.model';
             </tr>
           </thead>
           <tbody>
-            @for (p of planillasFiltradas(); track p.codigo) {
+            @for (p of planillasPaginadas(); track p.codigo) {
               <tr>
                 <td>{{ p.nombre }} {{ p.apellido }}</td>
                 <td>
@@ -66,6 +66,41 @@ import { PlanillaResponse } from '../../shared/models/planilla.model';
             }
           </tbody>
         </table>
+
+        <!-- Paginación -->
+        @if (totalPaginas() > 1) {
+          <div class="paginacion">
+            <button 
+              class="btn-pag" 
+              [disabled]="paginaActual() === 1"
+              (click)="cambiarPagina(paginaActual() - 1)"
+              title="Anterior"
+            >
+              <i class="fas fa-chevron-left"></i>
+            </button>
+
+            <div class="pag-numeros">
+              @for (p of paginas(); track p) {
+                <button 
+                  class="btn-num" 
+                  [class.activo]="p === paginaActual()"
+                  (click)="cambiarPagina(p)"
+                >
+                  {{ p }}
+                </button>
+              }
+            </div>
+
+            <button 
+              class="btn-pag" 
+              [disabled]="paginaActual() === totalPaginas()"
+              (click)="cambiarPagina(paginaActual() + 1)"
+              title="Siguiente"
+            >
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        }
       }
     </main>
   `,
@@ -143,6 +178,65 @@ import { PlanillaResponse } from '../../shared/models/planilla.model';
     }
 
     .link-planilla:hover { color: var(--clr-primary-dark); transform: translateX(2px); }
+
+    /* Estilos Paginación */
+    .paginacion {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: var(--spacing-md);
+      margin-top: var(--spacing-xl);
+      padding: var(--spacing-md) 0;
+    }
+
+    .pag-numeros {
+      display: flex;
+      gap: var(--spacing-xs);
+    }
+
+    .btn-pag, .btn-num {
+      border: 1px solid var(--clr-border);
+      background: white;
+      color: var(--clr-text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-pag {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+    }
+
+    .btn-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .btn-pag:hover:not(:disabled), .btn-num:hover:not(.activo) {
+      border-color: var(--clr-primary);
+      color: var(--clr-primary);
+      background: rgba(46, 158, 45, 0.1);
+    }
+
+    .btn-num.activo {
+      background: var(--clr-primary);
+      border-color: var(--clr-primary);
+      color: white;
+      box-shadow: 0 4px 10px rgba(42, 57, 141, 0.2);
+    }
+
+    .btn-pag:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      background: var(--clr-surface-alt);
+    }
   `]
 })
 export class ParticipantesComponent implements OnInit {
@@ -151,6 +245,25 @@ export class ParticipantesComponent implements OnInit {
   planillas = signal<PlanillaResponse[]>([]);
   planillasFiltradas = signal<PlanillaResponse[]>([]);
   hoy = new Date();
+
+  // Paginación
+  paginaActual = signal(1);
+  itemsPorPagina = 10;
+
+  planillasPaginadas = computed(() => {
+    const inicio = (this.paginaActual() - 1) * this.itemsPorPagina;
+    const fin = inicio + this.itemsPorPagina;
+    return this.planillasFiltradas().slice(inicio, fin);
+  });
+
+  totalPaginas = computed(() => 
+    Math.ceil(this.planillasFiltradas().length / this.itemsPorPagina)
+  );
+
+  paginas = computed(() => {
+    const total = this.totalPaginas();
+    return Array.from({ length: total }, (_, i) => i + 1);
+  });
 
   constructor(private planillaService: PlanillaService) {}
 
@@ -173,5 +286,13 @@ export class ParticipantesComponent implements OnInit {
         p.apellido.toLowerCase().includes(termino)
       )
     );
+    this.paginaActual.set(1); // Reset a la primera página al filtrar
+  }
+
+  cambiarPagina(p: number): void {
+    if (p >= 1 && p <= this.totalPaginas()) {
+      this.paginaActual.set(p);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 }

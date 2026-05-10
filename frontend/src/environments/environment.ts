@@ -2,5 +2,5 @@
 // Este archivo se usa cuando corrés: ng serve (desarrollo)
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080/api'
+  apiUrl: 'https://prode-mundial-2026-backend.onrender.com/api'
 };

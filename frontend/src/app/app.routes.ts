@@ -1,6 +1,5 @@
 // src/app/app.routes.ts
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
 
@@ -58,31 +57,9 @@ export const routes: Routes = [
         .then(m => m.ReglamentoComponent)
   },
 
-  // ── Rutas de admin ──────────────────────────────────────────────────────
-  {
-    path: 'admin/login',
-    loadComponent: () =>
-      import('./features/admin/login/login.component').then(m => m.LoginComponent)
-  },
   {
     path: 'admin',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/admin/dashboard/dashboard.component').then(m => m.DashboardComponent)
-  },
-  {
-    path: 'admin/resultados',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/admin/cargar-resultados/cargar-resultados.component')
-        .then(m => m.CargarResultadosComponent)
-  },
-  {
-    path: 'admin/planillas',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/admin/confirmar-planillas/confirmar-planillas.component')
-        .then(m => m.ConfirmarPlanillasComponent)
+    loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES)
   },
 
   // Ruta de error 404
