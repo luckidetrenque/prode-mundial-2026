@@ -142,14 +142,26 @@ import { Posicion } from '../../shared/models/posicion.model';
           </table>
         </div>
 
-        <!-- Paginación -->
+        <!-- Paginación Mejorada -->
         @if (totalPaginas() > 1) {
           <div class="paginacion">
-            <button class="btn-pag" (click)="paginaAnterior()" [disabled]="paginaActual() === 1">
+            <button class="btn-pag" (click)="paginaAnterior()" [disabled]="paginaActual() === 1" title="Anterior">
               <i class="fas fa-chevron-left"></i>
             </button>
-            <span class="pag-info">Pág. {{ paginaActual() }} de {{ totalPaginas() }}</span>
-            <button class="btn-pag" (click)="paginaSiguiente()" [disabled]="paginaActual() === totalPaginas()">
+            
+            <div class="pag-numeros">
+              @for (p of paginas(); track p) {
+                <button 
+                  class="btn-num" 
+                  [class.activo]="p === paginaActual()"
+                  (click)="irAPagina(p)"
+                >
+                  {{ p }}
+                </button>
+              }
+            </div>
+
+            <button class="btn-pag" (click)="paginaSiguiente()" [disabled]="paginaActual() === totalPaginas()" title="Siguiente">
               <i class="fas fa-chevron-right"></i>
             </button>
           </div>
@@ -389,6 +401,41 @@ import { Posicion } from '../../shared/models/posicion.model';
 
     .pag-info { font-size: 0.82rem; color: var(--clr-text-muted); }
 
+    .pag-numeros {
+      display: flex;
+      gap: var(--spacing-xs);
+    }
+
+    .btn-num {
+      width: 34px;
+      height: 34px;
+      border: 1.5px solid var(--clr-border-strong);
+      border-radius: 8px;
+      background: var(--clr-surface);
+      color: var(--clr-text-muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-body);
+    }
+
+    .btn-num:hover:not(.activo) {
+      border-color: var(--clr-primary);
+      color: var(--clr-primary);
+      background: rgba(46, 158, 45, 0.05);
+    }
+
+    .btn-num.activo {
+      background: var(--clr-primary);
+      border-color: var(--clr-primary);
+      color: white;
+      box-shadow: 0 4px 10px rgba(46, 158, 45, 0.2);
+    }
+
     /* ── Responsive ──────────────────────────────────────────────────────── */
     @media (max-width: 600px) {
       .podio { gap: 0.35em; }
@@ -404,7 +451,7 @@ export class PosicionesComponent implements OnInit {
   cargando = signal(true);
   posiciones = signal<Posicion[]>([]);
   paginaActual = signal(1);
-  readonly POR_PAGINA = 20;
+  readonly POR_PAGINA = 10;
 
   // Podio agrupado por los 3 primeros puestos reales
   podio = computed(() => {
@@ -484,8 +531,19 @@ export class PosicionesComponent implements OnInit {
 
   posicionesFiltradasTotal(): number { return this._posicionesFiltradas.length; }
   totalPaginas(): number { return Math.max(1, Math.ceil(this._posicionesFiltradas.length / this.POR_PAGINA)); }
-  paginaAnterior(): void { if (this.paginaActual() > 1) this.paginaActual.update(p => p - 1); }
-  paginaSiguiente(): void { if (this.paginaActual() < this.totalPaginas()) this.paginaActual.update(p => p + 1); }
+  
+  paginas = computed(() => {
+    const total = this.totalPaginas();
+    return Array.from({ length: total }, (_, i) => i + 1);
+  });
+
+  paginaAnterior(): void { if (this.paginaActual() > 1) this.irAPagina(this.paginaActual() - 1); }
+  paginaSiguiente(): void { if (this.paginaActual() < this.totalPaginas()) this.irAPagina(this.paginaActual() + 1); }
+  
+  irAPagina(p: number): void {
+    this.paginaActual.set(p);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   getClaseRow(posicion: number): string {
     if (posicion === 1) return 'row-gold';
