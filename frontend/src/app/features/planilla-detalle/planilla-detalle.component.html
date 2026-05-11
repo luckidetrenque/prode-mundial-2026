@@ -36,7 +36,15 @@
     </div>
 
     <div class="detalle-instrucciones">
-      <p><i class="fas fa-info-circle"></i> Estas son las predicciones ingresadas por el usuario para la fase de grupos.</p>
+      <p>
+        <i class="fas fa-info-circle"></i>
+        Predicciones de <strong>{{ planilla()!.nombre }} {{ planilla()!.apellido }}</strong>.
+        Las filas <span style="display:inline-block;width:12px;height:12px;background:rgba(58,75,176,0.25);border-radius:2px;vertical-align:middle;margin:0 3px"></span> son aciertos.
+        El icono <span style="display:inline-flex;align-items:center;gap:2px;background:#ffc107;color:#856404;font-size:0.6rem;font-weight:800;padding:1px 4px;border-radius:4px;vertical-align:middle">
+          <i class="fas fa-bolt" style="font-size:0.6rem"></i>x2
+        </span>
+        indica que el partido vale doble puntaje si se acierta.
+      </p>
     </div>
 
     <!-- Grilla de grupos (mismo formato que planilla) -->
@@ -49,39 +57,47 @@
           </div>
 
           @for (partido of getPartidosPorGrupo(grupo); track partido.id) {
-            <div class="partido-row view-mode" [class.fila-acierto]="esAcierto(partido.id)">
-              <!-- Número -->
-              <span class="partido-num">{{ partido.numero }}</span>
+            <div style="position:relative">
+              @if (partido.multiplicador > 1) {
+                <span class="multi-badge-detalle" title="Partido vale doble puntaje">
+                  <i class="fas fa-bolt" style="font-size:0.55rem"></i>x2
+                </span>
+              }
+              <div class="partido-row view-mode"
+                [class.fila-acierto]="esAcierto(partido.id)">
+                <!-- Número -->
+                <span class="partido-num">{{ partido.numero }}</span>
 
-              <!-- Equipo local -->
-              <div class="equipo-local">
-                <span class="equipo-nombre">{{ partido.equipoLocalShow }}</span>
-                <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" class="flag" width="28" height="19" />
-              </div>
+                <!-- Equipo local -->
+                <div class="equipo-local">
+                  <span class="equipo-nombre">{{ partido.equipoLocalShow }}</span>
+                  <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" class="flag" width="28" height="19" />
+                </div>
 
-              <!-- Opciones L / E / V (Solo Lectura) -->
-              <div class="opciones-centro">
-                <span
-                  class="opcion-btn readonly"
-                  [class.activa-local]="getPrediccion(partido.id) === 'LOCAL'"
-                  title="Local"
-                >L</span>
-                <span
-                  class="opcion-btn readonly"
-                  [class.activa-empate]="getPrediccion(partido.id) === 'EMPATE'"
-                  title="Empate"
-                >E</span>
-                <span
-                  class="opcion-btn readonly"
-                  [class.activa-visitante]="getPrediccion(partido.id) === 'VISITANTE'"
-                  title="Visitante"
-                >V</span>
-              </div>
+                <!-- Opciones L / E / V (Solo Lectura) -->
+                <div class="opciones-centro">
+                  <span
+                    class="opcion-btn readonly"
+                    [class.activa-local]="getPrediccion(partido.id) === 'LOCAL'"
+                    title="Local"
+                  >L</span>
+                  <span
+                    class="opcion-btn readonly"
+                    [class.activa-empate]="getPrediccion(partido.id) === 'EMPATE'"
+                    title="Empate"
+                  >E</span>
+                  <span
+                    class="opcion-btn readonly"
+                    [class.activa-visitante]="getPrediccion(partido.id) === 'VISITANTE'"
+                    title="Visitante"
+                  >V</span>
+                </div>
 
-              <!-- Equipo visitante -->
-              <div class="equipo-visitante">
-                <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow" class="flag" width="28" height="19" />
-                <span class="equipo-nombre">{{ partido.equipoVisitanteShow }}</span>
+                <!-- Equipo visitante -->
+                <div class="equipo-visitante">
+                  <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow" class="flag" width="28" height="19" />
+                  <span class="equipo-nombre">{{ partido.equipoVisitanteShow }}</span>
+                </div>
               </div>
             </div>
           }

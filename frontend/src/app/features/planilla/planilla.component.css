@@ -83,19 +83,22 @@
   box-shadow: inset 4px 0 0 var(--clr-primary-light);
 }
 
-/* Partidos destacados (Puntos x2) */
+/* Partidos destacados (Puntos x2) — fila entera en amarillo */
 .partido-row.destacado {
-  background: linear-gradient(to right, #fffdf2, #ffffff);
-  border-left: 3px solid #ffc107;
+  background: linear-gradient(to right, #fffbe6, #fff8d6);
 }
+.partido-row.destacado:hover {
+  background: linear-gradient(to right, #fff3c4, #fff0b8);
+}
+/* Al seleccionar x2: borde exterior verde + borde interior amarillo */
 .partido-row.destacado.seleccionado {
-  background: linear-gradient(to right, #f2faff, #ffffff);
+  background: linear-gradient(to right, #eef9fd, #f5fdff);
   border-left-color: var(--clr-primary-light);
 }
 
 .multi-badge {
   position: absolute;
-  left: 26px;
+  left: 36px;
   top: 12px;
   background: #ffc107;
   color: #856404;
@@ -163,6 +166,10 @@
   text-transform: uppercase;
   letter-spacing: 0.3px;
   color: var(--clr-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80px;
 }
 
 /* Bloque central con 3 opciones L / E / V */
