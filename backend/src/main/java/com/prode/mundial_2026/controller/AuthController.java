@@ -37,16 +37,18 @@ public class AuthController {
 
         LoginResponseDTO authResponse = authService.login(request);
 
+        // Usamos cookieSecure y SameSite variable según el entorno
+        String sameSiteValue = cookieSecure ? "None" : "Lax";
+
         ResponseCookie cookie = ResponseCookie.from("prode_token", authResponse.getToken())
                 .httpOnly(true)
-                .secure(cookieSecure) // FIX #7: configurable por entorno
+                .secure(cookieSecure)
                 .path("/")
-                .maxAge(24 * 60 * 60) // 1 día
-                .sameSite("Lax")
+                .maxAge(24 * 60 * 60)
+                .sameSite(sameSiteValue)
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-
         return ResponseEntity.ok(authResponse);
     }
 
@@ -59,17 +61,19 @@ public class AuthController {
             authService.logout(admin.getEmail());
         }
 
-        // FIX #7: mismo flag para la cookie de borrado
+        // Importante: SameSite debe coincidir con el del login para que el borrado sea
+        // efectivo
+        String sameSiteValue = cookieSecure ? "None" : "Lax";
+
         ResponseCookie cookie = ResponseCookie.from("prode_token", "")
                 .httpOnly(true)
                 .secure(cookieSecure)
                 .path("/")
-                .maxAge(0)
-                .sameSite("Lax")
+                .maxAge(0) // Expira inmediatamente
+                .sameSite(sameSiteValue)
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-
         return ResponseEntity.noContent().build();
     }
 }
