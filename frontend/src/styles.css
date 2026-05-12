@@ -96,11 +96,7 @@ body {
   font-family: var(--font-body);
   font-size: 15px;
   color: var(--clr-text);
-  background-color: var(--clr-surface-alt);
-  background-image: url('/assets/images/background.webp');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  background-color: #1e4620; /* Verde primario oscurecido */
   -webkit-font-smoothing: antialiased;
 }
 
