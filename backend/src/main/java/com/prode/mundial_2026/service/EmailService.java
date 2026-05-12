@@ -2,23 +2,27 @@ package com.prode.mundial_2026.service;
 
 import com.prode.mundial_2026.model.Planilla;
 import com.prode.mundial_2026.model.Prediccion;
-import com.resend.Resend;
-import com.resend.core.exception.ResendException;
-import com.resend.services.emails.model.CreateEmailOptions;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import java.util.List;
 import java.util.Map;
+import java.io.UnsupportedEncodingException;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class EmailService {
 
-  private final Resend resend;
+  private final JavaMailSender mailSender;
   private final com.prode.mundial_2026.repository.PlanillaRepository planillaRepository;
 
   @Value("${app.email.from}")
@@ -27,54 +31,60 @@ public class EmailService {
   @Value("${app.email.from-name:Prode Mundial 2026}")
   private String emailFromName;
 
-  public EmailService(
-      com.prode.mundial_2026.repository.PlanillaRepository planillaRepository,
-      @Value("${resend.api.key:}") String apiKey) {
-    this.planillaRepository = planillaRepository;
-    this.resend = new Resend(apiKey);
-  }
-
   /**
    * Envía los dos emails al participante cuando su planilla es confirmada:
    * 1. Email con el reglamento completo
    * 2. Email con sus predicciones
    *
    * Se ejecuta de forma asíncrona para no bloquear la respuesta HTTP del admin.
+   *
+   * IMPORTANTE: recargamos la planilla con un JOIN FETCH completo porque el
+   * contexto de Hibernate de la transacción original ya cerró. Si accediéramos
+   * a planilla.getPredicciones() directamente obtendríamos
+   * LazyInitializationException.
    */
   @Async
   public void enviarEmailsConfirmacion(Planilla planilla) {
     // Recarga con todas las asociaciones necesarias para los emails
     Planilla planillaCompleta = planillaRepository
         .findByCodigoWithPredicciones(planilla.getCodigo())
-        .orElse(planilla);
+        .orElse(planilla); // fallback: usa la que viene (puede fallar si lazy)
 
     String emailDestino = planillaCompleta.getUsuario().getEmail();
     String nombreCompleto = planillaCompleta.getUsuario().getNombre() + " "
         + planillaCompleta.getUsuario().getApellido();
 
-    enviarEmailReglamento(emailDestino, nombreCompleto, planillaCompleta.getCodigo());
-    enviarEmailPlanilla(emailDestino, nombreCompleto, planillaCompleta);
+    try {
+      enviarEmailReglamento(emailDestino, nombreCompleto, planillaCompleta.getCodigo());
+      log.info("Email reglamento enviado a {} (planilla {})", emailDestino, planillaCompleta.getCodigo());
+    } catch (Exception e) {
+      log.error("Error enviando email reglamento a {} (planilla {}): {}",
+          emailDestino, planillaCompleta.getCodigo(), e.getMessage());
+    }
+
+    try {
+      enviarEmailPlanilla(emailDestino, nombreCompleto, planillaCompleta);
+      log.info("Email planilla enviado a {} (planilla {})", emailDestino, planillaCompleta.getCodigo());
+    } catch (Exception e) {
+      log.error("Error enviando email planilla a {} (planilla {}): {}",
+          emailDestino, planillaCompleta.getCodigo(), e.getMessage());
+    }
   }
 
   // ── Email 1: Reglamento ────────────────────────────────────────────────
 
-  private void enviarEmailReglamento(String destino, String nombreCompleto, Long codigoPlanilla) {
-    try {
-      String from = "%s <%s>".formatted(emailFromName, emailFrom);
+  private void enviarEmailReglamento(String destino, String nombreCompleto, Long codigoPlanilla)
+      throws MessagingException, UnsupportedEncodingException {
 
-      CreateEmailOptions params = CreateEmailOptions.builder()
-          .from(from)
-          .to(destino)
-          .subject("🏆 Prode Mundial 2026 — Reglamento Oficial")
-          .html(buildReglamentoHtml(nombreCompleto, codigoPlanilla))
-          .build();
+    MimeMessage message = mailSender.createMimeMessage();
+    MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-      resend.emails().send(params);
-      log.info("Email reglamento enviado a {} (planilla {})", destino, codigoPlanilla);
-    } catch (ResendException e) {
-      log.error("Error enviando email reglamento a {} (planilla {}): {}",
-          destino, codigoPlanilla, e.getMessage());
-    }
+    helper.setFrom(emailFrom, emailFromName);
+    helper.setTo(destino);
+    helper.setSubject("🏆 Prode Mundial 2026 — Reglamento Oficial");
+    helper.setText(buildReglamentoHtml(nombreCompleto, codigoPlanilla), true);
+
+    mailSender.send(message);
   }
 
   private String buildReglamentoHtml(String nombreCompleto, Long codigoPlanilla) {
@@ -239,23 +249,18 @@ public class EmailService {
 
   // ── Email 2: Planilla con predicciones ────────────────────────────────
 
-  private void enviarEmailPlanilla(String destino, String nombreCompleto, Planilla planilla) {
-    try {
-      String from = "%s <%s>".formatted(emailFromName, emailFrom);
+  private void enviarEmailPlanilla(String destino, String nombreCompleto, Planilla planilla)
+      throws MessagingException, UnsupportedEncodingException {
 
-      CreateEmailOptions params = CreateEmailOptions.builder()
-          .from(from)
-          .to(destino)
-          .subject("⚽ Prode Mundial 2026 — Tu planilla #" + planilla.getCodigo())
-          .html(buildPlanillaHtml(nombreCompleto, planilla))
-          .build();
+    MimeMessage message = mailSender.createMimeMessage();
+    MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-      resend.emails().send(params);
-      log.info("Email planilla enviado a {} (planilla {})", destino, planilla.getCodigo());
-    } catch (ResendException e) {
-      log.error("Error enviando email planilla a {} (planilla {}): {}",
-          destino, planilla.getCodigo(), e.getMessage());
-    }
+    helper.setFrom(emailFrom, emailFromName);
+    helper.setTo(destino);
+    helper.setSubject("⚽ Prode Mundial 2026 — Tu planilla #" + planilla.getCodigo());
+    helper.setText(buildPlanillaHtml(nombreCompleto, planilla), true);
+
+    mailSender.send(message);
   }
 
   private String buildPlanillaHtml(String nombreCompleto, Planilla planilla) {
