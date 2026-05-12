@@ -31,6 +31,9 @@ public class EmailService {
       com.prode.mundial_2026.repository.PlanillaRepository planillaRepository,
       @Value("${resend.api.key:}") String apiKey) {
     this.planillaRepository = planillaRepository;
+    if (apiKey == null || apiKey.trim().isEmpty()) {
+      log.warn("RESEND_API_KEY no configurada. Los emails no se enviarán.");
+    }
     this.resend = new Resend(apiKey);
   }
 
@@ -43,17 +46,24 @@ public class EmailService {
    */
   @Async
   public void enviarEmailsConfirmacion(Planilla planilla) {
-    // Recarga con todas las asociaciones necesarias para los emails
-    Planilla planillaCompleta = planillaRepository
-        .findByCodigoWithPredicciones(planilla.getCodigo())
-        .orElse(planilla);
+    try {
+      log.info("Iniciando envío de emails para planilla: {}", planilla.getCodigo());
 
-    String emailDestino = planillaCompleta.getUsuario().getEmail();
-    String nombreCompleto = planillaCompleta.getUsuario().getNombre() + " "
-        + planillaCompleta.getUsuario().getApellido();
+      // Recarga con todas las asociaciones necesarias para los emails
+      Planilla planillaCompleta = planillaRepository
+          .findByCodigoWithPredicciones(planilla.getCodigo())
+          .orElseThrow(() -> new RuntimeException("No se encontró la planilla con código: " + planilla.getCodigo()));
 
-    enviarEmailReglamento(emailDestino, nombreCompleto, planillaCompleta.getCodigo());
-    enviarEmailPlanilla(emailDestino, nombreCompleto, planillaCompleta);
+      String emailDestino = planillaCompleta.getUsuario().getEmail();
+      String nombreCompleto = planillaCompleta.getUsuario().getNombre() + " "
+          + planillaCompleta.getUsuario().getApellido();
+
+      enviarEmailReglamento(emailDestino, nombreCompleto, planillaCompleta.getCodigo());
+      enviarEmailPlanilla(emailDestino, nombreCompleto, planillaCompleta);
+
+    } catch (Exception e) {
+      log.error("ERROR CRÍTICO en proceso asíncrono de envío de emails: {}", e.getMessage(), e);
+    }
   }
 
   // ── Email 1: Reglamento ────────────────────────────────────────────────
