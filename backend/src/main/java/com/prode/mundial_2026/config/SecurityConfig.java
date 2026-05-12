@@ -99,10 +99,10 @@ public class SecurityConfig {
                 "Access-Control-Request-Method",
                 "Access-Control-Request-Headers"));
         config.setAllowCredentials(true);
-        config.setExposedHeaders(List.of("Authorization"));
+        config.setExposedHeaders(List.of("Set-Cookie", "Authorization"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", config);
+        source.registerCorsConfiguration("/**", config);
         return source;
     }
 
