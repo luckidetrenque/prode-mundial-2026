@@ -150,6 +150,23 @@
   background-color: rgba(106, 126, 245, 0.05);
 }
 
+.partido-row.fila-desacierto {
+  background-color: rgba(255, 0, 0, 0.1);
+}
+
+.partido-row.fila-desacierto .partido-num {
+  color: var(--wc-usa);
+  background-color: rgba(255, 0, 0, 0.1);
+}
+
+.partido-row.fila-desacierto .opciones-centro,
+.partido-row.fila-desacierto .equipo-local,
+.partido-row.fila-desacierto .equipo-visitante {
+  color: var(--wc-usa);
+  background-color: rgba(255, 0, 0, 0.05);
+}
+
+
 .partido-row:last-child { border-bottom: none; }
 
 /* Badge x2 en detalle (estilo flotante como en planilla) */

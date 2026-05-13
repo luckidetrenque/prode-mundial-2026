@@ -121,10 +121,10 @@
 }
 
 .progreso-nota {
-  font-size: 0.72rem;
+  font-size: 1rem;
   color: var(--clr-text-muted);
   margin-top: 0.4em;
-  display: flex;
+  display: content;
   align-items: center;
   gap: 0.35em;
 }

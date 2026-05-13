@@ -9,106 +9,111 @@
   </div>
 
   @if (cargando()) {
-    <div class="spinner-container"><div class="spinner"></div></div>
+  <div class="spinner-container">
+    <div class="spinner"></div>
+  </div>
   }
 
   @if (errorMensaje()) {
-    <p class="msg-error"><i class="fas fa-triangle-exclamation"></i> {{ errorMensaje() }}</p>
+  <p class="msg-error"><i class="fas fa-triangle-exclamation"></i> {{ errorMensaje() }}</p>
   }
 
   @if (!cargando() && planilla()) {
-    
-    <!-- Info Cabecera -->
-    <div class="planilla-header-card">
-      <div class="header-main">
-        <div class="badge-codigo">PLANILLA #{{ planilla()!.codigo }}</div>
-        <h2>{{ planilla()!.nombre }} {{ planilla()!.apellido }}</h2>
-      </div>
-      <div class="header-status">
-        <span class="status-badge" [class.confirmada]="planilla()!.confirmada">
-          @if (planilla()!.confirmada) {
-            <i class="fas fa-check-circle"></i> Confirmada
-          } @else {
-            <i class="fas fa-clock"></i> Pendiente
-          }
-        </span>
-      </div>
-    </div>
 
-    <div class="detalle-instrucciones">
-      <p>
-        <i class="fas fa-info-circle"></i>
-        Predicciones de <strong>{{ planilla()!.nombre }} {{ planilla()!.apellido }}</strong>.
-        Las filas <span style="display:inline-block;width:12px;height:12px;background:rgba(58,75,176,0.25);border-radius:2px;vertical-align:middle;margin:0 3px"></span> son aciertos.
-        El icono <span style="display:inline-flex;align-items:center;gap:2px;background:#ffc107;color:#856404;font-size:0.6rem;font-weight:800;padding:1px 4px;border-radius:4px;vertical-align:middle">
-          <i class="fas fa-bolt" style="font-size:0.6rem"></i>x2
-        </span>
-        indica que el partido vale doble puntaje si se acierta.
-      </p>
+  <!-- Info Cabecera -->
+  <div class="planilla-header-card">
+    <div class="header-main">
+      <div class="badge-codigo">PLANILLA #{{ planilla()!.codigo }}</div>
+      <h2>{{ planilla()!.nombre }} {{ planilla()!.apellido }}</h2>
     </div>
+    <div class="header-status">
+      <span class="status-badge" [class.confirmada]="planilla()!.confirmada">
+        @if (planilla()!.confirmada) {
+        <i class="fas fa-check-circle"></i> Confirmada
+        } @else {
+        <i class="fas fa-clock"></i> Pendiente
+        }
+      </span>
+    </div>
+  </div>
 
-    <!-- Grilla de grupos (mismo formato que planilla) -->
-    <div class="groups-grid">
-      @for (grupo of grupos; track grupo) {
-        <div class="group-table">
-          <div class="group-caption">
-            <span class="group-label">GRUPO</span>
-            <span class="group-letter">{{ grupo }}</span>
+  <div class="detalle-instrucciones">
+    <p>
+      <i class="fas fa-info-circle"></i>
+      Predicciones de <strong>{{ planilla()!.nombre }} {{ planilla()!.apellido }}</strong>.
+      <br>
+      - El icono <span
+        style="display:inline-flex;align-items:center;gap:2px;background:#ffc107;color:#856404;font-size:0.6rem;font-weight:800;padding:1px 4px;border-radius:4px;vertical-align:middle">
+        <i class="fas fa-bolt" style="font-size:0.6rem"></i>x2
+      </span>
+      indica que el partido vale doble puntaje si se acierta.
+      <br>
+
+      - Las filas <span
+        style="display:inline-block;width:12px;height:12px;background:rgba(58,75,176,0.25);border-radius:2px;vertical-align:middle;margin:0 3px"></span>
+      son aciertos.
+      Las filas <span
+        style="display:inline-block;width:12px;height:12px;background:rgba(255,0,0,0.1);border-radius:2px;vertical-align:middle;margin:0 3px"></span>
+      son desaciertos.
+
+    </p>
+  </div>
+
+  <!-- Grilla de grupos (mismo formato que planilla) -->
+  <div class="groups-grid">
+    @for (grupo of grupos; track grupo) {
+    <div class="group-table">
+      <div class="group-caption">
+        <span class="group-label">GRUPO</span>
+        <span class="group-letter">{{ grupo }}</span>
+      </div>
+
+      @for (partido of getPartidosPorGrupo(grupo); track partido.id) {
+      <div style="position:relative">
+        @if (partido.multiplicador > 1) {
+        <span class="multi-badge-detalle" title="Partido vale doble puntaje">
+          <i class="fas fa-bolt" style="font-size:0.55rem"></i>x2
+        </span>
+        }
+        <div class="partido-row view-mode" [class.fila-acierto]="esAcierto(partido.id)"
+          [class.fila-desacierto]="!esAcierto(partido.id)">
+          <!-- Número -->
+          <span class="partido-num">{{ partido.numero }}</span>
+
+          <!-- Equipo local -->
+          <div class="equipo-local">
+            <span class="equipo-nombre">{{ partido.equipoLocalShow }}</span>
+            <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" class="flag" width="28"
+              height="19" />
           </div>
 
-          @for (partido of getPartidosPorGrupo(grupo); track partido.id) {
-            <div style="position:relative">
-              @if (partido.multiplicador > 1) {
-                <span class="multi-badge-detalle" title="Partido vale doble puntaje">
-                  <i class="fas fa-bolt" style="font-size:0.55rem"></i>x2
-                </span>
-              }
-              <div class="partido-row view-mode"
-                [class.fila-acierto]="esAcierto(partido.id)">
-                <!-- Número -->
-                <span class="partido-num">{{ partido.numero }}</span>
+          <!-- Opciones L / E / V (Solo Lectura) -->
+          <div class="opciones-centro">
+            <span class="opcion-btn readonly" [class.activa-local]="getPrediccion(partido.id) === 'LOCAL'"
+              title="Local">L</span>
+            <span class="opcion-btn readonly" [class.activa-empate]="getPrediccion(partido.id) === 'EMPATE'"
+              title="Empate">E</span>
+            <span class="opcion-btn readonly" [class.activa-visitante]="getPrediccion(partido.id) === 'VISITANTE'"
+              title="Visitante">V</span>
+          </div>
 
-                <!-- Equipo local -->
-                <div class="equipo-local">
-                  <span class="equipo-nombre">{{ partido.equipoLocalShow }}</span>
-                  <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" class="flag" width="28" height="19" />
-                </div>
-
-                <!-- Opciones L / E / V (Solo Lectura) -->
-                <div class="opciones-centro">
-                  <span
-                    class="opcion-btn readonly"
-                    [class.activa-local]="getPrediccion(partido.id) === 'LOCAL'"
-                    title="Local"
-                  >L</span>
-                  <span
-                    class="opcion-btn readonly"
-                    [class.activa-empate]="getPrediccion(partido.id) === 'EMPATE'"
-                    title="Empate"
-                  >E</span>
-                  <span
-                    class="opcion-btn readonly"
-                    [class.activa-visitante]="getPrediccion(partido.id) === 'VISITANTE'"
-                    title="Visitante"
-                  >V</span>
-                </div>
-
-                <!-- Equipo visitante -->
-                <div class="equipo-visitante">
-                  <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow" class="flag" width="28" height="19" />
-                  <span class="equipo-nombre">{{ partido.equipoVisitanteShow }}</span>
-                </div>
-              </div>
-            </div>
-          }
+          <!-- Equipo visitante -->
+          <div class="equipo-visitante">
+            <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow" class="flag" width="28"
+              height="19" />
+            <span class="equipo-nombre">{{ partido.equipoVisitanteShow }}</span>
+          </div>
         </div>
+      </div>
       }
     </div>
-
-    @if (planilla()!.mensaje) {
-      <div class="footer-mensaje">
-        <p><strong>Nota del sistema:</strong> {{ planilla()!.mensaje }}</p>
-      </div>
     }
+  </div>
+
+  @if (planilla()!.mensaje) {
+  <div class="footer-mensaje">
+    <p><strong>Nota del sistema:</strong> {{ planilla()!.mensaje }}</p>
+  </div>
+  }
   }
 </main>
