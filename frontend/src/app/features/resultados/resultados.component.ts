@@ -125,8 +125,8 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
                         [src]="partido.equipoLocalBandera"
                         [alt]="'Bandera de ' + partido.equipoLocalShow"
                         class="flag"
-                        width="26"
-                        height="17"
+                        width="24"
+                        height="16"
                       />
                     </div>
 
@@ -167,8 +167,8 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
                         [src]="partido.equipoVisitanteBandera"
                         [alt]="'Bandera de ' + partido.equipoVisitanteShow"
                         class="flag"
-                        width="26"
-                        height="17"
+                        width="24"
+                        height="16"
                       />
                       <span class="equipo-txt">{{ partido.equipoVisitanteShow }}</span>
                     </div>
@@ -199,65 +199,7 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
   `,
   styles: [`
     /* ── Overview Dashboard (Estadisticas style) ─────────────────────────── */
-    .stats-overview {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1em;
-      margin-bottom: 2em;
-    }
-
-    .overview-card {
-      background: var(--clr-surface);
-      border: 1px solid var(--clr-border);
-      border-radius: var(--radius-lg);
-      padding: 1.25em;
-      display: flex;
-      align-items: center;
-      gap: 1em;
-      box-shadow: var(--shadow-sm);
-      transition: var(--transition);
-    }
-
-    .overview-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-md);
-      border-color: var(--clr-primary-light);
-    }
-
-    .overview-card i {
-      font-size: 1.8rem;
-      color: var(--clr-primary);
-      background: var(--clr-surface-alt);
-      width: 50px;
-      height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 12px;
-      flex-shrink: 0;
-    }
-
-    .overview-data {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .overview-num {
-      font-family: var(--font-display);
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: var(--clr-primary-dark);
-      line-height: 1.1;
-    }
-
-    .overview-label {
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--clr-text-muted);
-      margin-top: 2px;
-    }
+    /* .stats-overview y .overview-card movidos a global styles.css */
 
     /* ── Referencia de estados ───────────────────────────────────────────── */
     .referencia-estados {
@@ -280,34 +222,7 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
     }
 
     /* ── Filtro grupos ───────────────────────────────────────────────────── */
-    .filtro-grupos {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.35em;
-      margin-bottom: 1.5em;
-    }
-
-    .btn-grupo {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3em;
-      padding: 0.3em 0.75em;
-      border: 1.5px solid var(--clr-border-strong);
-      border-radius: 20px;
-      background: var(--clr-surface);
-      color: var(--clr-text-muted);
-      font-size: 0.78rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: var(--transition);
-      font-family: var(--font-body);
-    }
-
-    .btn-grupo:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
-    .btn-grupo:focus-visible { outline: 2px solid var(--clr-primary); outline-offset: 2px; }
-    .btn-grupo.activo { border-color: var(--clr-primary); background: var(--clr-primary); color: white; }
-    .btn-grupo.completo { border-color: var(--clr-success-text); color: var(--clr-success-text); background: var(--clr-success-bg); }
-    .btn-grupo.completo.activo { background: var(--clr-success-text); color: white; border-color: var(--clr-success-text); }
+    /* .btn-grupo movido a global styles.css */
 
     /* ── Grupo bloque ────────────────────────────────────────────────────── */
     .grupo-bloque { margin-bottom: 2em; }
@@ -319,17 +234,7 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
       margin-bottom: 0.6em;
     }
 
-    .grupo-tag {
-      font-family: var(--font-display);
-      font-size: 0.85rem;
-      font-weight: 700;
-      letter-spacing: 2px;
-      color: var(--clr-primary-dark);
-      background: var(--clr-surface-alt);
-      padding: 0.2em 0.8em;
-      border-radius: 20px;
-      border: 1.5px solid var(--clr-border-strong);
-    }
+    /* .grupo-tag movido a global styles.css */
 
     .grupo-estado {
       font-size: 0.75rem;

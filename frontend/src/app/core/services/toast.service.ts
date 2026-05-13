@@ -14,30 +14,34 @@ export class ToastService {
   private toastIdCounter = 0;
   toasts = signal<Toast[]>([]);
 
-  private showToast(message: string, type: Toast['type'], duration = 4000): void {
+  private showToast(message: string, type: Toast['type'], duration?: number): void {
+    // Si no se especifica duración, usamos 6000ms para touch y 4000ms para desktop (error/warning usan sus propios defaults)
+    const defaultDuration = ('ontouchstart' in window) ? 6000 : 4000;
+    const finalDuration = duration ?? defaultDuration;
+
     const id = ++this.toastIdCounter;
-    const toast: Toast = { id, message, type, duration };
+    const toast: Toast = { id, message, type, duration: finalDuration };
     
     this.toasts.update(current => [...current, toast]);
 
-    if (duration > 0) {
-      setTimeout(() => this.remove(id), duration);
+    if (finalDuration > 0) {
+      setTimeout(() => this.remove(id), finalDuration);
     }
   }
 
-  success(message: string, duration = 4000): void {
+  success(message: string, duration?: number): void {
     this.showToast(message, 'success', duration);
   }
 
-  error(message: string, duration = 5000): void {
-    this.showToast(message, 'error', duration);
+  error(message: string, duration?: number): void {
+    this.showToast(message, 'error', duration ?? 5000);
   }
 
-  warning(message: string, duration = 5000): void {
-    this.showToast(message, 'warning', duration);
+  warning(message: string, duration?: number): void {
+    this.showToast(message, 'warning', duration ?? 5000);
   }
 
-  info(message: string, duration = 4000): void {
+  info(message: string, duration?: number): void {
     this.showToast(message, 'info', duration);
   }
 

@@ -26,7 +26,8 @@ import { PlanillaResponse } from '../../shared/models/planilla.model';
       }
 
       @if (!cargando() && planillas().length > 0) {
-        <table class="tabla-participantes">
+        <div class="table-container">
+          <table class="tabla-participantes">
           <caption>
             Total confirmados al {{ hoy | date:'dd/MM/yyyy' }}: {{ planillas().length }}
           </caption>
@@ -55,8 +56,8 @@ import { PlanillaResponse } from '../../shared/models/planilla.model';
           <tbody>
             @for (p of planillasPaginadas(); track p.codigo) {
               <tr>
-                <td>{{ p.nombre }} {{ p.apellido }}</td>
-                <td>
+                <td data-label="Nombre">{{ p.nombre }} {{ p.apellido }}</td>
+                <td data-label="Planilla">
                   <a [routerLink]="['/planillas', p.codigo]" class="link-planilla" title="Ver planilla">
                     {{ p.codigo }}
                     <i class="fas fa-arrow-up-right-from-square" style="font-size:0.6rem;opacity:0.6"></i>
@@ -66,6 +67,7 @@ import { PlanillaResponse } from '../../shared/models/planilla.model';
             }
           </tbody>
         </table>
+      </div>
 
         <!-- Paginación -->
         @if (totalPaginas() > 1) {
@@ -105,16 +107,16 @@ import { PlanillaResponse } from '../../shared/models/planilla.model';
     </main>
   `,
   styles: [`
-    .tabla-participantes { width: 100%; border-collapse: collapse; margin-top: var(--spacing-sm); }
+    .tabla-participantes { width: 100%; border-collapse: collapse; }
     .tabla-participantes th { 
       background: var(--clr-surface-alt); 
       color: var(--clr-text-muted); 
       font-size: 0.68rem; 
       text-transform: uppercase; 
       letter-spacing: 0.8px;
-      padding: var(--spacing-sm) var(--spacing-md);
+      padding: 0.85rem 1rem;
       border-bottom: 1.5px solid var(--clr-border-strong);
-      text-align: center;
+      text-align: left;
     }
     .tabla-participantes th.col-nombre { text-align: left; }
     
@@ -162,9 +164,25 @@ import { PlanillaResponse } from '../../shared/models/planilla.model';
       font-weight: 500;
     }
 
-    .tabla-participantes td { padding: var(--spacing-md); border-bottom: 1px solid var(--clr-border); font-size: 0.9rem; }
+    .tabla-participantes td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--clr-border); font-size: 0.9rem; }
     .tabla-participantes td:first-child { text-align: left; font-weight: 500; }
-    .tabla-participantes td:last-child { text-align: center; }
+    .tabla-participantes td:last-child { text-align: right; }
+
+    @media (max-width: 600px) {
+      .tabla-participantes thead { display: none; }
+      .tabla-participantes tr { display: flex; flex-direction: column; padding: 1rem; gap: 0.5rem; border-bottom: 1px solid var(--clr-border); }
+      .tabla-participantes td { display: flex; justify-content: space-between; padding: 0; border: none; }
+      .tabla-participantes td:last-child { text-align: left; }
+      
+      /* Labels para modo stack */
+      .tabla-participantes td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: var(--clr-text-muted);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+      }
+    }
 
     .link-planilla {
       display: inline-flex;
@@ -179,64 +197,7 @@ import { PlanillaResponse } from '../../shared/models/planilla.model';
 
     .link-planilla:hover { color: var(--clr-primary-dark); transform: translateX(2px); }
 
-    /* Estilos Paginación */
-    .paginacion {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: var(--spacing-md);
-      margin-top: var(--spacing-xl);
-      padding: var(--spacing-md) 0;
-    }
-
-    .pag-numeros {
-      display: flex;
-      gap: var(--spacing-xs);
-    }
-
-    .btn-pag, .btn-num {
-      border: 1px solid var(--clr-border);
-      background: white;
-      color: var(--clr-text-muted);
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .btn-pag {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-    }
-
-    .btn-num {
-      width: 32px;
-      height: 32px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      font-weight: 500;
-    }
-
-    .btn-pag:hover:not(:disabled), .btn-num:hover:not(.activo) {
-      border-color: var(--clr-primary);
-      color: var(--clr-primary);
-      background: rgba(46, 158, 45, 0.1);
-    }
-
-    .btn-num.activo {
-      background: var(--clr-primary);
-      border-color: var(--clr-primary);
-      color: white;
-      box-shadow: 0 4px 10px rgba(42, 57, 141, 0.2);
-    }
-
-    .btn-pag:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-      background: var(--clr-surface-alt);
-    }
+    /* Paginación y otros estilos movidos a global o simplificados */
   `]
 })
 export class ParticipantesComponent implements OnInit {

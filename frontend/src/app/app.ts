@@ -129,7 +129,13 @@ export class App {
       const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const segundos = Math.floor((diff % (1000 * 60)) / 1000);
 
-      this.countdownText.set(`${dias}d ${horas}h ${minutos}m ${segundos}s`);
+      // MEJORA: En pantallas muy chicas (<400px), mostramos solo días y horas para que no se corte
+      const isMobile = window.innerWidth < 400;
+      if (isMobile && dias > 0) {
+        this.countdownText.set(`${dias}d ${horas}h`);
+      } else {
+        this.countdownText.set(`${dias}d ${horas}h ${minutos}m ${segundos}s`);
+      }
       this.tiempoExpirado.set(false);
     });
   }

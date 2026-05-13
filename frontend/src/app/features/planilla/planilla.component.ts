@@ -214,6 +214,15 @@ export class PlanillaComponent implements OnInit {
     if (!this.form.valid) {
       this.form.markAllAsTouched();
       this.toastService.error('Revisá los datos del formulario. Hay campos con errores.');
+      
+      // MEJORA: Focus automático en el primer campo inválido
+      setTimeout(() => {
+        const firstInvalid = document.querySelector('.ng-invalid[formControlName], .ng-invalid[formControl]');
+        if (firstInvalid) {
+          firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          (firstInvalid as HTMLElement).focus();
+        }
+      }, 100);
       return;
     }
 

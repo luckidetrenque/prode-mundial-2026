@@ -88,7 +88,8 @@ import { Posicion } from '../../shared/models/posicion.model';
         
         <!-- Tabla limpia -->
         <div class="table-container">
-          <table class="tabla-pos">
+          <div class="table-wrap">
+            <table class="tabla-pos">
             <thead>
               <tr>
                 <th class="col-pos">#</th>
@@ -141,6 +142,7 @@ import { Posicion } from '../../shared/models/posicion.model';
             </tbody>
           </table>
         </div>
+      </div>
 
         <!-- Paginación Mejorada -->
         @if (totalPaginas() > 1) {
@@ -171,6 +173,8 @@ import { Posicion } from '../../shared/models/posicion.model';
     </main>
   `,
   styles: [`
+    /* .subtitulo movido a global styles.css */
+
     /* ── Estado vacío ────────────────────────────────────────────────────── */
     .estado-vacio {
       text-align: center;
@@ -207,6 +211,7 @@ import { Posicion } from '../../shared/models/posicion.model';
       display: flex;
       flex-direction: column;
       gap: 2px;
+      min-height: 20px; /* MEJORA: Evita colapso visual */
       max-height: 52px;
       overflow-y: auto;
       margin-bottom: var(--spacing-xs);
@@ -292,15 +297,8 @@ import { Posicion } from '../../shared/models/posicion.model';
     }
 
     /* ── Tabla ───────────────────────────────────────────────────────────── */
-    .table-container {
-      border: 1px solid var(--clr-border-strong);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
-      margin-top: 0;
-    }
-
-    .tabla-pos { margin: 0; width: 100%; }
+    /* .table-container movido a global styles.css */
+    .tabla-pos { margin: 0; min-width: 450px; }
 
     .tabla-pos thead th {
       background: var(--clr-surface-alt);
@@ -309,15 +307,17 @@ import { Posicion } from '../../shared/models/posicion.model';
       text-transform: uppercase;
       letter-spacing: 0.8px;
       color: var(--clr-text-muted);
-      padding: 0.6em 0.85em;
+      padding: 0.75rem 1rem;
       border-bottom: 1.5px solid var(--clr-border-strong);
       vertical-align: middle;
+      white-space: nowrap;
     }
 
     .tabla-pos tbody td {
-      padding: 0.7em 0.85em;
+      padding: 0.75rem 1rem;
       border-bottom: 1px solid var(--clr-border);
       font-size: 0.875rem;
+      vertical-align: middle;
     }
 
     .tabla-pos tbody tr:last-child td { border-bottom: none; }
@@ -332,15 +332,21 @@ import { Posicion } from '../../shared/models/posicion.model';
     .row-bronze:hover td { background: #fef0e4 !important; }
 
     /* Columnas */
-    .col-pos      { width: 48px; text-align: center; }
+    .col-pos      { width: 50px; text-align: center; }
     .col-nombre   { text-align: left; }
-    .col-afil     { width: 90px; text-align: center; }
-    .col-planilla { width: 100px; text-align: center; }
+    .col-planilla { width: 110px; text-align: center; }
     .col-pts      { width: 80px; text-align: center; }
-    .col-muted    { color: var(--clr-text-muted); font-size: 0.82rem; }
+
+    .nombre-participante {
+      font-weight: 500;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 180px; /* Evita que el nombre empuje las columnas en mobile */
+    }
 
     .pos-num { font-size: 0.8rem; font-weight: 600; color: var(--clr-text-muted); }
-    .nombre-participante { font-weight: 500; }
 
     .link-planilla {
       display: inline-flex;

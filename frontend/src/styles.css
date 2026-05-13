@@ -11,34 +11,31 @@
   --wc-neutral-light: #D1D4D1;
   --wc-neutral-dark: #474A4A;
 
-  /* ── MEJORA 4: Semántica de colores unificada ──────────────────────────
-     Antes: --clr-primary era verde pero --btn-primary usaba rojo (maroon).
-     Ahora: verde = acciones principales de UI, rojo = acciones destructivas/CTA fuertes.
-  ── */
-  --clr-primary: #2e9e2d;
-  /* verde oscurecido para WCAG AA */
+  /* ── MEJORA — Roles semánticos unificados ── */
+  --color-brand:    #2A398D;   /* azul → identidad, nav, headers */
+  --color-action:   #c0171d;   /* rojo → botón primario, CTA */
+  --color-link:     #2e9e2d;   /* verde → links, confirmados, éxito */
+  --color-text:     #474A4A;   /* cuerpo */
+  --color-muted:    #6b7a80;   /* secundario / muted */
+  --color-surface:  #ffffff;   /* fondo principal */
+  --color-surface-alt: #f2f4f5; /* fondo alternativo */
+
+  /* Aliases para compatibilidad (Legacy) */
+  --clr-primary: var(--color-link);
   --clr-primary-light: #5edb5c;
-  --clr-primary-dark: var(--wc-usa);
-  /* azul USA para headers/nav */
-  --clr-action: #c0171d;
-  /* rojo oscurecido para CTA (era --clr-maroon) */
+  --clr-primary-dark: var(--color-brand);
+  --clr-action: var(--color-action);
   --clr-action-hover: #e82028;
   --clr-accent: var(--wc-canada);
-  /* Aliases de compatibilidad para no romper componentes existentes */
-  --clr-maroon: var(--clr-action);
+  --clr-maroon: var(--color-action);
   --clr-maroon-light: var(--clr-action-hover);
 
   --clr-gold: #FFD700;
   --clr-silver: #C0C0C0;
   --clr-bronze: #CD7F32;
 
-  /* ── MEJORA 2: Colores de texto con contraste WCAG AA ──────────────────
-     #6b7a80 sobre blanco = 3.8:1 (insuficiente para texto normal <18px)
-     #4a5e66 sobre blanco = 5.2:1 (pasa WCAG AA)
-  ── */
-  --clr-text-muted: #4a5e66;
-  /* era #6b7a80 — subimos contraste */
-  --clr-text: var(--wc-neutral-dark);
+  --clr-text: var(--color-text);
+  --clr-text-muted: var(--color-muted);
 
   --clr-error-bg: #ffebeb;
   --clr-error-text: #c0392b;
@@ -46,9 +43,9 @@
   --clr-success-text: #1a7a4a;
   --clr-warning-bg: #fff8e1;
   --clr-warning-text: #7a5800;
-  /* era #8a6500 — mejorado contraste */
-  --clr-surface: #ffffff;
-  --clr-surface-alt: #f2f4f5;
+
+  --clr-surface: var(--color-surface);
+  --clr-surface-alt: var(--color-surface-alt);
   --clr-border: rgba(0, 0, 0, 0.08);
   --clr-border-strong: var(--wc-neutral-light);
 
@@ -65,19 +62,13 @@
   --font-body: 'DM Sans', sans-serif;
   --transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* ── MEJORA 7: Sistema de espaciado consistente ─────────────────────── */
+  /* Sistema de espaciado */
   --spacing-xs: 0.25rem;
-  /* 4px */
   --spacing-sm: 0.5rem;
-  /* 8px */
   --spacing-md: 1rem;
-  /* 16px */
   --spacing-lg: 1.5rem;
-  /* 24px */
   --spacing-xl: 2rem;
-  /* 32px */
   --spacing-2xl: 3rem;
-  /* 48px */
 
   --navbar-height: 60px;
 }
@@ -94,7 +85,7 @@
 /* ── Base ────────────────────────────────────────────────────────────────── */
 body {
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: 16px; /* MEJORA: 16px base para legibilidad mobile */
   color: var(--clr-text);
   background-color: #1e4620; /* Verde primario oscurecido */
   -webkit-font-smoothing: antialiased;
@@ -140,7 +131,7 @@ h2 {
   font-size: 1.7rem;
   font-weight: 700;
   letter-spacing: 0.5px;
-  color: var(--clr-primary-dark);
+  color: var(--color-brand);
   margin-bottom: var(--spacing-md);
   display: flex;
   align-items: center;
@@ -149,7 +140,154 @@ h2 {
 
 h2 i {
   color: var(--clr-primary-light);
-  font-size: 1.3rem;
+  /* Eliminado font-size fijo para permitir override o herencia limpia */
+}
+
+/* ── Clases Globales Unificadas ───────────────────────────────────────────── */
+.subtitulo {
+  font-size: 0.85rem;
+  color: var(--clr-text-muted);
+  line-height: 1.6;
+  margin-bottom: 1.5em;
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.grupo-tag {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--color-brand);
+  background: var(--color-surface-alt);
+  padding: 0.2em 0.8em;
+  border-radius: 20px;
+  border: 1.5px solid var(--clr-border-strong);
+}
+
+/* Dashboard / Stats Overview Global */
+.stats-overview {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1em;
+  margin-bottom: 2em;
+}
+
+.overview-card {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: 1.25em;
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.overview-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--clr-primary-light);
+}
+
+.overview-card i {
+  font-size: 1.8rem;
+  color: var(--clr-primary);
+  background: var(--clr-surface-alt);
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.overview-data {
+  display: flex;
+  flex-direction: column;
+}
+
+.overview-num {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--color-brand);
+  line-height: 1.1;
+}
+
+.overview-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--clr-text-muted);
+  margin-top: 2px;
+}
+
+/* Filtros de Grupo Global */
+.filtro-grupos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35em;
+  margin-bottom: 1.5em;
+}
+
+.btn-grupo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1.2px solid var(--clr-border-strong);
+  border-radius: 50%;
+  background: var(--clr-surface);
+  color: var(--clr-text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: var(--font-body);
+  padding: 0;
+}
+
+.btn-grupo:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
+.btn-grupo.activo { 
+  background: var(--clr-primary); 
+  color: white; 
+  border-color: var(--clr-primary);
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--clr-primary);
+}
+
+/* Excepción para botones de grupo con texto (ej: "Todos") */
+.btn-grupo-text, 
+.btn-grupo:first-child {
+  width: auto;
+  padding: 0 1.25em;
+  border-radius: 20px;
+}
+
+/* Tablas Responsivas Utility */
+.table-container {
+  border: 1px solid var(--clr-border-strong);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  background: var(--clr-surface);
+}
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
 /* ── Navbar ──────────────────────────────────────────────────────────────── */

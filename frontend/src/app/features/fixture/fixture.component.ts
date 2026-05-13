@@ -82,7 +82,7 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
                       <td class="th-num col-muted">{{ partido.numero }}</td>
                       <td class="td-equipo">
                         <div class="equipo-vertical">
-                          <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" class="flag" width="20" height="13" />
+                          <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" class="flag" width="24" height="16" />
                           <span class="equipo-txt">{{ partido.equipoLocalShow | shortCountry }}</span>
                         </div>
                       </td>
@@ -95,7 +95,7 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
                       </td>
                       <td class="td-equipo">
                         <div class="equipo-vertical">
-                          <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow" class="flag" width="20" height="13" />
+                          <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow" class="flag" width="24" height="16" />
                           <span class="equipo-txt">{{ partido.equipoVisitanteShow | shortCountry }}</span>
                         </div>
                       </td>
@@ -156,14 +156,7 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
   `,
   styles: [`
     /* ── Subtítulo ───────────────────────────────────────────────────────── */
-    .subtitulo {
-      font-size: 0.85rem;
-      color: var(--clr-text-muted);
-      margin-bottom: 1.5em;
-      display: flex;
-      align-items: center;
-      gap: 0.4em;
-    }
+    /* .subtitulo movido a global styles.css */
 
     /* ── Tabs de fase ────────────────────────────────────────────────────── */
     .fase-tabs {
@@ -219,21 +212,7 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
       margin-bottom: 1.25em;
     }
 
-    .btn-grupo {
-      padding: 0.3em 0.8em;
-      border: 1px solid var(--clr-border-strong);
-      border-radius: 20px;
-      background: var(--clr-surface);
-      color: var(--clr-text-muted);
-      font-size: 0.75rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: var(--transition);
-      font-family: var(--font-body);
-    }
-
-    .btn-grupo:hover { border-color: var(--wc-mexico); color: var(--wc-mexico); }
-    .btn-grupo.activo { border-color: var(--wc-mexico); background: var(--wc-mexico); color: white; }
+    /* .btn-grupo movido a global styles.css */
 
     /* ── Groups grid ─────────────────────────────────────────────────────── */
     .groups-grid { gap: 1.25em; }

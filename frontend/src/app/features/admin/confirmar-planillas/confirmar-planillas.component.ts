@@ -135,10 +135,7 @@ interface PaginatedResponse {
     </main>
   `,
   styles: [`
-    .estado-vacio { text-align: center; padding: 4em 2em; }
-    .icono-vacio { font-size: 3rem; color: var(--clr-border-strong); margin-bottom: 0.5em; display: block; }
-    .titulo-vacio { font-family: var(--font-display); font-size: 1.3rem; color: var(--clr-text-muted); margin-bottom: 0.4em; }
-    .desc-vacio { font-size: 0.875rem; color: var(--clr-text-muted); max-width: 340px; margin: 0 auto; line-height: 1.6; }
+    /* .estado-vacio movido a global styles.css */
 
     .controles-bar { display: flex; align-items: center; justify-content: space-between; gap: 1em; padding: 0.85em 1.1em; background: var(--clr-surface-alt); border: 1px solid var(--clr-border-strong); border-radius: var(--radius-md); margin-bottom: 1.25em; }
     .controles-izq { display: flex; align-items: center; gap: 0.85em; }
