@@ -76,7 +76,7 @@
         </span>
         }
         <div class="partido-row view-mode" [class.fila-acierto]="esAcierto(partido.id)"
-          [class.fila-desacierto]="!esAcierto(partido.id)">
+          [class.fila-desacierto]="esDesacierto(partido.id)">
           <!-- Número -->
           <span class="partido-num">{{ partido.numero }}</span>
 

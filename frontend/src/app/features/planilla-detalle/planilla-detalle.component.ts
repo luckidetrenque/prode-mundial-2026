@@ -102,6 +102,12 @@ export class PlanillaDetalleComponent implements OnInit {
     return pred !== null && real !== null && pred === real;
   }
 
+  esDesacierto(partidoId: number): boolean {
+    const pred = this.getPrediccion(partidoId);
+    const real = this.getResultadoReal(partidoId);
+    return pred !== null && real !== null && pred !== real;
+  }
+
   descargarPDF(): void {
     const p = this.planilla();
     if (!p) return;
