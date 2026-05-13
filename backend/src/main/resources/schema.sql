@@ -149,11 +149,11 @@ ON CONFLICT (id) DO NOTHING;
 SELECT setval('usuarios_id_seq', (SELECT MAX(id) FROM usuarios));
 
 -- ─── Resetear base de datos ───────────────────────────────────────────────────────────
-DELETE FROM predicciones;
+-- DELETE FROM predicciones;
 
-DELETE FROM planillas;
+-- DELETE FROM planillas;
 
-DELETE FROM resultados;
+-- DELETE FROM resultados;
 
-DELETE FROM usuarios
-	WHERE usuarios.es_admin = false;
+-- DELETE FROM usuarios
+-- 	WHERE usuarios.es_admin = false;
