@@ -289,71 +289,84 @@ public class EmailService {
           <meta charset="UTF-8"/>
           <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         </head>
-        <body style="margin:0;padding:0;background:#f2f4f5;font-family:'DM Sans',Arial,sans-serif;">
+        <body style="margin:0;padding:0;background:#f2f4f5;font-family:'DM Sans',Arial,sans-serif;color:#474A4A;">
           <table width="100%%" cellpadding="0" cellspacing="0" style="background:#f2f4f5;padding:32px 16px;">
             <tr><td align="center">
               <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
 
-                <!-- Header -->
+                <!-- Header Gradient -->
                 <tr>
-                  <td style="background:linear-gradient(135deg,#2A398D 0%%,#1a237e 100%%);padding:36px 40px;text-align:center;">
-                    <div style="font-size:48px;margin-bottom:12px;">⚽</div>
-                    <h1 style="margin:0;font-family:Arial,sans-serif;font-size:28px;font-weight:800;color:#ffffff;letter-spacing:0.5px;">
-                      PRODE MUNDIAL 2026
+                  <td style="background:linear-gradient(135deg,#2A398D 0%%,#1a237e 100%%);padding:32px 40px;text-align:center;">
+                    <div style="font-size:40px;margin-bottom:8px;">🏆</div>
+                    <h1 style="margin:0;font-family:Arial,sans-serif;font-size:26px;font-weight:800;color:#ffffff;letter-spacing:1px;text-transform:uppercase;">
+                      Prode Mundial 2026
                     </h1>
-                    <p style="margin:8px 0 0;font-size:14px;color:rgba(255,255,255,0.75);letter-spacing:1px;text-transform:uppercase;">
-                      Tus predicciones
+                    <p style="margin:4px 0 0;font-size:12px;color:rgba(255,255,255,0.7);letter-spacing:1.5px;text-transform:uppercase;">
+                      Confirmación de Predicciones
                     </p>
                   </td>
                 </tr>
 
-                <!-- Info planilla -->
+                <!-- Planilla Header Card (Simulando el componente UI) -->
                 <tr>
-                  <td style="padding:36px 40px 24px;">
-                    <h2 style="margin:0 0 8px;font-size:22px;color:#2A398D;">
-                      ¡Hola, %s! 🎉
-                    </h2>
-                    <p style="margin:0 0 20px;font-size:15px;color:#474A4A;line-height:1.6;">
-                      Aquí están todas tus predicciones para la fase de grupos del Mundial 2026.
-                      ¡Guardá este email como respaldo!
-                    </p>
+                  <td style="padding:32px 40px 0;">
+                    <div style="background:#ffffff; border:1px solid #D1D4D1; border-radius:12px; padding:20px 24px; box-shadow:0 2px 8px rgba(0,0,0,0.05); margin-bottom:24px;">
+                      <table width="100%%" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td>
+                            <div style="display:inline-block; background:#f2f4f5; color:#c0171d; padding:2px 10px; border-radius:20px; font-size:11px; font-weight:700; letter-spacing:1px; margin-bottom:8px; border:1px solid rgba(192,23,29,0.1);">
+                              PLANILLA #%d
+                            </div>
+                            <h2 style="margin:0; font-size:24px; color:#2A398D; font-family:Arial, sans-serif;">%s</h2>
+                            <p style="margin:4px 0 0; font-size:14px; color:#4a5e66;">¡Tu planilla ya está confirmada!</p>
+                          </td>
+                          <td style="text-align:right; vertical-align:middle;">
+                            <div style="background:#e8f8ef; color:#1a7a4a; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:600; display:inline-block;">
+                              <span style="margin-right:4px;">✔️</span> Confirmada
+                            </div>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
 
-                    <!-- Badge código -->
-                    <table cellpadding="0" cellspacing="0" style="background:#f2f4f5;border:2px dashed #c0171d;border-radius:12px;margin-bottom:24px;">
-                      <tr>
-                        <td style="padding:16px 24px;text-align:center;">
-                          <p style="margin:0 0 4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9e9e9e;">
-                            Código de planilla
-                          </p>
-                          <p style="margin:0;font-family:monospace;font-size:32px;font-weight:700;color:#c0171d;letter-spacing:2px;">
-                            #%d
-                          </p>
-                        </td>
-                      </tr>
-                    </table>
+                    <div style="margin-bottom:24px;">
+                      <p style="margin:0; font-size:14px; color:#4a5e66; line-height:1.6;">
+                        <span style="color:#2A398D; font-weight:700;">ℹ️ Información:</span> Abajo encontrás el detalle de tus predicciones agrupadas por zona. Guardá este correo como comprobante oficial de tu participación.
+                      </p>
+                    </div>
                   </td>
                 </tr>
 
-                <!-- Predicciones por grupo -->
+                <!-- Predicciones -->
                 <tr>
-                  <td style="padding:0 40px 32px;">
+                  <td style="padding:0 40px 20px;">
                     %s
                   </td>
                 </tr>
 
-                <!-- Leyenda -->
+                <!-- Leyenda de colores -->
                 <tr>
                   <td style="padding:0 40px 32px;">
-                    <table cellpadding="0" cellspacing="0" style="background:#f8f9fa;border-radius:8px;padding:12px 16px;width:100%%;">
+                    <table width="100%%" cellpadding="0" cellspacing="0" style="background:#fafafa; border-radius:8px; border:1px solid #e0e0e0; padding:16px;">
                       <tr>
                         <td>
-                          <p style="margin:0 0 6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9e9e9e;">Leyenda</p>
-                          <p style="margin:0;font-size:13px;color:#474A4A;">
-                            <span style="background:#2e9e2d;color:white;padding:2px 8px;border-radius:4px;font-weight:700;margin-right:4px;">L</span> Gana Local &nbsp;&nbsp;
-                            <span style="background:#2A398D;color:white;padding:2px 8px;border-radius:4px;font-weight:700;margin-right:4px;">E</span> Empate &nbsp;&nbsp;
-                            <span style="background:#c0171d;color:white;padding:2px 8px;border-radius:4px;font-weight:700;margin-right:4px;">V</span> Gana Visitante &nbsp;&nbsp;
-                            <span style="background:#ffc107;color:#856404;padding:2px 8px;border-radius:4px;font-weight:700;font-size:11px;">⚡ X2</span> Partido doble puntaje
-                          </p>
+                          <p style="margin:0 0 10px; font-size:10px; font-weight:700; text-transform:uppercase; color:#9e9e9e; letter-spacing:1px;">Referencias</p>
+                          <table cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td style="font-size:12px; color:#474A4A; padding-right:15px;">
+                                <span style="display:inline-block; width:18px; height:18px; line-height:18px; background:rgba(46,158,45,0.15); border:1.5px solid #2e9e2d; color:#2e9e2d; border-radius:50%%; text-align:center; font-size:9px; font-weight:800; margin-right:5px;">L</span> Local
+                              </td>
+                              <td style="font-size:12px; color:#474A4A; padding-right:15px;">
+                                <span style="display:inline-block; width:18px; height:18px; line-height:18px; background:rgba(42,57,141,0.12); border:1.5px solid #2A398D; color:#2A398D; border-radius:50%%; text-align:center; font-size:9px; font-weight:800; margin-right:5px;">E</span> Empate
+                              </td>
+                              <td style="font-size:12px; color:#474A4A; padding-right:15px;">
+                                <span style="display:inline-block; width:18px; height:18px; line-height:18px; background:rgba(192,23,29,0.12); border:1.5px solid #c0171d; color:#c0171d; border-radius:50%%; text-align:center; font-size:9px; font-weight:800; margin-right:5px;">V</span> Visitante
+                              </td>
+                              <td style="font-size:12px; color:#474A4A;">
+                                <span style="background:#ffc107; color:#856404; font-size:9px; font-weight:800; padding:2px 6px; border-radius:4px; margin-right:5px;">⚡ X2</span> Doble Puntaje
+                              </td>
+                            </tr>
+                          </table>
                         </td>
                       </tr>
                     </table>
@@ -362,10 +375,11 @@ public class EmailService {
 
                 <!-- Footer -->
                 <tr>
-                  <td style="background:#f8f9fa;padding:24px 40px;border-top:1px solid #e0e0e0;text-align:center;">
+                  <td style="background:#f8f9fa;padding:32px 40px;border-top:1px solid #e0e0e0;text-align:center;">
                     <p style="margin:0;font-size:12px;color:#9e9e9e;line-height:1.8;">
-                      Prode Mundial 2026 — Canadá · Estados Unidos · México<br/>
-                      11 de junio – 19 de julio de 2026
+                      Este es un correo automático, por favor no lo respondas.<br/>
+                      <strong>Prode Mundial 2026</strong> — Canadá · Estados Unidos · México<br/>
+                      Sitio Oficial: <a href="https://prode-mundial-2026-62343.web.app" style="color:#2A398D; text-decoration:none; font-weight:600;">prode-mundial-2026.web.app</a>
                     </p>
                   </td>
                 </tr>
@@ -377,76 +391,95 @@ public class EmailService {
         </html>
         """
         .formatted(
-            nombreCompleto,
             planilla.getCodigo(),
+            nombreCompleto,
             tablaHtml.toString());
   }
 
   private String buildGrupoHtml(String grupo, List<Prediccion> predicciones) {
     StringBuilder sb = new StringBuilder();
+    String baseUrl = "https://prode-mundial-2026-62343.web.app/";
 
     sb.append(
         """
-            <table width="100%%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;border-radius:10px;overflow:hidden;border:1px solid #e0e0e0;">
-              <tr>
-                <td style="background:linear-gradient(to right,#2A398D,#3a4bb0);padding:10px 16px;">
-                  <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.7);text-transform:uppercase;">GRUPO</p>
-                  <p style="margin:0;font-family:Arial,sans-serif;font-size:22px;font-weight:800;color:#ffffff;">%s</p>
-                </td>
-              </tr>
-            """
-            .formatted(grupo));
+        <table width="100%%" cellpadding="0" cellspacing="0" style="margin-bottom:24px; border:1px solid #D1D4D1; border-radius:12px; overflow:hidden; background:#ffffff; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+          <tr>
+            <td style="background:linear-gradient(to right, #2A398D, #3a4bb0); padding:12px 20px;">
+              <table width="100%%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <span style="font-size:10px; font-weight:700; color:rgba(255,255,255,0.7); letter-spacing:2px; text-transform:uppercase; display:block;">GRUPO</span>
+                    <span style="font-size:22px; font-weight:800; color:#ffffff; font-family:Arial, sans-serif;">%s</span>
+                  </td>
+                  <td style="text-align:right;">
+                    <span style="font-size:18px;">⚽</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0;">
+              <table width="100%%" cellpadding="0" cellspacing="0">
+        """.formatted(grupo));
 
     for (Prediccion pred : predicciones) {
-      String local = pred.getPartido().getEquipoLocal() != null
-          ? pred.getPartido().getEquipoLocal().getNombreShow()
-          : "TBD";
-      String visitante = pred.getPartido().getEquipoVisitante() != null
-          ? pred.getPartido().getEquipoVisitante().getNombreShow()
-          : "TBD";
-      boolean esX2 = pred.getPartido().getMultiplicador() != null
-          && pred.getPartido().getMultiplicador() > 1;
+      var partido = pred.getPartido();
+      String localName = partido.getEquipoLocal() != null ? partido.getEquipoLocal().getNombreShow() : "TBD";
+      String visitanteName = partido.getEquipoVisitante() != null ? partido.getEquipoVisitante().getNombreShow() : "TBD";
+      
+      String flagLocal = partido.getEquipoLocal() != null ? baseUrl + partido.getEquipoLocal().getBanderaUrl() : "";
+      String flagVisitante = partido.getEquipoVisitante() != null ? baseUrl + partido.getEquipoVisitante().getBanderaUrl() : "";
 
+      boolean esX2 = partido.getMultiplicador() != null && partido.getMultiplicador() > 1;
       String resultado = pred.getPrediccion().name();
-      String color = switch (resultado) {
-        case "LOCAL" -> "#2e9e2d";
-        case "EMPATE" -> "#2A398D";
-        case "VISITANTE" -> "#c0171d";
-        default -> "#666";
-      };
-      String label = switch (resultado) {
-        case "LOCAL" -> "L";
-        case "EMPATE" -> "E";
-        case "VISITANTE" -> "V";
-        default -> "?";
-      };
-      String descripcion = switch (resultado) {
-        case "LOCAL" -> "Gana " + local;
-        case "EMPATE" -> "Empate";
-        case "VISITANTE" -> "Gana " + visitante;
-        default -> "-";
-      };
+
+      // Estilos para los botones L E V
+      String styleL = "display:inline-block; width:26px; height:26px; line-height:26px; border-radius:50%%; border:1.5px solid #D1D4D1; font-size:11px; font-weight:700; color:#ccc; background:#ffffff; text-align:center;";
+      String styleE = "display:inline-block; width:26px; height:26px; line-height:26px; border-radius:50%%; border:1.5px solid #D1D4D1; font-size:11px; font-weight:700; color:#ccc; background:#ffffff; text-align:center;";
+      String styleV = "display:inline-block; width:26px; height:26px; line-height:26px; border-radius:50%%; border:1.5px solid #D1D4D1; font-size:11px; font-weight:700; color:#ccc; background:#ffffff; text-align:center;";
+
+      if (resultado.equals("LOCAL")) {
+        styleL = "display:inline-block; width:26px; height:26px; line-height:26px; border-radius:50%%; border:1.5px solid #2e9e2d; font-size:11px; font-weight:800; color:#2e9e2d; background:rgba(46, 158, 45, 0.15); text-align:center; box-shadow:0 2px 4px rgba(46, 158, 45, 0.2);";
+      } else if (resultado.equals("EMPATE")) {
+        styleE = "display:inline-block; width:26px; height:26px; line-height:26px; border-radius:50%%; border:1.5px solid #2A398D; font-size:11px; font-weight:800; color:#2A398D; background:rgba(42, 57, 141, 0.12); text-align:center; box-shadow:0 2px 4px rgba(42, 57, 141, 0.15);";
+      } else if (resultado.equals("VISITANTE")) {
+        styleV = "display:inline-block; width:26px; height:26px; line-height:26px; border-radius:50%%; border:1.5px solid #c0171d; font-size:11px; font-weight:800; color:#c0171d; background:rgba(192, 23, 29, 0.12); text-align:center; box-shadow:0 2px 4px rgba(192, 23, 29, 0.15);";
+      }
 
       sb.append(
           """
               <tr style="border-bottom:1px solid #f0f0f0;">
-                <td style="padding:10px 16px;">
+                <td style="padding:12px 16px;">
                   <table width="100%%" cellpadding="0" cellspacing="0">
                     <tr>
-                      <td style="width:28px;font-size:11px;font-weight:700;color:#9e9e9e;vertical-align:middle;">#%d</td>
-                      <td style="vertical-align:middle;padding:0 8px;">
-                        <table cellpadding="0" cellspacing="0">
-                          <tr>
-                            <td style="font-size:13px;font-weight:600;color:#474A4A;text-align:right;padding-right:8px;">%s</td>
-                            <td style="font-size:10px;color:#9e9e9e;white-space:nowrap;padding:0 4px;">vs</td>
-                            <td style="font-size:13px;font-weight:600;color:#474A4A;padding-left:8px;">%s</td>
-                            %s
-                          </tr>
-                        </table>
+                      <!-- Número y X2 -->
+                      <td style="width:35px; vertical-align:middle;">
+                        <div style="font-size:10px; font-weight:700; color:#9e9e9e;">#%d</div>
+                        %s
                       </td>
-                      <td style="white-space:nowrap;text-align:right;vertical-align:middle;">
-                        <span style="background:%s;color:white;font-weight:800;font-size:14px;width:28px;height:28px;border-radius:50%%;display:inline-block;line-height:28px;text-align:center;">%s</span>
-                        <span style="font-size:12px;color:#474A4A;margin-left:8px;">%s</span>
+
+                      <!-- Equipo Local -->
+                      <td style="text-align:right; vertical-align:middle; padding-right:8px;">
+                        <span style="font-size:13px; font-weight:600; color:#474A4A; text-transform:uppercase;">%s</span>
+                      </td>
+                      <td style="width:30px; vertical-align:middle;">
+                        %s
+                      </td>
+
+                      <!-- Opciones L E V -->
+                      <td style="width:100px; text-align:center; vertical-align:middle; background:#fafafa; border-left:1px solid #f0f0f0; border-right:1px solid #f0f0f0; padding:4px 0;">
+                        <span style="%s">L</span>
+                        <span style="%s">E</span>
+                        <span style="%s">V</span>
+                      </td>
+
+                      <!-- Equipo Visitante -->
+                      <td style="width:30px; vertical-align:middle; padding-left:8px;">
+                        %s
+                      </td>
+                      <td style="text-align:left; vertical-align:middle;">
+                        <span style="font-size:13px; font-weight:600; color:#474A4A; text-transform:uppercase;">%s</span>
                       </td>
                     </tr>
                   </table>
@@ -454,15 +487,17 @@ public class EmailService {
               </tr>
               """
               .formatted(
-                  pred.getPartido().getNumero(),
-                  local,
-                  visitante,
-                  esX2 ? "<td style=\"padding-left:8px;\"><span style=\"background:#ffc107;color:#856404;font-size:10px;font-weight:800;padding:2px 6px;border-radius:4px;\">⚡X2</span></td>"
-                      : "",
-                  color, label, descripcion));
+                  partido.getNumero(),
+                  esX2 ? "<div style=\"background:#ffc107; color:#856404; font-size:8px; font-weight:800; padding:1px 3px; border-radius:3px; display:inline-block; margin-top:2px;\">⚡X2</div>" : "",
+                  localName,
+                  flagLocal.isEmpty() ? "" : "<img src=\"" + flagLocal + "\" width=\"24\" height=\"16\" style=\"border-radius:2px; border:1px solid #eee;\" />",
+                  styleL, styleE, styleV,
+                  flagVisitante.isEmpty() ? "" : "<img src=\"" + flagVisitante + "\" width=\"24\" height=\"16\" style=\"border-radius:2px; border:1px solid #eee;\" />",
+                  visitanteName
+              ));
     }
 
-    sb.append("</table>");
+    sb.append("      </table>\n    </td>\n  </tr>\n</table>");
     return sb.toString();
   }
-}
+}
