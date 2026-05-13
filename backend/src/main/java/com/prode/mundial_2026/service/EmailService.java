@@ -28,7 +28,7 @@ public class EmailService {
   @Value("${app.email.from}")
   private String emailFrom;
 
-  @Value("${app.email.from-name:Prode Mundial 2026}")
+  @Value("${app.email.from-name}")
   private String emailFromName;
 
   /**
@@ -57,9 +57,11 @@ public class EmailService {
     try {
       enviarEmailReglamento(emailDestino, nombreCompleto, planillaCompleta.getCodigo());
       log.info("Email reglamento enviado a {} (planilla {})", emailDestino, planillaCompleta.getCodigo());
+      System.out.println("Mail enviado con éxito");
     } catch (Exception e) {
       log.error("Error enviando email reglamento a {} (planilla {}): {}",
           emailDestino, planillaCompleta.getCodigo(), e.getMessage());
+      e.printStackTrace();
     }
 
     try {
