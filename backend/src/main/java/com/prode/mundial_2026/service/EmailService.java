@@ -402,84 +402,98 @@ public class EmailService {
 
     sb.append(
         """
-        <table width="100%%" cellpadding="0" cellspacing="0" style="margin-bottom:24px; border:1px solid #D1D4D1; border-radius:12px; overflow:hidden; background:#ffffff; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-          <tr>
-            <td style="background:linear-gradient(to right, #2A398D, #3a4bb0); padding:12px 20px;">
-              <table width="100%%" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td>
-                    <span style="font-size:10px; font-weight:700; color:rgba(255,255,255,0.7); letter-spacing:2px; text-transform:uppercase; display:block;">GRUPO</span>
-                    <span style="font-size:22px; font-weight:800; color:#ffffff; font-family:Arial, sans-serif;">%s</span>
-                  </td>
-                  <td style="text-align:right;">
-                    <span style="font-size:18px;">⚽</span>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:0;">
-              <table width="100%%" cellpadding="0" cellspacing="0">
-        """.formatted(grupo));
+            <table width="100%%" cellpadding="0" cellspacing="0" style="margin-bottom:24px; border:1px solid #D1D4D1; border-radius:12px; overflow:hidden; background:#ffffff; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+              <tr>
+                <td style="background:linear-gradient(to right, #2A398D, #3a4bb0); padding:10px 16px;">
+                  <table width="100%%" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td>
+                        <span style="font-size:10px; font-weight:700; color:rgba(255,255,255,0.7); letter-spacing:2px; text-transform:uppercase; display:block; margin-bottom:2px;">GRUPO</span>
+                        <span style="font-size:22px; font-weight:800; color:#ffffff; font-family:Arial, sans-serif;">%s</span>
+                      </td>
+                      <td style="text-align:right;">
+                        <span style="font-size:18px;">⚽</span>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0;">
+                  <table width="100%%" cellpadding="0" cellspacing="0">
+            """
+            .formatted(grupo));
 
     for (Prediccion pred : predicciones) {
       var partido = pred.getPartido();
       String localName = partido.getEquipoLocal() != null ? partido.getEquipoLocal().getNombreShow() : "TBD";
-      String visitanteName = partido.getEquipoVisitante() != null ? partido.getEquipoVisitante().getNombreShow() : "TBD";
-      
+      String visitanteName = partido.getEquipoVisitante() != null ? partido.getEquipoVisitante().getNombreShow()
+          : "TBD";
+
       String flagLocal = partido.getEquipoLocal() != null ? baseUrl + partido.getEquipoLocal().getBanderaUrl() : "";
-      String flagVisitante = partido.getEquipoVisitante() != null ? baseUrl + partido.getEquipoVisitante().getBanderaUrl() : "";
+      String flagVisitante = partido.getEquipoVisitante() != null
+          ? baseUrl + partido.getEquipoVisitante().getBanderaUrl()
+          : "";
 
       boolean esX2 = partido.getMultiplicador() != null && partido.getMultiplicador() > 1;
-      String resultado = pred.getPrediccion().name();
 
-      // Estilos para los botones L E V
-      String styleL = "display:inline-block; width:26px; height:26px; line-height:26px; border-radius:50%%; border:1.5px solid #D1D4D1; font-size:11px; font-weight:700; color:#ccc; background:#ffffff; text-align:center;";
-      String styleE = "display:inline-block; width:26px; height:26px; line-height:26px; border-radius:50%%; border:1.5px solid #D1D4D1; font-size:11px; font-weight:700; color:#ccc; background:#ffffff; text-align:center;";
-      String styleV = "display:inline-block; width:26px; height:26px; line-height:26px; border-radius:50%%; border:1.5px solid #D1D4D1; font-size:11px; font-weight:700; color:#ccc; background:#ffffff; text-align:center;";
+      // Comparación directa con el Enum para asegurar que se marquen correctamente
+      Prediccion.ResultadoPrediccion res = pred.getPrediccion();
 
-      if (resultado.equals("LOCAL")) {
-        styleL = "display:inline-block; width:26px; height:26px; line-height:26px; border-radius:50%%; border:1.5px solid #2e9e2d; font-size:11px; font-weight:800; color:#2e9e2d; background:rgba(46, 158, 45, 0.15); text-align:center; box-shadow:0 2px 4px rgba(46, 158, 45, 0.2);";
-      } else if (resultado.equals("EMPATE")) {
-        styleE = "display:inline-block; width:26px; height:26px; line-height:26px; border-radius:50%%; border:1.5px solid #2A398D; font-size:11px; font-weight:800; color:#2A398D; background:rgba(42, 57, 141, 0.12); text-align:center; box-shadow:0 2px 4px rgba(42, 57, 141, 0.15);";
-      } else if (resultado.equals("VISITANTE")) {
-        styleV = "display:inline-block; width:26px; height:26px; line-height:26px; border-radius:50%%; border:1.5px solid #c0171d; font-size:11px; font-weight:800; color:#c0171d; background:rgba(192, 23, 29, 0.12); text-align:center; box-shadow:0 2px 4px rgba(192, 23, 29, 0.15);";
+      // Estilos base (gris/inactivo)
+      String tdL = "background-color:#ffffff; border:1.5px solid #D1D4D1; color:#cccccc;";
+      String tdE = "background-color:#ffffff; border:1.5px solid #D1D4D1; color:#cccccc;";
+      String tdV = "background-color:#ffffff; border:1.5px solid #D1D4D1; color:#cccccc;";
+
+      // Aplicar estilos de "activo" según la predicción (usando HEX para
+      // compatibilidad)
+      if (res == Prediccion.ResultadoPrediccion.LOCAL) {
+        tdL = "background-color:#e8f8ef; border:1.5px solid #2e9e2d; color:#2e9e2d; font-weight:800;";
+      } else if (res == Prediccion.ResultadoPrediccion.EMPATE) {
+        tdE = "background-color:#e8eaf6; border:1.5px solid #2A398D; color:#2A398D; font-weight:800;";
+      } else if (res == Prediccion.ResultadoPrediccion.VISITANTE) {
+        tdV = "background-color:#ffebee; border:1.5px solid #c0171d; color:#c0171d; font-weight:800;";
       }
 
       sb.append(
           """
               <tr style="border-bottom:1px solid #f0f0f0;">
-                <td style="padding:12px 16px;">
+                <td style="padding:12px 10px;">
                   <table width="100%%" cellpadding="0" cellspacing="0">
                     <tr>
-                      <!-- Número y X2 -->
-                      <td style="width:35px; vertical-align:middle;">
-                        <div style="font-size:10px; font-weight:700; color:#9e9e9e;">#%d</div>
+                      <!-- Columna 1: #Num y X2 -->
+                      <td width="32" style="vertical-align:middle;">
+                        <div style="font-size:9px; color:#9e9e9e; font-weight:700;">#%d</div>
                         %s
                       </td>
 
-                      <!-- Equipo Local -->
-                      <td style="text-align:right; vertical-align:middle; padding-right:8px;">
-                        <span style="font-size:13px; font-weight:600; color:#474A4A; text-transform:uppercase;">%s</span>
+                      <!-- Columna 2: Equipo Local -->
+                      <td align="right" style="vertical-align:middle; padding-right:6px;">
+                        <span style="font-size:12px; font-weight:600; color:#474A4A; text-transform:uppercase;">%s</span>
                       </td>
-                      <td style="width:30px; vertical-align:middle;">
+                      <td width="24" style="vertical-align:middle;">
                         %s
                       </td>
 
-                      <!-- Opciones L E V -->
-                      <td style="width:100px; text-align:center; vertical-align:middle; background:#fafafa; border-left:1px solid #f0f0f0; border-right:1px solid #f0f0f0; padding:4px 0;">
-                        <span style="%s">L</span>
-                        <span style="%s">E</span>
-                        <span style="%s">V</span>
+                      <!-- Columna 3: L E V (CENTRADO) -->
+                      <td align="center" style="vertical-align:middle; padding:0 8px;">
+                        <table cellpadding="0" cellspacing="0" style="background:#f8f9fa; border-radius:15px; border:1px solid #f0f0f0; padding:2px 4px;">
+                          <tr>
+                            <td align="center" style="width:24px; height:24px; border-radius:12px; font-size:10px; %s">L</td>
+                            <td width="4"></td>
+                            <td align="center" style="width:24px; height:24px; border-radius:12px; font-size:10px; %s">E</td>
+                            <td width="4"></td>
+                            <td align="center" style="width:24px; height:24px; border-radius:12px; font-size:10px; %s">V</td>
+                          </tr>
+                        </table>
                       </td>
 
-                      <!-- Equipo Visitante -->
-                      <td style="width:30px; vertical-align:middle; padding-left:8px;">
+                      <!-- Columna 4: Equipo Visitante -->
+                      <td width="24" style="vertical-align:middle;">
                         %s
                       </td>
-                      <td style="text-align:left; vertical-align:middle;">
-                        <span style="font-size:13px; font-weight:600; color:#474A4A; text-transform:uppercase;">%s</span>
+                      <td align="left" style="vertical-align:middle; padding-left:6px;">
+                        <span style="font-size:12px; font-weight:600; color:#474A4A; text-transform:uppercase;">%s</span>
                       </td>
                     </tr>
                   </table>
@@ -488,16 +502,20 @@ public class EmailService {
               """
               .formatted(
                   partido.getNumero(),
-                  esX2 ? "<div style=\"background:#ffc107; color:#856404; font-size:8px; font-weight:800; padding:1px 3px; border-radius:3px; display:inline-block; margin-top:2px;\">⚡X2</div>" : "",
+                  esX2 ? "<div style=\"background:#ffc107; color:#856404; font-size:8px; font-weight:800; padding:1px 3px; border-radius:3px; display:inline-block;\">⚡X2</div>"
+                      : "",
                   localName,
-                  flagLocal.isEmpty() ? "" : "<img src=\"" + flagLocal + "\" width=\"24\" height=\"16\" style=\"border-radius:2px; border:1px solid #eee;\" />",
-                  styleL, styleE, styleV,
-                  flagVisitante.isEmpty() ? "" : "<img src=\"" + flagVisitante + "\" width=\"24\" height=\"16\" style=\"border-radius:2px; border:1px solid #eee;\" />",
-                  visitanteName
-              ));
+                  flagLocal.isEmpty() ? ""
+                      : "<img src=\"" + flagLocal
+                          + "\" width=\"24\" height=\"16\" style=\"border-radius:2px; display:block;\" />",
+                  tdL, tdE, tdV,
+                  flagVisitante.isEmpty() ? ""
+                      : "<img src=\"" + flagVisitante
+                          + "\" width=\"24\" height=\"16\" style=\"border-radius:2px; display:block;\" />",
+                  visitanteName));
     }
 
     sb.append("      </table>\n    </td>\n  </tr>\n</table>");
     return sb.toString();
   }
-}
+}

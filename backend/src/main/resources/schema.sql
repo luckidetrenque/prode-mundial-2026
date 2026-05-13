@@ -147,3 +147,13 @@ INSERT INTO usuarios (id, apellido, email, es_admin, nombre, password, token_ver
 ON CONFLICT (id) DO NOTHING;
 
 SELECT setval('usuarios_id_seq', (SELECT MAX(id) FROM usuarios));
+
+-- ─── Resetear base de datos ───────────────────────────────────────────────────────────
+DELETE FROM predicciones;
+
+DELETE FROM planillas;
+
+DELETE FROM resultados;
+
+DELETE FROM usuarios
+	WHERE usuarios.es_admin = false;

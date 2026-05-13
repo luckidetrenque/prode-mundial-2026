@@ -24,16 +24,17 @@ public class PlanillaService {
         @Transactional
         public PlanillaResponseDTO guardarPlanilla(PlanillaRequestDTO request) {
 
-                Usuario usuario = usuarioRepository
-                                .findByEmail(request.getEmail())
-                                .orElseGet(() -> {
-                                        Usuario nuevo = new Usuario();
-                                        nuevo.setNombre(request.getNombre().toUpperCase());
-                                        nuevo.setApellido(request.getApellido().toUpperCase());
-                                        nuevo.setEmail(request.getEmail());
-                                        nuevo.setEsAdmin(false);
-                                        return usuarioRepository.save(nuevo);
-                                });
+                Usuario usuario = new Usuario();
+                usuario.setNombre(request.getNombre().toUpperCase());
+                usuario.setApellido(request.getApellido().toUpperCase());
+                usuario.setEmail(request.getEmail());
+                usuario.setEsAdmin(false);
+                usuarioRepository.save(usuario);
+
+                // Usuario usuario = usuarioRepository
+                // .findByEmail(request.getEmail())
+                // .orElseGet(() -> {
+                // });
 
                 Planilla planilla = new Planilla();
                 planilla.setUsuario(usuario);
