@@ -182,6 +182,21 @@ import { PlanillaResponse } from '../../shared/models/planilla.model';
         font-size: 0.75rem;
         text-transform: uppercase;
       }
+
+      .header-nombre-content {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spacing-sm);
+      }
+
+      .buscador-inline {
+        max-width: 100%;
+        order: 2;
+      }
+
+      .total-chip {
+        order: 3;
+      }
     }
 
     .link-planilla {

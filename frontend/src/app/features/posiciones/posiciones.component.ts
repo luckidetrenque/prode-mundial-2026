@@ -450,6 +450,15 @@ import { Posicion } from '../../shared/models/posicion.model';
       .buscador-wrap { max-width: 100%; width: 100%; }
       .col-afil { display: none; }
     }
+
+    @media (max-width: 380px) {
+      .podio { gap: 4px; padding-top: 10px; }
+      .podio-medal { font-size: 1.2rem; }
+      .podio-base-1 { height: 50px; }
+      .podio-base-2 { height: 35px; }
+      .podio-base-3 { height: 25px; }
+      .podio-base { font-size: 1rem; }
+    }
   `]
 })
 export class PosicionesComponent implements OnInit {

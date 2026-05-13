@@ -16,7 +16,8 @@ export class ToastService {
 
   private showToast(message: string, type: Toast['type'], duration?: number): void {
     // Si no se especifica duración, usamos 6000ms para touch y 4000ms para desktop (error/warning usan sus propios defaults)
-    const defaultDuration = ('ontouchstart' in window) ? 6000 : 4000;
+    const isTouch = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+    const defaultDuration = isTouch ? 6000 : 4000;
     const finalDuration = duration ?? defaultDuration;
 
     const id = ++this.toastIdCounter;

@@ -130,7 +130,9 @@ export class App {
       const segundos = Math.floor((diff % (1000 * 60)) / 1000);
 
       // MEJORA: En pantallas muy chicas (<400px), mostramos solo días y horas para que no se corte
-      const isMobile = window.innerWidth < 400;
+      const isBrowser = typeof window !== 'undefined';
+      const isMobile = isBrowser && window.innerWidth < 400;
+      
       if (isMobile && dias > 0) {
         this.countdownText.set(`${dias}d ${horas}h`);
       } else {

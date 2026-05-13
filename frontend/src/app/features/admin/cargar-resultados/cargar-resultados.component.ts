@@ -163,7 +163,7 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
                     <span class="partido-n">#{{ partido.numero }}</span>
                     <div class="partido-equipo partido-equipo--local">
                       <span class="equipo-txt">{{ partido.equipoLocalShow }}</span>
-                      <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" class="flag" width="26" height="17" />
+                      <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" class="flag" width="24" height="16" />
                     </div>
                     <div class="opciones-resultado">
                       <button class="opcion-btn" 
@@ -183,7 +183,7 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
                         title="Visitante gana">V</button>
                     </div>
                     <div class="partido-equipo partido-equipo--visit">
-                      <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow" class="flag" width="26" height="17" />
+                      <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow" class="flag" width="24" height="16" />
                       <span class="equipo-txt">{{ partido.equipoVisitanteShow }}</span>
                     </div>
                     <div class="partido-accion">
