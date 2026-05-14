@@ -27,9 +27,9 @@ export const serverRoutes: ServerRoute[] = [
     path: 'admin/login',
     renderMode: RenderMode.Server,
   },
-  // Rutas públicas estáticas → pre-renderizadas en build time
+  // Rutas públicas → renderizado en el servidor (evita errores de prerender en build)
   {
     path: '**',
-    renderMode: RenderMode.Prerender,
+    renderMode: RenderMode.Server,
   },
 ];
