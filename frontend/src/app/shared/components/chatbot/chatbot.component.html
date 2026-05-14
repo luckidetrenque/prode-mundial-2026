@@ -1,0 +1,53 @@
+<div class="chatbot-container">
+  <!-- Floating Button -->
+  <button class="chatbot-fab" (click)="toggleChat()" [attr.aria-label]="isOpen ? 'Cerrar Chat' : 'Abrir Chat'">
+    <i class="fas" [class.fa-comments]="!isOpen" [class.fa-times]="isOpen"></i>
+  </button>
+
+  <!-- Chat Window -->
+  <div class="chatbot-window" *ngIf="isOpen">
+    <div class="chatbot-header">
+      <div class="header-info">
+        <i class="fas fa-robot"></i>
+        <h3>Asistente Prode 2026</h3>
+      </div>
+      <button class="close-btn" (click)="toggleChat()">&times;</button>
+    </div>
+    
+    <div class="chatbot-messages" #scrollMe>
+      <div *ngFor="let msg of messages" class="message" [ngClass]="msg.type">
+        <div class="message-bubble">
+          {{ msg.text }}
+        </div>
+      </div>
+      
+      <!-- Contact Admin Quick Action -->
+      <div class="contact-admin-card" *ngIf="messages.length < 5">
+        <p>¿Problemas técnicos o dudas con tu pago?</p>
+        <button (click)="contactAdmin()" class="contact-btn">
+          <i class="fas fa-envelope"></i>
+          Contactar Administrador
+        </button>
+      </div>
+
+      <div *ngIf="isLoading" class="message bot">
+        <div class="message-bubble loading">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="chatbot-input">
+      <input 
+        type="text" 
+        [(ngModel)]="userMessage" 
+        (keyup.enter)="sendMessage()" 
+        placeholder="Escribe tu duda aquí..."
+        [disabled]="isLoading"
+      />
+      <button (click)="sendMessage()" [disabled]="isLoading || !userMessage.trim()">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+  </div>
+</div>

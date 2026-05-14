@@ -50,6 +50,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/estadisticas/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/planillas/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/planillas").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/chatbot/ask").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/resultados/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/planillas/*/confirmar").hasRole("ADMIN")

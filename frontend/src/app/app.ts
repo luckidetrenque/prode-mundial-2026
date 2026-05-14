@@ -8,6 +8,7 @@ import { switchMap, of, catchError, timer } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { ToastContainerComponent } from './shared/components/toast-container/toast-container.component';
 import { ScrollToTopComponent } from './shared/components/scroll-to-top/scroll-to-top.component';
+import { ChatbotComponent } from './shared/components/chatbot/chatbot.component';
 
 const ROUTE_LABELS: Record<string, string> = {
   '/home': 'Inicio',
@@ -26,7 +27,7 @@ const ROUTE_LABELS: Record<string, string> = {
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ToastContainerComponent, ScrollToTopComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ToastContainerComponent, ScrollToTopComponent, ChatbotComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
