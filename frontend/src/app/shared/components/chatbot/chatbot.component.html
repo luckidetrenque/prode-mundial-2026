@@ -40,6 +40,8 @@
     <div class="chatbot-input">
       <input 
         type="text" 
+        id="chatInput"
+        name="chatInput"
         [(ngModel)]="userMessage" 
         (keyup.enter)="sendMessage()" 
         placeholder="Escribe tu duda aquí..."

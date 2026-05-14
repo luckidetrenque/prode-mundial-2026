@@ -100,6 +100,8 @@ import { Posicion } from '../../shared/models/posicion.model';
                       <i class="fas fa-magnifying-glass"></i>
                       <input
                         type="text"
+                        id="buscarPosicion"
+                        name="buscarPosicion"
                         class="buscador-input"
                         placeholder="Buscar..."
                         (input)="filtrar($event)"

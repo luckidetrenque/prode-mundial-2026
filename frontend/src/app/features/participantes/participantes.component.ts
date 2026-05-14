@@ -40,6 +40,8 @@ import { PlanillaResponse } from '../../shared/models/planilla.model';
                     <i class="fas fa-magnifying-glass"></i>
                     <input
                       type="text"
+                      id="buscarParticipante"
+                      name="buscarParticipante"
                       class="buscador-input"
                       placeholder="Buscar..."
                       (input)="filtrar($event)"
