@@ -28,6 +28,15 @@
               "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
               "src/styles.css"
             ],
+            "allowedCommonJsDependencies": [
+              "jspdf",
+              "canvg",
+              "html2canvas",
+              "rgbcolor",
+              "stackblur-canvas",
+              "core-js",
+              "raf"
+            ],
             "server": "src/main.server.ts",
             "outputMode": "server",
             "security": {
@@ -35,7 +44,8 @@
             },
             "ssr": {
               "entry": "src/server.ts"
-            }
+            },
+            "prerender": false
           },
           "configurations": {
             "production": {
@@ -57,7 +67,8 @@
                   "maximumError": "20kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "prerender": false
             },
             "development": {
               "fileReplacements": [
