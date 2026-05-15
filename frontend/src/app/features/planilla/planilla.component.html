@@ -88,16 +88,26 @@
       @for (grupo of grupos; track grupo) {
       <div class="group-table" role="region" [attr.aria-label]="'Grupo ' + grupo">
         <div class="group-caption">
-          <div class="caption-left">
-            <span class="group-label">GRUPO</span>
-            <span class="group-letter">{{ grupo }}</span>
+          <div class="caption-header-row">
+            <div class="caption-left">
+              <span class="group-label">GRUPO</span>
+              <span class="group-letter">{{ grupo }}</span>
+            </div>
+            @if (grupoCompletado(grupo)) {
+            <button type="button" class="btn-reset-grupo" (click)="resetearGrupo(grupo)"
+              title="Resetear grupo {{ grupo }}" aria-label="Resetear grupo {{ grupo }}">
+              <i class="fas fa-rotate-left"></i>
+            </button>
+            }
           </div>
-          @if (grupoCompletado(grupo)) {
-          <button type="button" class="btn-reset-grupo" (click)="resetearGrupo(grupo)"
-            title="Resetear grupo {{ grupo }}" aria-label="Resetear grupo {{ grupo }}">
-            <i class="fas fa-rotate-left"></i>
-          </button>
-          }
+          <div class="group-teams-mobile">
+            @for (eq of getEquiposDelGrupo(grupo); track eq.nombre) {
+              <div class="mobile-team-item">
+                <img [src]="eq.bandera" [alt]="eq.nombre" class="flag-mini" />
+                <span class="team-name-mini">{{ eq.nombre }}</span>
+              </div>
+            }
+          </div>
         </div>
 
         @for (partido of getPartidosPorGrupo(grupo); track partido.id) {

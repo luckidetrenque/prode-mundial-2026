@@ -108,7 +108,7 @@ import { Posicion } from '../../shared/models/posicion.model';
                       />
                     </div>
                     <span class="total-chip">
-                      ({{ posicionesFiltradasTotal() }} participants · {{ posiciones()[0]?.totalPartidos ?? 0 }} partidos jugados)
+                      {{ posiciones()[0]?.totalPartidos ?? 0 }} partidos jugados
                     </span>
                   </div>
                 </th>

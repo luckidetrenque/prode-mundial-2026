@@ -58,6 +58,14 @@
     <li role="listitem">
       <a routerLink="/estadisticas" routerLinkActive="activo" (click)="cerrarMenu()">Estadísticas</a>
     </li>
+    <li role="listitem" class="nav-admin-mobile">
+      <a routerLink="/admin" routerLinkActive="activo" (click)="cerrarMenu()">
+        <i class="fas fa-lock" aria-hidden="true" style="margin-right: 0.4em;"></i> Panel Admin
+        @if (pendientesCount() > 0) {
+          <span class="badge-notif-inline">{{ pendientesCount() }}</span>
+        }
+      </a>
+    </li>
   </ul>
 
 </nav>

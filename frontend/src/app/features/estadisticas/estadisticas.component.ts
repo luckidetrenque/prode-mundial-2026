@@ -143,10 +143,12 @@ import { EstadisticaPartido } from '../../shared/models/estadistica.model';
               </div>
 
               <!-- Favorito -->
-              <div class="stat-card-footer">
-                <span class="favorito-label">Favorito:</span>
-                <span class="favorito-valor">{{ getFavorito(stat) }}</span>
-              </div>
+              @if (getFavorito(stat)) {
+                <div class="stat-card-footer">
+                  <span class="favorito-label">Favorito:</span>
+                  <span class="favorito-valor">{{ getFavorito(stat) }}</span>
+                </div>
+              }
 
             </div>
           }
@@ -324,9 +326,22 @@ export class EstadisticasComponent implements OnInit {
   }
 
   getFavorito(stat: EstadisticaPartido): string {
-    const max = Math.max(stat.votosLocal, stat.votosEmpate, stat.votosVisitante);
-    if (max === stat.votosLocal)     return stat.equipoLocal;
-    if (max === stat.votosEmpate)    return 'Empate';
+    const { votosLocal, votosEmpate, votosVisitante, totalVotos } = stat;
+    if (totalVotos === 0) return '';
+
+    const max = Math.max(votosLocal, votosEmpate, votosVisitante);
+
+    // Verificamos si hay empate en el máximo
+    let countMax = 0;
+    if (votosLocal === max) countMax++;
+    if (votosEmpate === max) countMax++;
+    if (votosVisitante === max) countMax++;
+
+    // Si hay empate o el máximo es 0, no hay un favorito único
+    if (countMax > 1 || max === 0) return '';
+
+    if (max === votosLocal)     return stat.equipoLocal;
+    if (max === votosEmpate)    return 'Empate';
     return stat.equipoVisitante;
   }
 

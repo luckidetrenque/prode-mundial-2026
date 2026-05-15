@@ -104,10 +104,20 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
             <div class="grupo-bloque" role="region" [attr.aria-label]="'Grupo ' + grupo">
 
               <div class="grupo-header">
-                <span class="grupo-tag">GRUPO {{ grupo }}</span>
-                <span class="grupo-estado">
-                  {{ contarGuardadosEnGrupo(grupo) }}/{{ getPartidosPorGrupo(grupo).length }} jugados
-                </span>
+                <div class="header-main">
+                  <span class="grupo-tag">GRUPO {{ grupo }}</span>
+                  <span class="grupo-estado">
+                    {{ contarGuardadosEnGrupo(grupo) }}/{{ getPartidosPorGrupo(grupo).length }} jugados
+                  </span>
+                </div>
+                <div class="group-teams-mobile">
+                  @for (eq of getEquiposDelGrupo(grupo); track eq.nombre) {
+                    <div class="mobile-team-item">
+                      <img [src]="eq.bandera" [alt]="eq.nombre" class="flag-mini" />
+                      <span class="team-name-mini">{{ eq.nombre }}</span>
+                    </div>
+                  }
+                </div>
               </div>
 
               <div class="partidos-lista">
@@ -240,6 +250,8 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
       font-size: 0.75rem;
       color: var(--clr-text-muted);
     }
+
+    .group-teams-mobile { display: none; }
 
     /* ── Lista de partidos (Grid de 2 columnas) ──────────────────────────── */
     .partidos-lista {
@@ -392,6 +404,19 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
     }
 
     @media (max-width: 550px) {
+      .grupo-header { flex-direction: column; align-items: flex-start; gap: 0.5em; }
+      .group-teams-mobile { 
+        display: flex; 
+        flex-wrap: wrap; 
+        gap: 0.7em; 
+        width: 100%;
+        padding-top: 0.3em;
+        border-top: 1px solid var(--clr-border);
+      }
+      .mobile-team-item { display: flex; align-items: center; gap: 0.3em; }
+      .flag-mini { width: 16px; height: 11px; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+      .team-name-mini { color: var(--clr-text); font-size: 0.6rem; font-weight: 700; text-transform: uppercase; }
+
       .stats-overview { grid-template-columns: 1fr; }
       .equipo-txt { display: none; }
       .partido-row { grid-template-columns: 20px auto 80px auto 30px; }
@@ -450,6 +475,16 @@ export class ResultadosComponent implements OnInit {
 
   getPartidosPorGrupo(grupo: string): Partido[] {
     return this.partidos().filter(p => p.grupo === grupo);
+  }
+
+  getEquiposDelGrupo(grupo: string): { nombre: string, bandera: string }[] {
+    const partidos = this.getPartidosPorGrupo(grupo);
+    const equipos = new Map<string, string>();
+    partidos.forEach(p => {
+      if (p.equipoLocalShow) equipos.set(p.equipoLocalShow, p.equipoLocalBandera);
+      if (p.equipoVisitanteShow) equipos.set(p.equipoVisitanteShow, p.equipoVisitanteBandera);
+    });
+    return Array.from(equipos.entries()).map(([nombre, bandera]) => ({ nombre, bandera }));
   }
 
   getSeleccion(partidoId: number): string {

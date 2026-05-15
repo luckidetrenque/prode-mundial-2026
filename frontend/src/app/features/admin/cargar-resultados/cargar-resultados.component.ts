@@ -189,16 +189,16 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
                     <div class="partido-accion">
                       @if (resultadosGuardados().has(partido.id)) {
                         @if (editando() === partido.id) {
-                          <button class="btn btn-guardar-edit" [disabled]="!getSeleccion(partido.id) || guardando() === partido.id" (click)="guardar(partido.id)" title="Confirmar cambios">
+                          <button class="btn-accion-circular btn-guardar-edit" [disabled]="!getSeleccion(partido.id) || guardando() === partido.id" (click)="guardar(partido.id)" title="Confirmar cambios">
                             @if (guardando() === partido.id) { <i class="fas fa-spinner fa-spin"></i> } @else { <i class="fas fa-check"></i> }
                           </button>
-                          <button class="btn btn-cancelar-edit" (click)="cancelarEdicion(partido.id)" [disabled]="guardando() === partido.id" title="Cancelar edición"><i class="fas fa-xmark"></i></button>
+                          <button class="btn-accion-circular btn-cancelar-edit" (click)="cancelarEdicion(partido.id)" [disabled]="guardando() === partido.id" title="Cancelar edición"><i class="fas fa-xmark"></i></button>
                         } @else {
-                          <span class="badge-guardado" title="Resultado guardado"><i class="fas fa-check"></i></span>
-                          <button class="btn-editar" (click)="habilitarEdicion(partido.id)" title="Editar resultado"><i class="fas fa-pen"></i></button>
+                          <span class="btn-accion-circular badge-guardado" title="Resultado guardado"><i class="fas fa-check"></i></span>
+                          <button class="btn-accion-circular btn-editar" (click)="habilitarEdicion(partido.id)" title="Editar resultado"><i class="fas fa-pen"></i></button>
                         }
                       } @else {
-                        <button class="btn btn-guardar" [disabled]="!getSeleccion(partido.id) || guardando() === partido.id" (click)="guardar(partido.id)" title="Guardar resultado">
+                        <button class="btn-accion-circular btn-guardar" [disabled]="!getSeleccion(partido.id) || guardando() === partido.id" (click)="guardar(partido.id)" title="Guardar resultado">
                           @if (guardando() === partido.id) { <i class="fas fa-spinner fa-spin"></i> } @else { <i class="fas fa-floppy-disk"></i> }
                         </button>
                       }

@@ -459,10 +459,23 @@
   }
 
   .partido-row {
-    grid-template-columns: 20px auto 80px auto auto;
+    grid-template-columns: 20px auto 95px auto auto;
   }
 
   .partido-accion {
-    min-width: 90px;
+    min-width: 75px;
+    gap: 0.35em;
+  }
+
+  .btn-accion-circular {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+
+  .opcion-btn {
+    width: 25px;
+    height: 25px;
+    font-size: 0.58rem;
   }
 }

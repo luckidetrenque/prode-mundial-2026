@@ -62,8 +62,18 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
           @for (grupo of gruposMostrados(); track grupo) {
             <div class="group-table-wrap">
               <div class="group-caption">
-                <span class="group-label">GRUPO</span>
-                <span class="group-letter">{{ grupo }}</span>
+                <div class="caption-header">
+                  <span class="group-label">GRUPO</span>
+                  <span class="group-letter">{{ grupo }}</span>
+                </div>
+                <div class="group-teams-mobile">
+                  @for (eq of getEquiposDelGrupo(grupo); track eq.nombre) {
+                    <div class="mobile-team-item">
+                      <img [src]="eq.bandera" [alt]="eq.nombre" class="flag-mini" />
+                      <span class="team-name-mini">{{ eq.nombre | shortCountry }}</span>
+                    </div>
+                  }
+                </div>
               </div>
               <table class="tabla-grupo">
                 <thead>
@@ -248,6 +258,8 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
       color: rgba(255,255,255,0.7);
     }
 
+    .group-teams-mobile { display: none; }
+
     .tabla-grupo { margin: 0; table-layout: fixed; }
     .tabla-grupo thead th { 
       background: #f8fafb; 
@@ -406,6 +418,20 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
 
     /* ── Responsive ──────────────────────────────────────────────────────── */
     @media (max-width: 640px) {
+      .group-caption { flex-direction: column; align-items: flex-start; gap: 0.6em; }
+      .group-teams-mobile { 
+        display: flex; 
+        flex-wrap: wrap; 
+        gap: 0.8em; 
+        width: 100%;
+        padding-top: 0.4em;
+        border-top: 1px solid rgba(255,255,255,0.1);
+      }
+      .mobile-team-item { display: flex; align-items: center; gap: 0.3em; }
+      .flag-mini { width: 18px; height: 12px; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+      .team-name-mini { color: white; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; }
+
+      .th-date    { width: 60px; } 
       .equipo-txt { display: none; }
       .th-sede    { display: none; }
       .elim-card  { grid-template-columns: 24px 1fr 36px 1fr; }
@@ -461,6 +487,16 @@ export class FixtureComponent implements OnInit {
 
   getPartidosPorGrupo(grupo: string): Partido[] {
     return this.todosLosPartidos.filter(p => p.grupo === grupo);
+  }
+
+  getEquiposDelGrupo(grupo: string): { nombre: string, bandera: string }[] {
+    const partidos = this.getPartidosPorGrupo(grupo);
+    const equipos = new Map<string, string>();
+    partidos.forEach(p => {
+      if (p.equipoLocalShow) equipos.set(p.equipoLocalShow, p.equipoLocalBandera);
+      if (p.equipoVisitanteShow) equipos.set(p.equipoVisitanteShow, p.equipoVisitanteBandera);
+    });
+    return Array.from(equipos.entries()).map(([nombre, bandera]) => ({ nombre, bandera }));
   }
 
   esJugado(partido: Partido): boolean {

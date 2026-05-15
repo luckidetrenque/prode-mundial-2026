@@ -109,6 +109,16 @@ export class PlanillaComponent implements OnInit {
     return this.partidos.filter(p => p.grupo === grupo);
   }
 
+  getEquiposDelGrupo(grupo: string): { nombre: string, bandera: string }[] {
+    const partidos = this.getPartidosPorGrupo(grupo);
+    const equipos = new Map<string, string>();
+    partidos.forEach(p => {
+      if (p.equipoLocalShow) equipos.set(p.equipoLocalShow, p.equipoLocalBandera);
+      if (p.equipoVisitanteShow) equipos.set(p.equipoVisitanteShow, p.equipoVisitanteBandera);
+    });
+    return Array.from(equipos.entries()).map(([nombre, bandera]) => ({ nombre, bandera }));
+  }
+
   // FIX #17: reemplaza la referencia del objeto para disparar reactividad
   seleccionar(partidoId: number, prediccion: ResultadoPrediccion): void {
     const id = Number(partidoId);

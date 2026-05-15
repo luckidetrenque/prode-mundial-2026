@@ -479,6 +479,26 @@ table {
   outline: none;
 }
 
+.nav-admin-mobile {
+  display: none;
+}
+
+.badge-notif-inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--clr-accent);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 800;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  padding: 0 4px;
+  margin-left: 0.5em;
+  vertical-align: middle;
+}
+
 /* ── Countdown Navbar ────────────────────────────────────────────────────── */
 .countdown-nav {
   display: flex;
@@ -916,8 +936,14 @@ input[type="radio"] {
   }
 
   .btn-admin {
-    margin-left: 0;
-    order: 2;
+    display: none;
+  }
+
+  .nav-admin-mobile {
+    display: block;
+    margin-top: 0.25em;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 0.25em;
   }
 
   .countdown-nav {
