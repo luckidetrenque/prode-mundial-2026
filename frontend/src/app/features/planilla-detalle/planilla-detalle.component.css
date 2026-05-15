@@ -249,6 +249,11 @@
 @media (max-width: 768px) {
   .planilla-header-card { flex-direction: column; align-items: flex-start; gap: 1em; }
   .groups-grid { grid-template-columns: 1fr; }
+  .header-acciones {
+    flex-direction: column;
+    gap: 0.8em;
+    align-items: stretch;
+  }
 }
 
 @media (max-width: 576px) {

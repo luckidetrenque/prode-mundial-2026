@@ -44,8 +44,7 @@
             },
             "ssr": {
               "entry": "src/server.ts"
-            },
-            "prerender": false
+            }
           },
           "configurations": {
             "production": {
@@ -67,8 +66,7 @@
                   "maximumError": "20kB"
                 }
               ],
-              "outputHashing": "all",
-              "prerender": false
+              "outputHashing": "all"
             },
             "development": {
               "fileReplacements": [

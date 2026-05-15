@@ -12,13 +12,20 @@
   --wc-neutral-dark: #474A4A;
 
   /* ── MEJORA — Roles semánticos unificados ── */
-  --color-brand:    #2A398D;   /* azul → identidad, nav, headers */
-  --color-action:   #c0171d;   /* rojo → botón primario, CTA */
-  --color-link:     #2e9e2d;   /* verde → links, confirmados, éxito */
-  --color-text:     #474A4A;   /* cuerpo */
-  --color-muted:    #6b7a80;   /* secundario / muted */
-  --color-surface:  #ffffff;   /* fondo principal */
-  --color-surface-alt: #f2f4f5; /* fondo alternativo */
+  --color-brand: #2A398D;
+  /* azul → identidad, nav, headers */
+  --color-action: #c0171d;
+  /* rojo → botón primario, CTA */
+  --color-link: #2e9e2d;
+  /* verde → links, confirmados, éxito */
+  --color-text: #474A4A;
+  /* cuerpo */
+  --color-muted: #6b7a80;
+  /* secundario / muted */
+  --color-surface: #ffffff;
+  /* fondo principal */
+  --color-surface-alt: #f2f4f5;
+  /* fondo alternativo */
 
   /* Aliases para compatibilidad (Legacy) */
   --clr-primary: var(--color-link);
@@ -85,9 +92,11 @@
 /* ── Base ────────────────────────────────────────────────────────────────── */
 body {
   font-family: var(--font-body);
-  font-size: 16px; /* MEJORA: 16px base para legibilidad mobile */
+  font-size: 16px;
+  /* MEJORA: 16px base para legibilidad mobile */
   color: var(--clr-text);
-  background-color: #1e4620; /* Verde primario oscurecido */
+  background-color: #1e4620;
+  /* Verde primario oscurecido */
   -webkit-font-smoothing: antialiased;
 }
 
@@ -149,7 +158,7 @@ h2 i {
   color: var(--clr-text-muted);
   line-height: 1.6;
   margin-bottom: 1.5em;
-  display: flex;
+  display: content;
   align-items: center;
   gap: 0.4em;
 }
@@ -233,15 +242,18 @@ h2 i {
     grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
   }
+
   .overview-card {
     padding: 0.85rem;
     gap: 0.75rem;
   }
+
   .overview-card i {
     width: 38px;
     height: 38px;
     font-size: 1.2rem;
   }
+
   .overview-num {
     font-size: 1.3rem;
   }
@@ -279,16 +291,20 @@ h2 i {
   padding: 0;
 }
 
-.btn-grupo:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
-.btn-grupo.activo { 
-  background: var(--clr-primary); 
-  color: white; 
+.btn-grupo:hover {
+  border-color: var(--clr-primary);
+  color: var(--clr-primary);
+}
+
+.btn-grupo.activo {
+  background: var(--clr-primary);
+  color: white;
   border-color: var(--clr-primary);
   box-shadow: 0 0 0 2px white, 0 0 0 4px var(--clr-primary);
 }
 
 /* Excepción para botones de grupo con texto (ej: "Todos") */
-.btn-grupo-text, 
+.btn-grupo-text,
 .btn-grupo:first-child {
   width: auto;
   padding: 0 1.25em;
