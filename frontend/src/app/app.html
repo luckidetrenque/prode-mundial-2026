@@ -17,7 +17,7 @@
     </div>
   </div>
 
-  <a routerLink="/admin" class="btn-admin" aria-label="Acceso al panel de administración">
+  <a [routerLink]="admin() ? '/admin' : '/admin/login'" class="btn-admin" aria-label="Acceso al panel de administración">
     <i class="fas fa-lock" aria-hidden="true"></i>
     <span>Admin</span>
     @if (pendientesCount() > 0) {
@@ -59,7 +59,7 @@
       <a routerLink="/estadisticas" routerLinkActive="activo" (click)="cerrarMenu()">Estadísticas</a>
     </li>
     <li role="listitem" class="nav-admin-mobile">
-      <a routerLink="/admin" routerLinkActive="activo" (click)="cerrarMenu()">
+      <a [routerLink]="admin() ? '/admin' : '/admin/login'" routerLinkActive="activo" (click)="cerrarMenu()">
         <i class="fas fa-lock" aria-hidden="true" style="margin-right: 0.4em;"></i> Panel Admin
         @if (pendientesCount() > 0) {
           <span class="badge-notif-inline">{{ pendientesCount() }}</span>
@@ -108,6 +108,6 @@
     <br/>
     <a routerLink="/reglamento">Reglamento</a>
     &nbsp;|&nbsp;
-    <a routerLink="/admin/login">Administración</a>
+    <a [routerLink]="admin() ? '/admin' : '/admin/login'">Administración</a>
   </p>
 </footer>
