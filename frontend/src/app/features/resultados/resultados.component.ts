@@ -19,18 +19,26 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
         Consultá los resultados oficiales de los partidos de la fase de grupos.
       </p>
 
-      <div class="referencia-estados">
-        <span class="ref-item"><i class="fas fa-check-circle" style="color:var(--clr-success-text)"></i> Finalizado</span>
-        <span class="ref-item"><i class="fas fa-clock" style="color:var(--clr-text-muted)"></i> Pendiente</span>
-      </div>
-
       @if (cargando()) {
         <div class="spinner-container" role="status" aria-label="Cargando datos...">
           <div class="spinner"></div>
         </div>
       }
 
-      @if (!cargando() && partidos().length > 0) {
+      @if (!cargando() && resultadosGuardados().size === 0) {
+        <div class="estado-vacio">
+          <i class="fas fa-futbol icono-vacio"></i>
+          <p class="titulo-vacio">Aún no hay resultados</p>
+          <p class="desc-vacio">Los resultados oficiales de los partidos aparecerán aquí a medida que se jueguen.</p>
+        </div>
+      }
+
+      @if (!cargando() && partidos().length > 0 && resultadosGuardados().size > 0) {
+        <div class="referencia-estados">
+          <span class="ref-item"><i class="fas fa-check-circle" style="color:var(--clr-success-text)"></i> Finalizado</span>
+          <span class="ref-item"><i class="fas fa-clock" style="color:var(--clr-text-muted)"></i> Pendiente</span>
+        </div>
+
 
         <!-- Resumen de progreso (Dashboard style) -->
         <div class="stats-overview">

@@ -175,17 +175,7 @@ import { Posicion } from '../../shared/models/posicion.model';
     </main>
   `,
   styles: [`
-    /* .subtitulo movido a global styles.css */
-
-    /* ── Estado vacío ────────────────────────────────────────────────────── */
-    .estado-vacio {
-      text-align: center;
-      padding: 4em 2em;
-    }
-
-    .icono-vacio { font-size: 3rem; color: var(--clr-border-strong); margin-bottom: 0.5em; display: block; }
-    .titulo-vacio { font-family: var(--font-display); font-size: 1.3rem; color: var(--clr-text-muted); margin-bottom: 0.4em; }
-    .desc-vacio { font-size: 0.875rem; color: var(--clr-text-muted); max-width: 360px; margin: 0 auto; line-height: 1.6; }
+    /* .subtitulo y .estado-vacio movidos a global styles.css */
 
     /* ── Podio ───────────────────────────────────────────────────────────── */
     .podio {

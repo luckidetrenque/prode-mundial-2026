@@ -22,7 +22,11 @@ import { PlanillaResponse } from '../../shared/models/planilla.model';
       }
 
       @if (!cargando() && planillas().length === 0) {
-        <p class="msg-warning">No hay planillas confirmadas todavía.</p>
+        <div class="estado-vacio">
+          <i class="fas fa-user-group icono-vacio"></i>
+          <p class="titulo-vacio">Sin participantes aún</p>
+          <p class="desc-vacio">No hay planillas confirmadas todavía.</p>
+        </div>
       }
 
       @if (!cargando() && planillas().length > 0) {

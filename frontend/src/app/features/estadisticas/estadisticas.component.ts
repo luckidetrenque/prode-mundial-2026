@@ -20,14 +20,15 @@ import { EstadisticaPartido } from '../../shared/models/estadistica.model';
         <div class="spinner-container"><div class="spinner"></div></div>
       }
 
-      @if (!cargando() && estadisticas().length === 0) {
-        <p class="msg-warning">
-          <i class="fas fa-circle-info"></i>
-          No hay planillas confirmadas aún. Las estadísticas aparecerán aquí cuando haya participantes.
-        </p>
+      @if (!cargando() && (estadisticas().length === 0 || totalPlanillas() === 0)) {
+        <div class="estado-vacio">
+          <i class="fas fa-chart-simple icono-vacio"></i>
+          <p class="titulo-vacio">Sin estadísticas aún</p>
+          <p class="desc-vacio">Las estadísticas aparecerán aquí cuando haya participantes confirmados.</p>
+        </div>
       }
 
-      @if (!cargando() && estadisticas().length > 0) {
+      @if (!cargando() && estadisticas().length > 0 && totalPlanillas() > 0) {
 
         <!-- Resumen general mejorado -->
         <div class="stats-overview">

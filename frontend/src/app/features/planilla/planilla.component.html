@@ -39,8 +39,10 @@
     <div class="exito-info-box">
       <i class="fas fa-circle-info" aria-hidden="true"></i>
       <div>
-        <p><strong>Guardá este número.</strong> Lo vas a necesitar para confirmar tu participación con el administrador.</p>
-        <p>También podés editar tus predicciones en cualquier momento <strong>antes de la confirmación</strong>, usando tu código y el email con el que te registraste.</p>
+        <p><strong>Guardá este número.</strong> Lo vas a necesitar para confirmar tu participación con el administrador.
+        </p>
+        <p>También podés editar tus predicciones en cualquier momento <strong>antes de la confirmación</strong>, usando
+          tu código y el email con el que te registraste.</p>
       </div>
     </div>
 
@@ -76,11 +78,7 @@
           <i class="fas fa-hashtag" style="color:var(--clr-primary-light);font-size:0.85rem"></i>
           Número de planilla
         </label>
-        <input
-          id="codigoBusqueda"
-          type="number"
-          formControlName="codigoBusqueda"
-          placeholder="Ej: 80358702"
+        <input id="codigoBusqueda" type="number" formControlName="codigoBusqueda" placeholder="Ej: 80358702"
           inputmode="numeric"
           [attr.aria-invalid]="formBusqueda.get('codigoBusqueda')?.invalid && formBusqueda.get('codigoBusqueda')?.touched"
           aria-describedby="codigo-busqueda-error" />
@@ -97,11 +95,7 @@
           <i class="fas fa-envelope" style="color:var(--clr-primary-light);font-size:0.85rem"></i>
           Email registrado
         </label>
-        <input
-          id="emailBusqueda"
-          type="email"
-          formControlName="emailBusqueda"
-          placeholder="ejemplo@correo.com"
+        <input id="emailBusqueda" type="email" formControlName="emailBusqueda" placeholder="ejemplo@correo.com"
           autocomplete="email"
           [attr.aria-invalid]="formBusqueda.get('emailBusqueda')?.invalid && formBusqueda.get('emailBusqueda')?.touched"
           aria-describedby="email-busqueda-error" />
@@ -126,9 +120,9 @@
         </button>
         <button type="submit" class="btn btn-primary" [disabled]="buscandoPlanilla()">
           @if (buscandoPlanilla()) {
-            <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Buscando...
+          <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Buscando...
           } @else {
-            <i class="fas fa-magnifying-glass" aria-hidden="true"></i> Buscar planilla
+          <i class="fas fa-magnifying-glass" aria-hidden="true"></i> Buscar planilla
           }
         </button>
       </div>
@@ -183,7 +177,8 @@
     <div class="edicion-banner-info">
       <span class="edicion-banner-titulo">Editando planilla</span>
       <span class="edicion-banner-detalle">
-        {{ planillaAEditar()!.nombre }} {{ planillaAEditar()!.apellido }} · Código <strong>{{ planillaAEditar()!.codigo }}</strong>
+        {{ planillaAEditar()!.nombre }} {{ planillaAEditar()!.apellido }} · Código <strong>{{ planillaAEditar()!.codigo
+          }}</strong>
       </span>
     </div>
     <button type="button" class="btn btn-ghost btn-sm" (click)="irAEditarPlanilla()">
@@ -246,16 +241,16 @@
           @if (grupoCompletado(grupo)) {
           <button type="button" class="btn-reset-grupo" (click)="resetearGrupo(grupo)"
             title="Resetear grupo {{ grupo }}" aria-label="Resetear grupo {{ grupo }}">
-            <i class="fas fa-rotate-left"></i>
+            <i class="fas fa-trash-can"></i>
           </button>
           }
         </div>
         <div class="group-teams-mobile">
           @for (eq of getEquiposDelGrupo(grupo); track eq.nombre) {
-            <div class="mobile-team-item">
-              <img [src]="eq.bandera" [alt]="eq.nombre" class="flag-mini" />
-              <span class="team-name-mini">{{ eq.nombre }}</span>
-            </div>
+          <div class="mobile-team-item">
+            <img [src]="eq.bandera" [alt]="eq.nombre" class="flag-mini" />
+            <span class="team-name-mini">{{ eq.nombre }}</span>
+          </div>
           }
         </div>
       </div>
@@ -299,8 +294,8 @@
 
           <!-- Equipo visitante -->
           <div class="equipo-visitante">
-            <img [src]="partido.equipoVisitanteBandera" [alt]="'Bandera de ' + partido.equipoVisitanteShow"
-              class="flag" width="24" height="16" />
+            <img [src]="partido.equipoVisitanteBandera" [alt]="'Bandera de ' + partido.equipoVisitanteShow" class="flag"
+              width="24" height="16" />
             <span class="equipo-nombre">{{ partido.equipoVisitanteShow }}</span>
           </div>
         </div> <!-- cierre partido-row -->
@@ -380,9 +375,8 @@
       <p class="ayuda-validon" aria-live="polite">
         @if (prediccionesCompletadas() < totalPartidos()) { Faltan completar {{ totalPartidos() -
           prediccionesCompletadas() }} predicciones. } @else if (form.invalid) { Revisá los datos de Nombre, Apellido y
-          Email. } @else { Completá todos los campos para guardar. }
-      </p>
-      }
+          Email. } @else { Completá todos los campos para guardar. } </p>
+          }
     </form>
   </div>
   }
@@ -403,8 +397,7 @@
     }
 
     <button type="button" class="btn btn-primary" style="width:100%;margin-top:0.5em"
-      [disabled]="guardandoEdicion() || !prediccionesEditarCompletas()"
-      (click)="guardarEdicion()">
+      [disabled]="guardandoEdicion() || !prediccionesEditarCompletas()" (click)="guardarEdicion()">
       @if (guardandoEdicion()) {
       <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
       <span>Guardando cambios...</span>
