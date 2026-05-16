@@ -30,6 +30,18 @@ export class PlanillaService {
     return this.http.get<PlanillaResponse>(`${this.apiUrl}/${codigo}`);
   }
 
+  // GET /api/planillas/buscar?codigo=X&email=Y → verifica identidad y retorna planilla con predicciones
+  buscar(codigo: number, email: string): Observable<PlanillaResponse> {
+    return this.http.get<PlanillaResponse>(`${this.apiUrl}/buscar`, {
+      params: { codigo: codigo.toString(), email }
+    });
+  }
+
+  // PUT /api/planillas/:codigo/editar → actualiza predicciones (requiere codigo+email en body)
+  editar(codigo: number, payload: PlanillaRequest & { codigo: number }): Observable<PlanillaResponse> {
+    return this.http.put<PlanillaResponse>(`${this.apiUrl}/${codigo}/editar`, payload);
+  }
+
   // GET /api/admin/planillas → lista TODAS — solo admin
   listarTodas(): Observable<PlanillaResponse[]> {
     return this.http.get<PlanillaResponse[]>(this.adminUrl);

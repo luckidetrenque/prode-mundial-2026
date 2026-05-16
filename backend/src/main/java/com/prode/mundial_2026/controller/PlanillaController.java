@@ -1,5 +1,6 @@
 package com.prode.mundial_2026.controller;
 
+import com.prode.mundial_2026.dto.EditarPlanillaRequestDTO;
 import com.prode.mundial_2026.dto.PlanillaRequestDTO;
 import com.prode.mundial_2026.dto.PlanillaResponseDTO;
 import com.prode.mundial_2026.service.PlanillaService;
@@ -38,6 +39,24 @@ public class PlanillaController {
     @GetMapping("/{codigo}")
     public ResponseEntity<PlanillaResponseDTO> obtener(@PathVariable Long codigo) {
         return ResponseEntity.ok(planillaService.obtenerPorCodigo(codigo));
+    }
+
+    // GET /api/planillas/buscar?codigo=X&email=Y → verifica identidad del usuario (público)
+    // Devuelve la planilla con sus predicciones si código + email coinciden
+    @GetMapping("/buscar")
+    public ResponseEntity<PlanillaResponseDTO> buscar(
+            @RequestParam Long codigo,
+            @RequestParam String email) {
+        return ResponseEntity.ok(planillaService.buscarPorCodigoYEmail(codigo, email));
+    }
+
+    // PUT /api/planillas/{codigo}/editar → actualiza predicciones (público, requiere código+email)
+    @PutMapping("/{codigo}/editar")
+    public ResponseEntity<PlanillaResponseDTO> editar(
+            @PathVariable Long codigo,
+            @Valid @RequestBody EditarPlanillaRequestDTO request) {
+        request.setCodigo(codigo); // asegurar consistencia URL vs body
+        return ResponseEntity.ok(planillaService.editarPlanilla(request));
     }
 
     // PUT /api/planillas/{id}/confirmar → confirma una planilla (solo admin)

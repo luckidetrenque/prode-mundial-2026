@@ -2,6 +2,7 @@
 // FIX #17: Se elimina el hack _selVersion + Map no reactivo.
 // Ahora las predicciones se guardan en un signal<Record<number, ResultadoPrediccion>>
 // que Angular detecta automáticamente en los templates sin trucos adicionales.
+// EDITAR PLANILLA: nuevo flow de búsqueda por código+email y actualización de predicciones.
 import { Component, OnInit, signal, computed, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -21,6 +22,9 @@ function emailValidator(control: any) {
   return emailRegex.test(control.value) ? null : { invalidEmail: true };
 }
 
+// Modos de la vista planilla
+type VistaMode = 'nueva' | 'exito' | 'buscar-editar' | 'editando';
+
 @Component({
   selector: 'app-planilla',
   standalone: true,
@@ -37,23 +41,26 @@ export class PlanillaComponent implements OnInit {
   errorMensaje     = signal<string | null>(null);
   planillaGuardada = signal<PlanillaResponse | null>(null);
 
+  // ── Modo de vista ──────────────────────────────────────────────────────────
+  vistaMode        = signal<VistaMode>('nueva');
+
+  // ── Edición ────────────────────────────────────────────────────────────────
+  buscandoPlanilla  = signal(false);
+  errorBusqueda     = signal<string | null>(null);
+  planillaAEditar   = signal<PlanillaResponse | null>(null);
+  guardandoEdicion  = signal(false);
+  edicionExitosa    = signal(false);
+
   partidos: Partido[] = [];
   grupos = GRUPOS_2026;
 
   /**
    * FIX #17: Las predicciones se almacenan en un signal<Record<number, ResultadoPrediccion>>.
-   *
-   * Problema anterior: Map<number, string> no es reactivo — Angular no detecta
-   * cambios internos al Map, por eso existía el hack _selVersion que forzaba
-   * un re-render manual incrementando un signal auxiliar en cada mutación.
-   *
-   * Solución: Record (objeto plano) SÍ es compatible con la detección de cambios
-   * de Angular cuando se reemplaza la referencia completa con signal.update().
-   * No se necesitan signals auxiliares ni void calls.
    */
   private prediccionesSignal = signal<Record<number, ResultadoPrediccion>>({});
 
   form: FormGroup;
+  formBusqueda: FormGroup;
   private formValidezSignal = signal(false);
   private destroyRef = inject(DestroyRef);
 
@@ -67,19 +74,23 @@ export class PlanillaComponent implements OnInit {
         Validators.required,
         Validators.minLength(2),
         Validators.maxLength(50),
-        // Regex más permisivo para nombres (admite guiones, apóstrofes, puntos y espacios)
-        Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-\.\']+$/)
+        Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-\.\\']+$/)
       ]],
       apellido: ['', [
         Validators.required,
         Validators.minLength(2),
         Validators.maxLength(50),
-        Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-\.\']+$/)
+        Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-\.\\']+$/)
       ]],
       email: ['', [Validators.required, emailValidator]]
     });
 
-    // Escuchamos los cambios de estado del formulario para que el signal computed reaccione
+    // Formulario de búsqueda para edición
+    this.formBusqueda = this.fb.group({
+      codigoBusqueda: ['', [Validators.required, Validators.pattern(/^\d{7,9}$/)]],
+      emailBusqueda:  ['', [Validators.required, emailValidator]]
+    });
+
     this.form.statusChanges.pipe(
       startWith(this.form.status),
       takeUntilDestroyed(this.destroyRef)
@@ -119,14 +130,10 @@ export class PlanillaComponent implements OnInit {
     return Array.from(equipos.entries()).map(([nombre, bandera]) => ({ nombre, bandera }));
   }
 
-  // FIX #17: reemplaza la referencia del objeto para disparar reactividad
   seleccionar(partidoId: number, prediccion: ResultadoPrediccion): void {
     const id = Number(partidoId);
     this.prediccionesSignal.update(actual => {
       const copia = { ...actual };
-      // MEJORA: No hacemos toggle si es la misma opción. 
-      // Si el usuario hace click en lo que ya está seleccionado, queda seleccionado.
-      // Esto evita confusiones y el "a veces se marca y otras no".
       copia[id] = prediccion;
       return copia;
     });
@@ -177,7 +184,6 @@ export class PlanillaComponent implements OnInit {
     return partidos.length > 0 && partidos.every(p => this.prediccionSeleccionada(p.id));
   }
 
-  // FIX #17: computed signals leen prediccionesSignal reactivamente — sin hacks
   getPrediccion(partidoId: number): ResultadoPrediccion | null {
     return this.prediccionesSignal()[Number(partidoId)] ?? null;
   }
@@ -188,20 +194,22 @@ export class PlanillaComponent implements OnInit {
 
   prediccionesCompletadas = computed(() => {
     const pred = this.prediccionesSignal();
-    // Contamos solo las predicciones de partidos que realmente existen en nuestro listado
     return this.partidos.filter(p => !!pred[p.id]).length;
   });
 
   totalPartidos(): number { return this.partidos.length; }
 
   formularioValido = computed(() => {
-    const formValid = this.formValidezSignal(); // Dependencia reactiva del formulario
+    const formValid = this.formValidezSignal();
     const pred = this.prediccionesSignal();
-    // Verificamos que CADA partido del listado tenga una predicción
-    const partidosCompletos = this.partidos.length > 0 && 
+    const partidosCompletos = this.partidos.length > 0 &&
                              this.partidos.every(p => !!pred[p.id]);
-    
     return formValid && partidosCompletos;
+  });
+
+  prediccionesEditarCompletas = computed(() => {
+    const pred = this.prediccionesSignal();
+    return this.partidos.length > 0 && this.partidos.every(p => !!pred[p.id]);
   });
 
   getErrorMensaje(campo: string): string {
@@ -224,8 +232,6 @@ export class PlanillaComponent implements OnInit {
     if (!this.form.valid) {
       this.form.markAllAsTouched();
       this.toastService.error('Revisá los datos del formulario. Hay campos con errores.');
-      
-      // MEJORA: Focus automático en el primer campo inválido
       setTimeout(() => {
         const firstInvalid = document.querySelector('.ng-invalid[formControlName], .ng-invalid[formControl]');
         if (firstInvalid) {
@@ -253,6 +259,7 @@ export class PlanillaComponent implements OnInit {
       next: response => {
         this.planillaGuardada.set(response);
         this.guardando.set(false);
+        this.vistaMode.set('exito');
         this.toastService.success('¡Planilla guardada exitosamente!', 6000);
         setTimeout(() => {
           document.querySelector('.planilla-exito')
@@ -272,7 +279,107 @@ export class PlanillaComponent implements OnInit {
     this.planillaGuardada.set(null);
     this.prediccionesSignal.set({});
     this.form.reset();
+    this.vistaMode.set('nueva');
     this.toastService.info('Formulario reiniciado. Podés cargar una nueva planilla.');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── Flow de edición ────────────────────────────────────────────────────────
+
+  irAEditarPlanilla(): void {
+    this.vistaMode.set('buscar-editar');
+    this.formBusqueda.reset();
+    this.errorBusqueda.set(null);
+    this.planillaAEditar.set(null);
+    this.edicionExitosa.set(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  buscarPlanillaParaEditar(): void {
+    if (this.formBusqueda.invalid) {
+      this.formBusqueda.markAllAsTouched();
+      return;
+    }
+
+    const codigo = Number(this.formBusqueda.value.codigoBusqueda);
+    const email  = this.formBusqueda.value.emailBusqueda.trim();
+
+    this.buscandoPlanilla.set(true);
+    this.errorBusqueda.set(null);
+
+    this.planillaService.buscar(codigo, email).subscribe({
+      next: planilla => {
+        if (planilla.confirmada) {
+          this.errorBusqueda.set('Esta planilla ya fue confirmada y no puede editarse.');
+          this.buscandoPlanilla.set(false);
+          return;
+        }
+        this.planillaAEditar.set(planilla);
+
+        // Pre-cargar predicciones existentes
+        if (planilla.predicciones) {
+          const pred: Record<number, ResultadoPrediccion> = {};
+          planilla.predicciones.forEach((p: any) => {
+            pred[p.partidoId] = p.prediccion as ResultadoPrediccion;
+          });
+          this.prediccionesSignal.set(pred);
+        }
+
+        this.buscandoPlanilla.set(false);
+        this.vistaMode.set('editando');
+        this.toastService.success(`Planilla de ${planilla.nombre} ${planilla.apellido} cargada. Ya podés editar.`);
+        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+      },
+      error: err => {
+        const msg = err.error?.error ?? 'No se pudo encontrar la planilla. Verificá los datos ingresados.';
+        this.errorBusqueda.set(msg);
+        this.buscandoPlanilla.set(false);
+      }
+    });
+  }
+
+  guardarEdicion(): void {
+    if (!this.prediccionesEditarCompletas()) {
+      this.toastService.warning('Completá todas las predicciones antes de guardar los cambios.');
+      return;
+    }
+
+    const planilla = this.planillaAEditar();
+    if (!planilla) return;
+
+    const pred = this.prediccionesSignal();
+    const payload: any = {
+      codigo: planilla.codigo,
+      email:  planilla.email,
+      predicciones: Object.entries(pred).map(([partidoId, prediccion]) => ({
+        partidoId: Number(partidoId),
+        prediccion
+      }))
+    };
+
+    this.guardandoEdicion.set(true);
+
+    this.planillaService.editar(planilla.codigo, payload).subscribe({
+      next: response => {
+        this.guardandoEdicion.set(false);
+        this.edicionExitosa.set(true);
+        this.toastService.success('¡Planilla actualizada correctamente!', 6000);
+        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+      },
+      error: err => {
+        const msg = err.error?.error ?? 'Error al guardar los cambios. Intentá de nuevo.';
+        this.toastService.error(msg, 6000);
+        this.guardandoEdicion.set(false);
+      }
+    });
+  }
+
+  volverAlInicio(): void {
+    this.vistaMode.set('nueva');
+    this.prediccionesSignal.set({});
+    this.planillaAEditar.set(null);
+    this.edicionExitosa.set(false);
+    this.formBusqueda.reset();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }

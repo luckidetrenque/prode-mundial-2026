@@ -1,6 +1,4 @@
-<!-- planilla.component.html — VERSIÓN MEJORADA v2 -->
-<!-- MEJORA 1: <span> reemplazados por <button> con aria-pressed y aria-label -->
-<!-- MEJORA 6: barra de progreso usa top: var(--navbar-height) -->
+<!-- planilla.component.html — con flow de Editar Planilla -->
 
 <main class="main">
   <h2><i class="fas fa-list-check" aria-hidden="true"></i> Planilla de la Fase de Grupos</h2>
@@ -9,38 +7,192 @@
     Ingresá tus predicciones para los <strong>72 partidos</strong> del torneo y ganá.
   </p>
 
+  <!-- Acceso rápido a edición (visible cuando no hay otro flow activo) -->
+  @if (vistaMode() === 'nueva') {
+  <div class="editar-acceso">
+    <i class="fas fa-pencil" aria-hidden="true"></i>
+    <span>¿Ya tenés una planilla guardada?</span>
+    <button type="button" class="btn-editar-link" (click)="irAEditarPlanilla()">
+      Editá tus predicciones <i class="fas fa-arrow-right" style="font-size:0.7rem"></i>
+    </button>
+  </div>
+  }
+
   @if (cargando()) {
   <div class="spinner-container" role="status" aria-label="Cargando partidos...">
     <div class="spinner"></div>
   </div>
   }
 
-  @if (planillaGuardada()) {
+  <!-- ══════════════════════════════════════════════════════
+       VISTA: ÉXITO TRAS GUARDAR NUEVA PLANILLA
+  ═══════════════════════════════════════════════════════ -->
+  @if (vistaMode() === 'exito' && planillaGuardada()) {
   <div class="planilla-exito" role="alert" aria-live="polite">
     <div class="exito-icono"><i class="fas fa-circle-check" aria-hidden="true"></i></div>
     <p class="msg-success">{{ planillaGuardada()!.mensaje }}</p>
-    <p style="color: var(--clr-text-muted); font-size: 0.9rem; margin-bottom: 0.5em;">Tu número de planilla es:</p>
+    <p class="exito-label">Tu número de planilla es:</p>
     <strong class="codigo-planilla" aria-label="Código de planilla {{ planillaGuardada()!.codigo }}">
       {{ planillaGuardada()!.codigo }}
     </strong>
-    <p style="color: var(--clr-text-muted); font-size: 0.85rem; margin: 1em 0 1.5em;">
-      Guardá este número. Lo vas a necesitar para confirmar tu participación.
-    </p>
-    <button class="btn btn-secondary" (click)="nuevaPlanilla()" type="button">
-      <i class="fas fa-plus" aria-hidden="true"></i> Cargar otra planilla
-    </button>
+
+    <div class="exito-info-box">
+      <i class="fas fa-circle-info" aria-hidden="true"></i>
+      <div>
+        <p><strong>Guardá este número.</strong> Lo vas a necesitar para confirmar tu participación con el administrador.</p>
+        <p>También podés editar tus predicciones en cualquier momento <strong>antes de la confirmación</strong>, usando tu código y el email con el que te registraste.</p>
+      </div>
+    </div>
+
+    <div class="exito-acciones">
+      <button class="btn btn-outline-edit" (click)="irAEditarPlanilla()" type="button">
+        <i class="fas fa-pencil" aria-hidden="true"></i> Editar mi planilla
+      </button>
+      <button class="btn btn-secondary" (click)="nuevaPlanilla()" type="button">
+        <i class="fas fa-plus" aria-hidden="true"></i> Cargar otra planilla
+      </button>
+    </div>
   </div>
   }
 
-  @if (errorMensaje()) {
+  <!-- ══════════════════════════════════════════════════════
+       VISTA: BUSCAR PLANILLA PARA EDITAR
+  ═══════════════════════════════════════════════════════ -->
+  @if (vistaMode() === 'buscar-editar') {
+  <div class="buscar-editar-wrap">
+
+    <div class="buscar-hero">
+      <div class="buscar-icono-wrap">
+        <i class="fas fa-search-plus" aria-hidden="true"></i>
+      </div>
+      <h3>Editar mi planilla</h3>
+      <p>Ingresá tu número de planilla y el email con el que te registraste para acceder a tus predicciones.</p>
+    </div>
+
+    <form [formGroup]="formBusqueda" (ngSubmit)="buscarPlanillaParaEditar()" novalidate class="buscar-form">
+
+      <div class="form-group">
+        <label for="codigoBusqueda">
+          <i class="fas fa-hashtag" style="color:var(--clr-primary-light);font-size:0.85rem"></i>
+          Número de planilla
+        </label>
+        <input
+          id="codigoBusqueda"
+          type="number"
+          formControlName="codigoBusqueda"
+          placeholder="Ej: 80358702"
+          inputmode="numeric"
+          [attr.aria-invalid]="formBusqueda.get('codigoBusqueda')?.invalid && formBusqueda.get('codigoBusqueda')?.touched"
+          aria-describedby="codigo-busqueda-error" />
+        @if (formBusqueda.get('codigoBusqueda')?.invalid && formBusqueda.get('codigoBusqueda')?.touched) {
+        <span id="codigo-busqueda-error" class="campo-error" role="alert">
+          <i class="fas fa-circle-exclamation" aria-hidden="true" style="font-size:0.7rem"></i>
+          Ingresá un código válido (número de 7 a 9 dígitos)
+        </span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="emailBusqueda">
+          <i class="fas fa-envelope" style="color:var(--clr-primary-light);font-size:0.85rem"></i>
+          Email registrado
+        </label>
+        <input
+          id="emailBusqueda"
+          type="email"
+          formControlName="emailBusqueda"
+          placeholder="ejemplo@correo.com"
+          autocomplete="email"
+          [attr.aria-invalid]="formBusqueda.get('emailBusqueda')?.invalid && formBusqueda.get('emailBusqueda')?.touched"
+          aria-describedby="email-busqueda-error" />
+        @if (formBusqueda.get('emailBusqueda')?.invalid && formBusqueda.get('emailBusqueda')?.touched) {
+        <span id="email-busqueda-error" class="campo-error" role="alert">
+          <i class="fas fa-circle-exclamation" aria-hidden="true" style="font-size:0.7rem"></i>
+          Ingresá un email válido
+        </span>
+        }
+      </div>
+
+      @if (errorBusqueda()) {
+      <div class="buscar-error" role="alert">
+        <i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
+        {{ errorBusqueda() }}
+      </div>
+      }
+
+      <div class="buscar-acciones">
+        <button type="button" class="btn btn-ghost" (click)="volverAlInicio()">
+          <i class="fas fa-arrow-left" aria-hidden="true"></i> Volver
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="buscandoPlanilla()">
+          @if (buscandoPlanilla()) {
+            <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Buscando...
+          } @else {
+            <i class="fas fa-magnifying-glass" aria-hidden="true"></i> Buscar planilla
+          }
+        </button>
+      </div>
+
+    </form>
+  </div>
+  }
+
+  <!-- ══════════════════════════════════════════════════════
+       VISTA: EDICIÓN EXITOSA
+  ═══════════════════════════════════════════════════════ -->
+  @if (vistaMode() === 'editando' && edicionExitosa()) {
+  <div class="planilla-exito" role="alert" aria-live="polite">
+    <div class="exito-icono"><i class="fas fa-circle-check" aria-hidden="true"></i></div>
+    <p class="msg-success">¡Planilla actualizada correctamente!</p>
+    <p class="exito-label">Tus predicciones fueron guardadas. Código:</p>
+    <strong class="codigo-planilla">{{ planillaAEditar()!.codigo }}</strong>
+
+    <div class="exito-info-box">
+      <i class="fas fa-circle-info" aria-hidden="true"></i>
+      <div>
+        <p>Podés seguir editando hasta que el administrador confirme tu planilla.</p>
+      </div>
+    </div>
+
+    <div class="exito-acciones">
+      <button class="btn btn-outline-edit" (click)="edicionExitosa.set(false)" type="button">
+        <i class="fas fa-pencil" aria-hidden="true"></i> Seguir editando
+      </button>
+      <button class="btn btn-secondary" (click)="volverAlInicio()" type="button">
+        <i class="fas fa-home" aria-hidden="true"></i> Ir al inicio
+      </button>
+    </div>
+  </div>
+  }
+
+  <!-- ══════════════════════════════════════════════════════
+       VISTA: FORMULARIO DE NUEVA PLANILLA
+  ═══════════════════════════════════════════════════════ -->
+  @if (errorMensaje() && vistaMode() === 'nueva') {
   <p class="msg-error" role="alert">
     <i class="fas fa-triangle-exclamation" aria-hidden="true"></i> {{ errorMensaje() }}
   </p>
   }
 
-  @if (!cargando() && !planillaGuardada()) {
+  @if (!cargando() && (vistaMode() === 'nueva' || (vistaMode() === 'editando' && !edicionExitosa()))) {
 
-  <!-- MEJORA 6: top usa var(--navbar-height) en vez de valor hardcoded -->
+  <!-- Banner de contexto cuando estamos editando -->
+  @if (vistaMode() === 'editando' && planillaAEditar()) {
+  <div class="edicion-banner">
+    <div class="edicion-banner-icono"><i class="fas fa-pencil" aria-hidden="true"></i></div>
+    <div class="edicion-banner-info">
+      <span class="edicion-banner-titulo">Editando planilla</span>
+      <span class="edicion-banner-detalle">
+        {{ planillaAEditar()!.nombre }} {{ planillaAEditar()!.apellido }} · Código <strong>{{ planillaAEditar()!.codigo }}</strong>
+      </span>
+    </div>
+    <button type="button" class="btn btn-ghost btn-sm" (click)="irAEditarPlanilla()">
+      <i class="fas fa-arrow-left" aria-hidden="true"></i> Cambiar planilla
+    </button>
+  </div>
+  }
+
+  <!-- Barra de progreso -->
   <div class="progreso-wrap" role="status" aria-live="polite"
     [attr.aria-label]="prediccionesCompletadas() + ' de ' + totalPartidos() + ' predicciones completadas'">
     <div class="progreso-header">
@@ -81,99 +233,99 @@
     </p>
   </div>
 
-  <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
-
-    <!-- Grilla de grupos -->
-    <div class="groups-grid">
-      @for (grupo of grupos; track grupo) {
-      <div class="group-table" role="region" [attr.aria-label]="'Grupo ' + grupo">
-        <div class="group-caption">
-          <div class="caption-header-row">
-            <div class="caption-left">
-              <span class="group-label">GRUPO</span>
-              <span class="group-letter">{{ grupo }}</span>
-            </div>
-            @if (grupoCompletado(grupo)) {
-            <button type="button" class="btn-reset-grupo" (click)="resetearGrupo(grupo)"
-              title="Resetear grupo {{ grupo }}" aria-label="Resetear grupo {{ grupo }}">
-              <i class="fas fa-rotate-left"></i>
-            </button>
-            }
+  <!-- Grilla de grupos -->
+  <div class="groups-grid">
+    @for (grupo of grupos; track grupo) {
+    <div class="group-table" role="region" [attr.aria-label]="'Grupo ' + grupo">
+      <div class="group-caption">
+        <div class="caption-header-row">
+          <div class="caption-left">
+            <span class="group-label">GRUPO</span>
+            <span class="group-letter">{{ grupo }}</span>
           </div>
-          <div class="group-teams-mobile">
-            @for (eq of getEquiposDelGrupo(grupo); track eq.nombre) {
-              <div class="mobile-team-item">
-                <img [src]="eq.bandera" [alt]="eq.nombre" class="flag-mini" />
-                <span class="team-name-mini">{{ eq.nombre }}</span>
-              </div>
-            }
-          </div>
-        </div>
-
-        @for (partido of getPartidosPorGrupo(grupo); track partido.id) {
-        <div style="position:relative">
-          @if (partido.multiplicador > 1) {
-          <span class="multi-badge" title="Este partido vale DOBLE puntaje">
-            <i class="fas fa-bolt" aria-hidden="true"></i>x2
-          </span>
+          @if (grupoCompletado(grupo)) {
+          <button type="button" class="btn-reset-grupo" (click)="resetearGrupo(grupo)"
+            title="Resetear grupo {{ grupo }}" aria-label="Resetear grupo {{ grupo }}">
+            <i class="fas fa-rotate-left"></i>
+          </button>
           }
-          <div class="partido-row" [class.seleccionado]="prediccionSeleccionada(partido.id)"
-            [class.destacado]="partido.multiplicador > 1">
-
-            <!-- Número -->
-            <span class="partido-num" aria-hidden="true">{{ partido.numero }}</span>
-
-            <!-- Equipo local -->
-            <div class="equipo-local">
-              <span class="equipo-nombre">{{ partido.equipoLocalShow }}</span>
-              <img [src]="partido.equipoLocalBandera" [alt]="'Bandera de ' + partido.equipoLocalShow" class="flag"
-                width="24" height="16" />
+        </div>
+        <div class="group-teams-mobile">
+          @for (eq of getEquiposDelGrupo(grupo); track eq.nombre) {
+            <div class="mobile-team-item">
+              <img [src]="eq.bandera" [alt]="eq.nombre" class="flag-mini" />
+              <span class="team-name-mini">{{ eq.nombre }}</span>
             </div>
-
-            <!-- MEJORA 1: Opciones L / E / V como <button> con aria-pressed y aria-label -->
-            <div class="opciones-centro" role="group"
-              [attr.aria-label]="'Predicción para ' + partido.equipoLocalShow + ' vs ' + partido.equipoVisitanteShow + ' — partido ' + partido.numero">
-              <button type="button" class="opcion-btn" [class.activa-local]="getPrediccion(partido.id) === 'LOCAL'"
-                [attr.aria-pressed]="getPrediccion(partido.id) === 'LOCAL'"
-                [attr.aria-label]="'Gana ' + partido.equipoLocalShow + ' (local)'"
-                (click)="seleccionar(partido.id, 'LOCAL')">L</button>
-              <button type="button" class="opcion-btn" [class.activa-empate]="getPrediccion(partido.id) === 'EMPATE'"
-                [attr.aria-pressed]="getPrediccion(partido.id) === 'EMPATE'" aria-label="Empate"
-                (click)="seleccionar(partido.id, 'EMPATE')">E</button>
-              <button type="button" class="opcion-btn"
-                [class.activa-visitante]="getPrediccion(partido.id) === 'VISITANTE'"
-                [attr.aria-pressed]="getPrediccion(partido.id) === 'VISITANTE'"
-                [attr.aria-label]="'Gana ' + partido.equipoVisitanteShow + ' (visitante)'"
-                (click)="seleccionar(partido.id, 'VISITANTE')">V</button>
-            </div>
-
-            <!-- Equipo visitante -->
-            <div class="equipo-visitante">
-              <img [src]="partido.equipoVisitanteBandera" [alt]="'Bandera de ' + partido.equipoVisitanteShow"
-                class="flag" width="24" height="16" />
-              <span class="equipo-nombre">{{ partido.equipoVisitanteShow }}</span>
-            </div>
-          </div> <!-- cierre partido-row -->
-        </div> <!-- cierre wrapper relativo -->
-        }
+          }
+        </div>
       </div>
+
+      @for (partido of getPartidosPorGrupo(grupo); track partido.id) {
+      <div style="position:relative">
+        @if (partido.multiplicador > 1) {
+        <span class="multi-badge" title="Este partido vale DOBLE puntaje">
+          <i class="fas fa-bolt" aria-hidden="true"></i>x2
+        </span>
+        }
+        <div class="partido-row" [class.seleccionado]="prediccionSeleccionada(partido.id)"
+          [class.destacado]="partido.multiplicador > 1">
+
+          <!-- Número -->
+          <span class="partido-num" aria-hidden="true">{{ partido.numero }}</span>
+
+          <!-- Equipo local -->
+          <div class="equipo-local">
+            <span class="equipo-nombre">{{ partido.equipoLocalShow }}</span>
+            <img [src]="partido.equipoLocalBandera" [alt]="'Bandera de ' + partido.equipoLocalShow" class="flag"
+              width="24" height="16" />
+          </div>
+
+          <!-- Opciones L / E / V -->
+          <div class="opciones-centro" role="group"
+            [attr.aria-label]="'Predicción para ' + partido.equipoLocalShow + ' vs ' + partido.equipoVisitanteShow + ' — partido ' + partido.numero">
+            <button type="button" class="opcion-btn" [class.activa-local]="getPrediccion(partido.id) === 'LOCAL'"
+              [attr.aria-pressed]="getPrediccion(partido.id) === 'LOCAL'"
+              [attr.aria-label]="'Gana ' + partido.equipoLocalShow + ' (local)'"
+              (click)="seleccionar(partido.id, 'LOCAL')">L</button>
+            <button type="button" class="opcion-btn" [class.activa-empate]="getPrediccion(partido.id) === 'EMPATE'"
+              [attr.aria-pressed]="getPrediccion(partido.id) === 'EMPATE'" aria-label="Empate"
+              (click)="seleccionar(partido.id, 'EMPATE')">E</button>
+            <button type="button" class="opcion-btn"
+              [class.activa-visitante]="getPrediccion(partido.id) === 'VISITANTE'"
+              [attr.aria-pressed]="getPrediccion(partido.id) === 'VISITANTE'"
+              [attr.aria-label]="'Gana ' + partido.equipoVisitanteShow + ' (visitante)'"
+              (click)="seleccionar(partido.id, 'VISITANTE')">V</button>
+          </div>
+
+          <!-- Equipo visitante -->
+          <div class="equipo-visitante">
+            <img [src]="partido.equipoVisitanteBandera" [alt]="'Bandera de ' + partido.equipoVisitanteShow"
+              class="flag" width="24" height="16" />
+            <span class="equipo-nombre">{{ partido.equipoVisitanteShow }}</span>
+          </div>
+        </div> <!-- cierre partido-row -->
+      </div> <!-- cierre wrapper relativo -->
       }
     </div>
+    }
+  </div>
 
-    <!-- Datos del participante -->
-    <div class="datos-participante">
-      <p class="datos-titulo">
-        <i class="fas fa-user" aria-hidden="true" style="font-size:0.95rem;color:var(--clr-primary-light)"></i>
-        Tus datos
-      </p>
+  <!-- ── Sección inferior: Datos del participante (nueva) o Botón guardar (edición) ── -->
+  @if (vistaMode() === 'nueva') {
+  <div class="datos-participante">
+    <p class="datos-titulo">
+      <i class="fas fa-user" aria-hidden="true" style="font-size:0.95rem;color:var(--clr-primary-light)"></i>
+      Tus datos
+    </p>
 
-      @if (prediccionesCompletadas() === totalPartidos() && totalPartidos() > 0) {
-      <div class="aviso-completo" role="status">
-        <i class="fas fa-circle-check" aria-hidden="true"></i>
-        ¡Completaste todas las predicciones! Ingresá tus datos y guardá.
-      </div>
-      }
+    @if (prediccionesCompletadas() === totalPartidos() && totalPartidos() > 0) {
+    <div class="aviso-completo" role="status">
+      <i class="fas fa-circle-check" aria-hidden="true"></i>
+      ¡Completaste todas las predicciones! Ingresá tus datos y guardá.
+    </div>
+    }
 
+    <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
       <div class="form-group">
         <label for="nombre">Nombre</label>
         <input id="nombre" type="text" formControlName="nombre" placeholder="Tu nombre" autocomplete="given-name"
@@ -228,10 +380,48 @@
       <p class="ayuda-validon" aria-live="polite">
         @if (prediccionesCompletadas() < totalPartidos()) { Faltan completar {{ totalPartidos() -
           prediccionesCompletadas() }} predicciones. } @else if (form.invalid) { Revisá los datos de Nombre, Apellido y
-          Email. } @else { Completá todos los campos para guardar. } </p>
-          }
-    </div>
-
-  </form>
+          Email. } @else { Completá todos los campos para guardar. }
+      </p>
+      }
+    </form>
+  </div>
   }
+
+  <!-- Botón guardar cambios (modo edición) -->
+  @if (vistaMode() === 'editando' && !edicionExitosa()) {
+  <div class="datos-participante">
+    <p class="datos-titulo">
+      <i class="fas fa-floppy-disk" aria-hidden="true" style="font-size:0.95rem;color:var(--clr-primary-light)"></i>
+      Guardar cambios
+    </p>
+
+    @if (prediccionesEditarCompletas()) {
+    <div class="aviso-completo" role="status">
+      <i class="fas fa-circle-check" aria-hidden="true"></i>
+      ¡Todas las predicciones completadas! Podés guardar los cambios.
+    </div>
+    }
+
+    <button type="button" class="btn btn-primary" style="width:100%;margin-top:0.5em"
+      [disabled]="guardandoEdicion() || !prediccionesEditarCompletas()"
+      (click)="guardarEdicion()">
+      @if (guardandoEdicion()) {
+      <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
+      <span>Guardando cambios...</span>
+      } @else {
+      <i class="fas fa-floppy-disk" aria-hidden="true"></i>
+      <span>Guardar cambios</span>
+      }
+    </button>
+
+    @if (!prediccionesEditarCompletas() && !guardandoEdicion()) {
+    <p class="ayuda-validon" aria-live="polite">
+      Faltan completar {{ totalPartidos() - prediccionesCompletadas() }} predicciones.
+    </p>
+    }
+  </div>
+  }
+
+  } <!-- fin bloque principal de partidos -->
+
 </main>

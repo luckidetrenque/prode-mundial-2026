@@ -569,8 +569,10 @@ export class ReglamentoComponent {
       icono: 'fa-floppy-disk',
       contenido: `
         <p>Una vez completados todos los campos y tus datos personales (Nombre, Apellido y Email), hacé clic en <strong>Guardar Planilla</strong>.</p>
-        <p>El sistema generará automáticamente un <strong>código único de identificación</strong> (ej: #1234). Guardá este número, ya que es el comprobante indispensable para tu participación.</p>
-      `
+        <p>El sistema generará automáticamente un <strong>código único de identificación</strong> (ej: #80358702). Guárdate este número, ya que es el comprobante indispensable para tu participación.</p>
+        <p>Si necesitás corregir alguna predicción antes de la confirmación, podés usar el botón <strong>"Editar mi planilla"</strong> e ingresar tu código más el email registrado. Las ediciones solo están disponibles mientras la planilla no esté confirmada.</p>
+      `,
+      destacado: `Guardá bien tu código. Si perdés el número, <strong>no podrás recuperarlo</strong>. También lo recibirás por email cuando el administrador confirme tu planilla.`
     },
     {
       numero: 3,

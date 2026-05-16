@@ -41,7 +41,17 @@ public class ChatbotService {
 
         knowledgeBase.add(new FAQItem(
             Arrays.asList("codigo", "comprobante", "identificacion", "numero", "id"),
-            "Al guardar tu planilla, el sistema genera un código único. ¡Guárdalo! Es tu comprobante indispensable para que el administrador la confirme."
+            "Al guardar tu planilla, el sistema genera un código único. ¡Guárdalo! Es tu comprobante indispensable. Con ese código y tu email también podés editar tus predicciones antes de la confirmación."
+        ));
+
+        knowledgeBase.add(new FAQItem(
+            Arrays.asList("editar", "modificar", "cambiar", "corregir", "actualizar", "cambio"),
+            "Podés editar tu planilla antes de que sea confirmada. En la sección 'Planilla', al guardar, aparece el botón 'Editar mi planilla'. También podés acceder desde ese mismo botón ingresando tu código único y el email con el que te registraste. Recordatorio: una vez confirmada, no se puede editar."
+        ));
+
+        knowledgeBase.add(new FAQItem(
+            Arrays.asList("perdi", "perdí", "olvide", "olvídé", "recuperar", "no recuerdo", "no tengo el codigo"),
+            "Si no recordás tu código de planilla, no es posible recuperarlo automáticamente. Contactá al administrador brindándole tu nombre, apellido y email para que pueda asistirte."
         ));
 
         knowledgeBase.add(new FAQItem(
