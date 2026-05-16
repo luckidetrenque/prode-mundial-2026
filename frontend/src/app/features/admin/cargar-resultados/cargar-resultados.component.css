@@ -219,7 +219,7 @@
 /* ── Lista de partidos ───────────────────────────────────────────────────── */
 .partidos-lista {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
   gap: 1em;
 }
 
@@ -459,23 +459,40 @@
   }
 
   .partido-row {
-    grid-template-columns: 20px auto 95px auto auto;
-  }
-
-  .partido-accion {
-    min-width: 75px;
-    gap: 0.35em;
-  }
-
-  .btn-accion-circular {
-    width: 28px;
-    height: 28px;
-    font-size: 0.75rem;
+    grid-template-columns: 20px auto 85px auto auto;
+    gap: 0.3em;
+    padding: 0.5em 0.4em;
   }
 
   .opcion-btn {
-    width: 25px;
-    height: 25px;
-    font-size: 0.58rem;
+    width: 23px;
+    height: 23px;
+    font-size: 0.55rem;
+  }
+
+  .partido-accion {
+    min-width: 64px;
+    gap: 0.25em;
+  }
+
+  .btn-accion-circular {
+    width: 26px;
+    height: 26px;
+    font-size: 0.75rem;
+  }
+
+  .filtro-grupos {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filtro-izq {
+    width: 100%;
+  }
+
+  .btn-reset,
+  .btn-reset-all {
+    width: 100%;
+    justify-content: center;
   }
 }

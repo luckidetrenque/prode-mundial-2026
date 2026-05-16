@@ -137,9 +137,9 @@ interface PaginatedResponse {
   styles: [`
     /* .estado-vacio movido a global styles.css */
 
-    .controles-bar { display: flex; align-items: center; justify-content: space-between; gap: 1em; padding: 0.85em 1.1em; background: var(--clr-surface-alt); border: 1px solid var(--clr-border-strong); border-radius: var(--radius-md); margin-bottom: 1.25em; }
-    .controles-izq { display: flex; align-items: center; gap: 0.85em; }
-    .controles-der { display: flex; align-items: center; gap: 1em; }
+    .controles-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75em; padding: 0.85em 1.1em; background: var(--clr-surface-alt); border: 1px solid var(--clr-border-strong); border-radius: var(--radius-md); margin-bottom: 1.25em; }
+    .controles-izq { display: flex; align-items: center; gap: 0.85em; flex-wrap: wrap; }
+    .controles-der { display: flex; align-items: center; gap: 0.75em; flex-wrap: wrap; width: 100%; }
     .check-all-wrap { display: flex; align-items: center; gap: 0.5em; cursor: pointer; }
     .check-input { width: 16px; height: 16px; cursor: pointer; accent-color: var(--clr-primary); }
     .check-label-txt { font-size: 0.85rem; font-weight: 500; color: var(--clr-text); }
@@ -147,9 +147,9 @@ interface PaginatedResponse {
     .contador-chip.activo { background: var(--clr-primary); color: white; }
     .total-pendientes { font-size: 0.82rem; color: var(--clr-text-muted); display: flex; align-items: center; gap: 0.4em; white-space: nowrap; }
 
-    .planillas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75em; margin-bottom: 1.5em; }
+    .planillas-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 0.75em; margin-bottom: 1.5em; }
 
-    .planilla-card { display: grid; grid-template-columns: 20px 36px 1fr auto; align-items: center; gap: 0.6em; background: var(--clr-surface); border: 1.5px solid var(--clr-border); border-radius: var(--radius-md); padding: 0.85em 0.9em; cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-sm); }
+    .planilla-card { display: grid; grid-template-columns: 20px 36px 1fr auto; align-items: center; gap: 0.6em; background: var(--clr-surface); border: 1.5px solid var(--clr-border); border-radius: var(--radius-md); padding: 0.85em 0.9em; cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-sm); min-width: 0; }
     .planilla-card:hover { border-color: var(--clr-primary-light); box-shadow: var(--shadow-md); }
     .planilla-card.seleccionada { border-color: var(--clr-primary); background: #edf8fb; box-shadow: 0 0 0 2px rgba(56,120,135,0.18), var(--shadow-sm); }
 
@@ -157,7 +157,7 @@ interface PaginatedResponse {
     .planilla-card.seleccionada .card-icono { background: var(--clr-primary); border-color: var(--clr-primary); color: white; }
 
     .card-info { display: flex; flex-direction: column; gap: 0.1em; overflow: hidden; }
-    .card-nombre { font-size: 0.82rem; font-weight: 600; color: var(--clr-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-nombre { font-size: 0.82rem; font-weight: 600; color: var(--clr-text); white-space: normal; overflow: visible; word-break: break-word; line-height: 1.3; }
 
     .card-codigo { display: flex; flex-direction: column; align-items: flex-end; gap: 0.05em; flex-shrink: 0; }
     .codigo-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--clr-text-muted); font-weight: 500; }
@@ -177,6 +177,9 @@ interface PaginatedResponse {
     @media (max-width: 640px) {
       .controles-bar { flex-direction: column; align-items: flex-start; gap: 0.75em; }
       .controles-der { width: 100%; justify-content: space-between; }
+      .controles-der .btn { flex: 1; justify-content: center; font-size: 0.8rem; padding: 0.5em 0.75em; }
+      .total-pendientes { font-size: 0.75rem; }
+      .planillas-grid { grid-template-columns: 1fr; }
       .acciones-footer { flex-direction: column; gap: 0.75em; bottom: 0.75em; }
       .acciones-footer .btn { width: 100%; }
     }
