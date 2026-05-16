@@ -189,7 +189,7 @@ public class EmailService {
             "Son los <strong>SETENTA Y DOS (72) partidos</strong> que se jugarán en la fase de grupos del Mundial de Fútbol 2026, iniciando el día <strong>jueves 11 de junio de 2026</strong> y culminando el día <strong>jueves 28 de junio de 2026</strong>. El torneo se disputará en estadios de <strong>Canadá, Estados Unidos y México</strong>.",
             null),
         new Articulo("2", "Planilla", "📋",
-            "La planilla cuenta con los <strong>SETENTA Y DOS (72) partidos</strong> de la fase de grupos. Solo se puede marcar: equipo <strong>Local (L)</strong>, equipo <strong>Visitante (V)</strong> o <strong>Empate (E)</strong> por cada partido.",
+            "La planilla cuenta con los <strong>SETENTA Y DOS (72) partidos</strong> de la fase de grupos. Solo se puede marcar: equipo <strong>Local (L)</strong>, equipo <strong>Visitante (V)</strong> o <strong>Empate (E)</strong> por cada partido. Se permite la edición de pronósticos utilizando el código y email registrado, únicamente <strong>antes</strong> de que la planilla sea confirmada por el administrador.",
             "Se admite <strong>más de una planilla</strong> por participante. Día y hora de finalización: <strong>10/06/2026 - 14:00 hs</strong>."),
         new Articulo("3", "Valor", "💵",
             "La planilla tiene un valor de <strong>PESOS CINCO MIL ($5.000)</strong> que deberá ser abonado de manera previa o al momento de confirmar la misma.",
