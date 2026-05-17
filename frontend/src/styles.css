@@ -158,7 +158,6 @@ h2 i {
   color: var(--clr-text-muted);
   line-height: 1.6;
   margin-bottom: 1.5em;
-  display: content;
   align-items: center;
   gap: 0.4em;
 }
