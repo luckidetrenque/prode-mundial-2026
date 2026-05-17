@@ -135,25 +135,11 @@ public class EmailService {
 
                 <!-- Reglamento -->
                 <tr>
-                  <td style="padding:24px 40px;">
-
-                    <table width="100%%" cellpadding="0" cellspacing="0">
-                      <tr>
-                        <td style="background:#2A398D;padding:12px 20px;border-radius:8px 8px 0 0;">
-                          <h3 style="margin:0;font-size:16px;color:#ffffff;letter-spacing:1px;text-transform:uppercase;">
-                            📋 Reglamento Oficial
-                          </h3>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="border:1px solid #e0e0e0;border-top:none;border-radius:0 0 8px 8px;padding:0;">
-
-                          %s
-
-                        </td>
-                      </tr>
-                    </table>
-
+                  <td style="padding:24px 40px; background:#f9fafb;">
+                    <h3 style="margin:0 0 20px;font-size:18px;color:#2A398D;letter-spacing:0.5px;text-transform:uppercase;border-bottom:2px solid #e0e0e0;padding-bottom:10px;">
+                      📋 Guía de Participación
+                    </h3>
+                    %s
                   </td>
                 </tr>
 
@@ -185,56 +171,60 @@ public class EmailService {
     }
 
     List<Articulo> articulos = List.of(
-        new Articulo("1", "Partidos", "⚽",
-            "Son los <strong>SETENTA Y DOS (72) partidos</strong> que se jugarán en la fase de grupos del Mundial de Fútbol 2026, iniciando el día <strong>jueves 11 de junio de 2026</strong> y culminando el día <strong>jueves 28 de junio de 2026</strong>. El torneo se disputará en estadios de <strong>Canadá, Estados Unidos y México</strong>.",
+        new Articulo("1", "Los Partidos", "⚽",
+            "Son los <strong>72 partidos</strong> de la fase de grupos del Mundial 2026 (Canadá, Estados Unidos y México), que se jugarán desde el <strong>11 hasta el 28 de junio de 2026</strong>.",
             null),
-        new Articulo("2", "Planilla", "📋",
-            "La planilla cuenta con los <strong>SETENTA Y DOS (72) partidos</strong> de la fase de grupos. Solo se puede marcar: equipo <strong>Local (L)</strong>, equipo <strong>Visitante (V)</strong> o <strong>Empate (E)</strong> por cada partido. Se permite la edición de pronósticos utilizando el código y email registrado, únicamente <strong>antes</strong> de que la planilla sea confirmada por el administrador.",
-            "Se admite <strong>más de una planilla</strong> por participante. Día y hora de finalización: <strong>10/06/2026 - 14:00 hs</strong>."),
+        new Articulo("2", "Tu Planilla", "📋",
+            "Vas a pronosticar los 72 partidos marcando: equipo <strong>Local (L)</strong>, <strong>Empate (E)</strong> o <strong>Visitante (V)</strong>. Podés cargar todas las planillas que quieras. Si necesitás corregir algo, podés editarla usando tu código y email <strong>antes</strong> de que el administrador la confirme.",
+            "Día y hora límite de finalización: <strong>10/06/2026 - 14:00 hs</strong>."),
         new Articulo("3", "Valor", "💵",
-            "La planilla tiene un valor de <strong>PESOS CINCO MIL ($5.000)</strong> que deberá ser abonado de manera previa o al momento de confirmar la misma.",
+            "Cada planilla tiene un valor de <strong>$5.000 (cinco mil pesos)</strong>, que deberás abonarle al administrador antes o al momento de la confirmación.",
             null),
         new Articulo("4", "Confirmación", "✅",
-            "Para confirmar la planilla, se deberá presentar el <strong>número único de identificación</strong> generado por el sistema al momento de guardarla.",
-            "Las planillas se confirmarán <strong>ineludiblemente</strong> hasta el <strong>10/06/2026 - 14:00 hs</strong>. Las planillas fuera de término no serán confirmadas."),
-        new Articulo("5", "Publicación", "👥",
-            "Las planillas debidamente confirmadas se publicarán en el sitio web una vez cerrado el período de inscripción.",
+            "Para que tu planilla participe, debés presentarle al administrador el <strong>código único</strong> que te generó el sistema al guardarla.",
+            "Las planillas se confirmarán <strong>ineludiblemente</strong> hasta el <strong>10/06/2026 - 14:00 hs</strong>. Pasado ese horario no serán confirmadas."),
+        new Articulo("5", "Transparencia y Publicación", "👥",
+            "Una vez cerrado el período de inscripción, todas las planillas confirmadas se publicarán en el sitio web para que cualquiera pueda verlas y auditarlas.",
             null),
-        new Articulo("6", "Resultados", "📊",
-            "Serán considerados los <strong>resultados oficiales de la FIFA</strong> del Mundial 2026. Los resultados y la tabla de posiciones se actualizarán automáticamente en el sitio.",
+        new Articulo("6", "Resultados y Puntos", "📊",
+            "Se usarán los <strong>resultados oficiales de la FIFA</strong>. Vas a sumar <strong>1 punto</strong> por cada acierto (L, E o V) y <strong>2 puntos</strong> en los partidos marcados con multiplicador <strong>X2</strong>.",
             null),
         new Articulo("7", "Ganadores", "🏆",
-            "Será ganador del <strong>Primer Puesto</strong> quien mayor puntaje acumule. En caso de empate, todos los participantes empatados son considerados ganadores y se reparten el premio. Lo mismo aplica para Segundo y Tercer Puesto.",
-            "Cada predicción correcta vale <strong>1 punto</strong> o <strong>2 puntos</strong> si el partido tiene multiplicador X2."),
-        new Articulo("8", "Premios", "🎁",
-            "<strong>1° Puesto:</strong> 60%% del pozo recaudado.<br/><strong>2° Puesto:</strong> 30%% del pozo recaudado.<br/><strong>3° Puesto:</strong> 10%% del pozo recaudado.<br/>En caso de empate en cualquier puesto, el monto se divide en partes iguales.",
+            "Será ganador del <strong>1° Puesto</strong> quien acumule más puntos. En caso de empate en cualquier puesto, todos los empatados se consideran ganadores y el premio se divide en partes iguales.",
+            null),
+        new Articulo("8", "Los Premios", "🎁",
+            "El pozo recaudado se reparte así:<br/><strong>1° Puesto:</strong> 60%%<br/><strong>2° Puesto:</strong> 30%%<br/><strong>3° Puesto:</strong> 10%%",
             null),
         new Articulo("9", "Entrega de Premios", "🤝",
-            "Los premios serán entregados dentro de los <strong>5 días hábiles</strong> posteriores a la finalización de la fase de grupos del Mundial 2026.",
+            "Los premios se entregarán dentro de los <strong>5 días hábiles</strong> posteriores a la finalización de la fase de grupos del Mundial.",
             null));
 
     StringBuilder sb = new StringBuilder();
     for (Articulo art : articulos) {
       sb.append(
           """
-              <table width="100%%" cellpadding="0" cellspacing="0" style="border-bottom:1px solid #f0f0f0;">
+              <table width="100%%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;background:#ffffff;border:1px solid #e0e0e0;border-radius:8px;overflow:hidden;">
                 <tr>
-                  <td style="padding:16px 20px;">
+                  <td style="background:#fafafa;padding:12px 16px;border-bottom:1px solid #e0e0e0;">
                     <table cellpadding="0" cellspacing="0">
                       <tr>
-                        <td style="width:36px;vertical-align:top;padding-top:2px;">
-                          <span style="font-size:20px;">%s</span>
+                        <td style="width:36px;height:36px;background:#2A398D;border-radius:6px;text-align:center;vertical-align:middle;">
+                          <span style="font-size:18px;">%s</span>
                         </td>
-                        <td style="padding-left:12px;">
-                          <p style="margin:0 0 4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9e9e9e;">
-                            ARTÍCULO %s
+                        <td style="padding-left:12px;vertical-align:middle;">
+                          <p style="margin:0 0 2px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9e9e9e;">
+                            PASO %s
                           </p>
-                          <p style="margin:0 0 8px;font-size:15px;font-weight:700;color:#2A398D;">%s</p>
-                          <p style="margin:0;font-size:13px;color:#474A4A;line-height:1.7;">%s</p>
-                          %s
+                          <p style="margin:0;font-size:15px;font-weight:700;color:#2A398D;font-family:Arial,sans-serif;">%s</p>
                         </td>
                       </tr>
                     </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:16px;">
+                    <div style="font-size:14px;color:#474A4A;line-height:1.7;font-family:Arial,sans-serif;">%s</div>
+                    %s
                   </td>
                 </tr>
               </table>

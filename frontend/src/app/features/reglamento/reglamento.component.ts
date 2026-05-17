@@ -403,6 +403,18 @@ interface ArticuloReglamento {
       text-underline-offset: 2px;
     }
 
+    .articulo-body ::ng-deep ul {
+      margin: 0.5em 0 1em;
+      padding-left: 1.5em;
+      font-size: 0.9rem;
+      line-height: 1.75;
+      color: var(--clr-text);
+    }
+    
+    .articulo-body ::ng-deep li {
+      margin-bottom: 0.3em;
+    }
+
     /* Bloque destacado */
     .articulo-destacado {
       display: flex;
@@ -550,27 +562,27 @@ export class ReglamentoComponent {
   readonly articulos: ArticuloReglamento[] = [
     {
       numero: 1,
-      titulo: 'Completar Pronósticos',
-      icono: 'fa-pencil',
+      titulo: 'Los Partidos',
+      icono: 'fa-futbol',
       contenido: `
-        <p>Ingresá a la sección <a href="/planilla">Planilla</a> para comenzar. Deberás cargar tus predicciones para los <strong>72 partidos</strong> de la fase de grupos del Mundial 2026.</p>
-        <p>Por cada partido, podés elegir entre tres opciones:</p>
+        <p>Vas a pronosticar los <strong>72 partidos</strong> de la fase de grupos del Mundial 2026 (Canadá, Estados Unidos y México), que se jugarán desde el <strong>11 hasta el 28 de junio de 2026</strong>.</p>
+        <p>Por cada partido, debés marcar una de tres opciones:</p>
         <ul>
           <li><strong>Local (L)</strong>: Gana el primer equipo.</li>
           <li><strong>Empate (E)</strong>: El partido termina igualado.</li>
           <li><strong>Visitante (V)</strong>: Gana el segundo equipo.</li>
         </ul>
-        <p>Si no te decidís, podés usar el botón <strong>"Me la juego"</strong> para completar resultados de forma aleatoria.</p>
+        <p>Si no te decidís, podés usar el botón <strong>"Me la juego"</strong> para completar de forma aleatoria.</p>
       `
     },
     {
       numero: 2,
-      titulo: 'Guardar y Obtener Código',
+      titulo: 'Tu Planilla',
       icono: 'fa-floppy-disk',
       contenido: `
-        <p>Una vez completados todos los campos y tus datos personales (Nombre, Apellido y Email), hacé clic en <strong>Guardar Planilla</strong>.</p>
-        <p>El sistema generará automáticamente un <strong>código único de identificación</strong> (ej: #80358702). Guárdate este número, ya que es el comprobante indispensable para tu participación.</p>
-        <p>Si necesitás corregir alguna predicción antes de la confirmación, podés usar el botón <strong>"Editar mi planilla"</strong> e ingresar tu código más el email registrado. Las ediciones solo están disponibles mientras la planilla no esté confirmada.</p>
+        <p>Una vez completados todos los campos y tus datos personales, hacé clic en <strong>Guardar Planilla</strong>.</p>
+        <p>El sistema te va a dar un <strong>código único</strong> (ej: 80358702). Guardate este número, es indispensable para confirmar tu participación.</p>
+        <p>Podés cargar todas las planillas que quieras. Si necesitás corregir algo, podés editar tu planilla usando ese código y tu email registrado <strong>antes</strong> de que el administrador la confirme.</p>
       `,
       destacado: `Guardá bien tu código. Si perdés el número, <strong>no podrás recuperarlo</strong>. También lo recibirás por email cuando el administrador confirme tu planilla.`
     },
@@ -579,40 +591,30 @@ export class ReglamentoComponent {
       titulo: 'Confirmación',
       icono: 'fa-circle-check',
       contenido: `
-        <p>Para que tu planilla entra oficialmente en juego y empieces a sumar puntos, debe ser <strong>confirmada por el administrador</strong>.</p>
-        <p>Deberás presentar tu número único de identificación al administrador para finalizar el proceso de confirmación.</p>
+        <p>Para que tu planilla participe, debés presentarle al administrador el <strong>código único</strong> que te generó el sistema al guardarla.</p>
       `,
-      destacado: `El plazo máximo para confirmar planillas es el <strong>10/06/2026 a las 14:00 hs</strong>. Pasado ese horario, no se admitirán nuevas confirmaciones.`
+      destacado: `Las planillas se confirmarán <strong>ineludiblemente</strong> hasta el <strong>10/06/2026 a las 14:00 hs</strong>. Pasado ese horario no serán confirmadas.`
     },
     {
       numero: 4,
-      titulo: 'Sistema de Puntos',
+      titulo: 'Resultados y Puntos',
       icono: 'fa-chart-line',
       contenido: `
-        <p>A medida que se jueguen los partidos, sumarás puntos de la siguiente manera:</p>
+        <p>Se usarán los <strong>resultados oficiales de la FIFA</strong>, y vas a poder seguir tu posición en vivo desde la sección <a href="/posiciones">Posiciones</a>.</p>
+        <p>Vas a sumar puntos así:</p>
         <ul>
-          <li><strong>1 Punto</strong>: Por cada resultado acertado (Local, Empate o Visitante).</li>
-          <li><strong>2 Puntos</strong>: En partidos especiales marcados con el multiplicador <strong>X2</strong>.</li>
+          <li><strong>1 Punto</strong>: Por cada acierto (L, E o V). No hace falta acertar el marcador exacto, solo quién gana o si empatan.</li>
+          <li><strong>2 Puntos</strong>: En los partidos especiales marcados con multiplicador <strong>X2</strong>.</li>
         </ul>
-      `,
-      destacado: `No es necesario acertar el marcador exacto (goles), solo quién gana o si empatan.`
-    },
-    {
-      numero: 5,
-      titulo: 'Resultados y Ranking',
-      icono: 'fa-ranking-star',
-      contenido: `
-        <p>Los resultados se actualizan automáticamente al finalizar cada encuentro según la información oficial de la FIFA.</p>
-        <p>Podrás seguir tu posición en el ranking general en tiempo real desde la sección <a href="/posiciones">Posiciones</a>.</p>
       `
     },
     {
-      numero: 6,
-      titulo: 'Transparencia',
+      numero: 5,
+      titulo: 'Transparencia y Publicación',
       icono: 'fa-eye',
       contenido: `
-        <p>Para garantizar la transparencia del juego, una vez que inicie el torneo y se cierre la inscripción, todas las planillas confirmadas serán publicadas en este sitio, siendo <strong>públicas</strong>.</p>
-        <p>En la sección <a href="/participantes">Participantes</a>, todos podrán ver y auditar los pronósticos de los demás jugadores.</p>
+        <p>Para garantizar la transparencia del juego, una vez cerrado el período de inscripción, todas las planillas confirmadas se publicarán en la sección <a href="/participantes">Participantes</a>.</p>
+        <p>Allí cualquiera podrá ver y auditar públicamente los pronósticos de todos los participantes.</p>
       `
     }
   ];
