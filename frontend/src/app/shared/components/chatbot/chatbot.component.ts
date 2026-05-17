@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, AfterViewChecked } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewChecked, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChatbotService } from '../../../core/services/chatbot.service';
@@ -25,7 +25,10 @@ export class ChatbotComponent implements AfterViewChecked {
     { text: '¡Hola! Soy tu asistente de Prode 2026. ¿En qué puedo ayudarte hoy?', type: 'bot' }
   ];
 
-  constructor(private chatbotService: ChatbotService) {}
+  constructor(
+    private chatbotService: ChatbotService, 
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngAfterViewChecked() {
     this.scrollToBottom();
@@ -43,10 +46,6 @@ export class ChatbotComponent implements AfterViewChecked {
     this.isOpen = !this.isOpen;
   }
 
-  contactAdmin() {
-    window.location.href = 'mailto:proyectos.lucho.tati@gmail.com?subject=Consulta Prode 2026';
-  }
-
   sendMessage() {
     if (!this.userMessage.trim() || this.isLoading) return;
 
@@ -54,18 +53,21 @@ export class ChatbotComponent implements AfterViewChecked {
     this.messages.push({ text: userText, type: 'user' });
     this.userMessage = '';
     this.isLoading = true;
+    this.cdr.detectChanges(); // fuerza el render del loading
 
     this.chatbotService.ask(userText).subscribe({
       next: (res) => {
         this.messages.push({ text: res.response, type: 'bot' });
         this.isLoading = false;
+        this.cdr.detectChanges(); // fuerza el render de la respuesta
       },
       error: (err) => {
         this.messages.push({ 
-          text: 'Lo siento, no puedo responder en este momento. Por favor, verifica tu conexión o intenta más tarde.', 
+          text: 'Lo siento, no puedo responder en este momento.', 
           type: 'bot' 
         });
         this.isLoading = false;
+        this.cdr.detectChanges();
         console.error('Chatbot error:', err);
       }
     });

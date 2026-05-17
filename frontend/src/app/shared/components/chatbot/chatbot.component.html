@@ -24,10 +24,10 @@
       <!-- Contact Admin Quick Action -->
       <div class="contact-admin-card" *ngIf="messages.length < 5">
         <p>¿Problemas técnicos o dudas con tu pago?</p>
-        <button (click)="contactAdmin()" class="contact-btn">
+        <a href="mailto:proyectos.lucho.tati@gmail.com?subject=Consulta Prode 2026" class="contact-btn">
           <i class="fas fa-envelope"></i>
           Contactar Administrador
-        </button>
+        </a>
       </div>
 
       <div *ngIf="isLoading" class="message bot">
