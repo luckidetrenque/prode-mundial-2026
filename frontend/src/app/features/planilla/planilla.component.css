@@ -141,10 +141,9 @@
 }
 
 .progreso-nota {
-  font-size: 1rem;
+  font-size: 0.85rem;
   color: var(--clr-text-muted);
-  margin-top: 0.4em;
-  display: content;
+  margin-top: 0.85em;
   align-items: center;
   gap: 0.35em;
 }
@@ -267,9 +266,7 @@
   /* ← antes era hardcoded 60px */
   z-index: 90;
   background: var(--clr-surface);
-  padding: 0.85em 0 0.6em;
-  border-bottom: 1px solid var(--clr-border);
-  margin-bottom: 1.5em;
+  padding: 0.85em 0 0.85em;
 }
 
 .progreso-header {
@@ -387,6 +384,7 @@
   border-radius: 3px;
   overflow: hidden;
   border: 1px solid var(--clr-border);
+  margin-bottom: .75rem;
 }
 
 .barra-fill {
@@ -794,4 +792,4 @@
   .editar-acceso { gap: 0.4em; }
   .editar-acceso > span { font-size: 0.78rem; }
 }
-
+
