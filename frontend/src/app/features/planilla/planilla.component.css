@@ -266,30 +266,33 @@
   /* ← antes era hardcoded 60px */
   z-index: 90;
   background: var(--clr-surface);
-  padding: 0.85em 0 0.85em;
+  padding: 0.85em 0.75em;
 }
 
 .progreso-header {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 0.75em;
+  gap: 0.5em;
   margin-bottom: 0.5em;
+  flex-wrap: nowrap;          /* ← nunca rompe a segunda línea */
 }
 
 .progreso-info {
   margin-right: auto;
   display: flex;
   align-items: center;
-  gap: 0.75em;
+  gap: 0.4em;
+  flex-shrink: 0;
 }
 
 .progreso-label {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--clr-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
 }
 
 .progreso-count {
@@ -297,6 +300,7 @@
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--clr-primary-dark);
+  white-space: nowrap;
 }
 
 .progreso-count span {
@@ -308,21 +312,24 @@
 .btn-auto {
   display: flex;
   align-items: center;
-  gap: 0.5em;
-  padding: 0.35em 0.85em;
+  gap: 0.35em;
+  padding: 0.35em 0.7em;
   border-radius: 20px;
   border: 1.5px solid var(--clr-primary-light);
   background: white;
   color: var(--clr-primary);
-  font-size: 0.75rem;
+  font-size: 0.72rem;         /* ← un poco más chico */
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
   box-shadow: var(--shadow-sm);
+  white-space: nowrap;        /* ← nunca parte "Me la juego" */
+  flex-shrink: 0;
 }
 
 .btn-auto i {
   color: var(--clr-primary-light);
+  font-size: 0.7rem;
 }
 
 .btn-auto:hover {
@@ -342,22 +349,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
-  border: 1.5px solid var(--clr-border-strong);
+  border: 1.5px solid var(--clr-error-text);
   background: var(--clr-error-bg);
   color: var(--clr-error-text);
-  border-color: var(--clr-error-text);
   cursor: pointer;
   transition: var(--transition);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
+  flex-shrink: 0;             /* ← no se achica */
 }
 
 .btn-reset-all:hover:not(:disabled) {
-  background: var(--clr-error-bg);
-  color: var(--clr-error-text);
-  border-color: var(--clr-error-text);
   transform: translateY(-2px);
 }
 
@@ -507,6 +511,9 @@
     width: 20px;
     height: 20px;
     font-size: 0.55rem;
+  }
+  .progreso-label {
+    display: none;
   }
 }
 
@@ -749,7 +756,7 @@
   border: 1px solid var(--clr-border-strong);
   border-left: 3px solid var(--clr-primary);
   border-radius: var(--radius-md);
-  padding: 0.65em 1em;
+  padding: 0.65em;
   margin-bottom: 1em;
   font-size: 0.82rem;
   color: var(--clr-text-muted);

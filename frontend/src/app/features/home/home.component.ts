@@ -76,10 +76,18 @@ import { RouterLink } from '@angular/router';
     .hero {
       text-align: center;
       padding: 4em 1em 4.5em;
-      background: linear-gradient(135deg, var(--wc-usa) 0%, #1a237e 100%);
+      background: linear-gradient(270deg, var(--wc-usa), #1a237e, #0e5630, #b0151a);
+      background-size: 800% 800%;
+      animation: gradientBg 20s ease infinite;
       color: white;
       position: relative;
       overflow: hidden;
+    }
+
+    @keyframes gradientBg {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     .hero::before {
@@ -117,8 +125,8 @@ import { RouterLink } from '@angular/router';
     }
 
     .highlight {
-      color: var(--wc-mexico);
-      text-shadow: 0 0 20px rgba(60, 172, 59, 0.4);
+      color: #ffffff;
+      text-shadow: 0 0 15px rgba(255, 255, 255, 0.6), 0 0 30px rgba(60, 172, 59, 0.8);
     }
 
     .hero-subtitle {

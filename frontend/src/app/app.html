@@ -99,6 +99,31 @@
 
 <router-outlet />
 
+<!-- Bottom Navigation Bar (Mobile Only) -->
+<nav class="bottom-nav" aria-label="Navegación móvil">
+  <a routerLink="/home" routerLinkActive="activo" [routerLinkActiveOptions]="{exact: true}" class="bottom-nav-item">
+    <i class="fas fa-home"></i>
+    <span>Inicio</span>
+  </a>
+  <a routerLink="/fixture" routerLinkActive="activo" class="bottom-nav-item">
+    <i class="fas fa-calendar-days"></i>
+    <span>Fixture</span>
+  </a>
+  <a routerLink="/planilla" routerLinkActive="activo" class="bottom-nav-item bottom-nav-item--main" [class.disabled]="tiempoExpirado()">
+    <div class="bottom-nav-fab">
+      <i class="fas fa-pencil"></i>
+    </div>
+  </a>
+  <a routerLink="/resultados" routerLinkActive="activo" class="bottom-nav-item">
+    <i class="fas fa-futbol"></i>
+    <span>Resultados</span>
+  </a>
+  <a routerLink="/posiciones" routerLinkActive="activo" class="bottom-nav-item">
+    <i class="fas fa-trophy"></i>
+    <span>Posiciones</span>
+  </a>
+</nav>
+
 <app-scroll-to-top />
 <app-chatbot />
 

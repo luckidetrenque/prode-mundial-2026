@@ -62,9 +62,11 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
           @for (grupo of gruposMostrados(); track grupo) {
             <div class="group-table-wrap">
               <div class="group-caption">
-                <div class="caption-header">
-                  <span class="group-label">GRUPO</span>
-                  <span class="group-letter">{{ grupo }}</span>
+                <div class="caption-header-row">
+                  <div class="caption-left">
+                    <span class="group-label">GRUPO</span>
+                    <span class="group-letter">{{ grupo }}</span>
+                  </div>
                 </div>
                 <div class="group-teams-mobile">
                   @for (eq of getEquiposDelGrupo(grupo); track eq.nombre) {
@@ -237,10 +239,23 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
 
     .group-caption {
       display: flex;
-      align-items: center;
+      flex-direction: column;       /* ← igual que planilla */
       gap: 0.4em;
       padding: 0.6em 1em;
       background: linear-gradient(to right, var(--wc-usa), #3a4bb0);
+    }
+
+    .caption-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .caption-left {
+      display: flex;
+      align-items: center;
+      gap: 0.4em;
     }
 
     .group-letter {
@@ -418,7 +433,6 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
 
     /* ── Responsive ──────────────────────────────────────────────────────── */
     @media (max-width: 640px) {
-      .group-caption { flex-direction: column; align-items: flex-start; gap: 0.6em; }
       .group-teams-mobile { 
         display: flex; 
         flex-wrap: wrap; 
