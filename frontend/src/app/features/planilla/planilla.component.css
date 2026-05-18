@@ -259,14 +259,16 @@
   box-shadow: 0 2px 6px rgba(192, 23, 29, 0.25);
 }
 
-/* ── MEJORA 6: Barra de progreso sticky con --navbar-height ─────────────── */
 .progreso-wrap {
   position: sticky;
   top: var(--navbar-height);
-  /* ← antes era hardcoded 60px */
   z-index: 90;
-  background: var(--clr-surface);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   padding: 0.85em 0.75em;
+  border-bottom: 1.5px solid var(--clr-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 .progreso-header {

@@ -35,28 +35,21 @@
         }
       </span>
     </div>
-  </div>
-
-  <div class="detalle-instrucciones">
-    <p>
-      <i class="fas fa-info-circle"></i>
-      Predicciones de <strong>{{ planilla()!.nombre }} {{ planilla()!.apellido }}</strong>.
-      <br>
-      - El icono <span
+    <div class="header-instrucciones">
+      El icono <span
         style="display:inline-flex;align-items:center;gap:2px;background:#ffc107;color:#856404;font-size:0.6rem;font-weight:800;padding:1px 4px;border-radius:4px;vertical-align:middle">
         <i class="fas fa-bolt" style="font-size:0.6rem"></i>x2
       </span>
       indica que el partido vale doble puntaje si se acierta.
       <br>
-
-      - Las filas <span
-        style="display:inline-block;width:12px;height:12px;background:rgba(58,75,176,0.25);border-radius:2px;vertical-align:middle;margin:0 3px"></span>
-      son aciertos.
       Las filas <span
-        style="display:inline-block;width:12px;height:12px;background:rgba(255,0,0,0.1);border-radius:2px;vertical-align:middle;margin:0 3px"></span>
+        style="display:inline-block;width:12px;height:12px;background:rgba(60, 172, 59, 0.25);border:1px solid rgba(60, 172, 59, 0.4);border-radius:2px;vertical-align:middle;margin:0 3px"></span>
+      son aciertos.
+      <br>
+      Las filas <span
+        style="display:inline-block;width:12px;height:12px;background:rgba(230, 29, 37, 0.25);border:1px solid rgba(230, 29, 37, 0.4);border-radius:2px;vertical-align:middle;margin:0 3px"></span>
       son desaciertos.
-
-    </p>
+    </div>
   </div>
 
   <!-- Grilla de grupos (mismo formato que planilla) -->

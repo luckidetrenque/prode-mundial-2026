@@ -82,52 +82,93 @@
   color: var(--clr-success-text);
 }
 
-.detalle-instrucciones {
-  margin-bottom: 2em;
+.header-instrucciones {
   color: var(--clr-text-muted);
-  font-size: 0.9rem;
+  font-size: 0.9rem;}
+
+/* ── Layout ──────────────────────────────────────────────────────────────── */
+.groups-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.25em;
+  width: 100%;
 }
 
-/* .groups-grid, .group-table y .group-caption movidos a global styles.css */
+/* ── Tabla de grupo ──────────────────────────────────────────────────────── */
+.group-table {
+  border: 1px solid var(--clr-border-strong);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  font-size: 12px;
+  background: var(--clr-surface);
+}
 
+.group-caption {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.4em;
+  padding: 0.6em 1em;
+  background: linear-gradient(to right, var(--wc-usa), #3a4bb0);
+}
+
+.group-letter {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+}
+
+.group-label {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ── Fila de partido ──────────────────────────────────────────────────────── */
 .partido-row {
   display: grid;
-  grid-template-columns: 28px 1fr 80px 1fr;
+  grid-template-columns: 28px 1fr 84px 1fr;
   align-items: center;
   border-bottom: 1px solid var(--clr-border);
   transition: background-color 0.3s ease;
 }
 
 .partido-row.fila-acierto {
-  background-color: rgba(58, 75, 176, 0.25);
+  background-color: rgba(60, 172, 59, 0.08); /* Verde oficial tenso */
 }
 
 .partido-row.fila-acierto .partido-num {
-  color: var(--wc-usa);
-  background-color: rgba(58, 75, 176, 0.25);
+  color: #2b7d2a;
+  background-color: rgba(60, 172, 59, 0.15);
+  font-weight: 700;
 }
 
 .partido-row.fila-acierto .opciones-centro,
 .partido-row.fila-acierto .equipo-local,
 .partido-row.fila-acierto .equipo-visitante {
-  color: var(--wc-usa);
-  background-color: rgba(106, 126, 245, 0.05);
+  color: var(--clr-text);
+  background-color: transparent;
 }
 
 .partido-row.fila-desacierto {
-  background-color: rgba(255, 0, 0, 0.1);
+  background-color: rgba(230, 29, 37, 0.08); /* Rojo oficial tenso */
 }
 
 .partido-row.fila-desacierto .partido-num {
-  color: var(--wc-usa);
-  background-color: rgba(255, 0, 0, 0.1);
+  color: #a8151b;
+  background-color: rgba(230, 29, 37, 0.15);
+  font-weight: 700;
 }
 
 .partido-row.fila-desacierto .opciones-centro,
 .partido-row.fila-desacierto .equipo-local,
 .partido-row.fila-desacierto .equipo-visitante {
-  color: var(--wc-usa);
-  background-color: rgba(255, 0, 0, 0.05);
+  color: var(--clr-text);
+  background-color: transparent;
 }
 
 
@@ -182,7 +223,15 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 80px;
+  flex: 1;
+}
+
+.equipo-local .equipo-nombre {
+  text-align: right;
+}
+
+.equipo-visitante .equipo-nombre {
+  text-align: left;
 }
 
 .opciones-centro {

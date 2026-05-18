@@ -189,17 +189,35 @@ export class PlanillaDetalleComponent implements OnInit {
       partidosGrupo.forEach(partido => {
         const pred = this.getPrediccion(partido.id);
         const acierto = this.esAcierto(partido.id);
-        const rowStyles = acierto ? { fillColor: [235, 247, 235] } : {}; // Verde muy claro
+        const desacierto = this.esDesacierto(partido.id);
+        const real = this.getResultadoReal(partido.id);
+        
+        let rowStyles = {};
+        if (real !== null) {
+          if (acierto) {
+            rowStyles = { fillColor: [239, 248, 239] }; // Verde suave oficial (#eff8ef)
+          } else if (desacierto) {
+            rowStyles = { fillColor: [253, 237, 238] }; // Rojo suave oficial (#fdedee)
+          }
+        }
 
         let predText = '-';
         if (pred === 'LOCAL') predText = 'LOCAL (L)';
         else if (pred === 'EMPATE') predText = 'EMPATE (E)';
         else if (pred === 'VISITANTE') predText = 'VISITANTE (V)';
 
+        let numeroText = String(partido.numero);
+        if (partido.multiplicador > 1) {
+          numeroText += ' (x2)';
+        }
+
         tableData.push([
-          { content: partido.numero, styles: { halign: 'center', ...rowStyles } },
+          { content: numeroText, styles: { halign: 'center', ...rowStyles } },
           { content: partido.equipoLocalShow, styles: { halign: 'right', ...rowStyles } },
-          { content: predText, styles: { halign: 'center', fontStyle: 'bold', ...rowStyles } },
+          { 
+            content: '', 
+            styles: { halign: 'center', ...rowStyles } 
+          },
           { content: partido.equipoVisitanteShow, styles: { halign: 'left', ...rowStyles } }
         ]);
       });
@@ -217,21 +235,62 @@ export class PlanillaDetalleComponent implements OnInit {
       },
       styles: { 
         fontSize: 8,
-        cellPadding: 2
+        cellPadding: 3
       },
       columnStyles: {
-        0: { cellWidth: 10 },
-        1: { cellWidth: 60 },
+        0: { cellWidth: 16 }, // Ancho suficiente para evitar saltos en '1 (x2)'
+        1: { cellWidth: 63 },
         2: { cellWidth: 40 },
-        3: { cellWidth: 60 }
+        3: { cellWidth: 63 }
       },
-      didParseCell: (data) => {
-        // Colorear el texto de la predicción según el resultado
+      didDrawCell: (data) => {
         if (data.section === 'body' && data.column.index === 2) {
-          const text = data.cell.text[0] || '';
-          if (text.includes('LOCAL')) data.cell.styles.textColor = [42, 57, 141];
-          if (text.includes('EMPATE')) data.cell.styles.textColor = [100, 100, 100];
-          if (text.includes('VISITANTE')) data.cell.styles.textColor = [192, 23, 29];
+          // Obtener el número de partido de la primera celda de la fila
+          const numCellText = data.row.cells[0].text[0] || '';
+          const matchNum = parseInt(numCellText);
+          if (isNaN(matchNum)) return; // Ignorar cabeceras de grupo
+
+          // Buscar el partido en el listado
+          const partidoObj = this.partidos().find(p => p.numero === matchNum);
+          if (!partidoObj) return;
+
+          const pred = this.getPrediccion(partidoObj.id);
+          
+          const docInstance = data.doc;
+          const cell = data.cell;
+          
+          const centerY = cell.y + cell.height / 2;
+          const centerX = cell.x + cell.width / 2;
+          
+          const radius = 2.4; 
+          const spacing = 7.5;
+          
+          const xL = centerX - spacing;
+          const xE = centerX;
+          const xV = centerX + spacing;
+          
+          const drawOption = (x: number, label: string, isActive: boolean, activeColor: [number, number, number], activeBg: [number, number, number]) => {
+            if (isActive) {
+              docInstance.setFillColor(activeBg[0], activeBg[1], activeBg[2]);
+              docInstance.setDrawColor(activeColor[0], activeColor[1], activeColor[2]);
+              docInstance.setLineWidth(0.3);
+              docInstance.circle(x, centerY, radius, 'FD');
+              docInstance.setTextColor(activeColor[0], activeColor[1], activeColor[2]);
+            } else {
+              docInstance.setFillColor(255, 255, 255);
+              docInstance.setDrawColor(220, 220, 220);
+              docInstance.setLineWidth(0.3);
+              docInstance.circle(x, centerY, radius, 'FD');
+              docInstance.setTextColor(200, 200, 200);
+            }
+            docInstance.setFont('helvetica', 'bold');
+            docInstance.setFontSize(5.5);
+            docInstance.text(label, x, centerY + 0.8, { align: 'center' });
+          };
+          
+          drawOption(xL, 'L', pred === 'LOCAL', [46, 158, 45], [232, 248, 239]); 
+          drawOption(xE, 'E', pred === 'EMPATE', [42, 57, 141], [232, 234, 246]); 
+          drawOption(xV, 'V', pred === 'VISITANTE', [192, 23, 29], [255, 235, 238]); 
         }
       }
     });
@@ -266,6 +325,6 @@ export class PlanillaDetalleComponent implements OnInit {
       );
     }
 
-    doc.save(`Prode_2026_Planilla_${p.codigo}_${p.apellido}.pdf`);
+    doc.save(`Planilla_${p.codigo}_${p.nombre}_${p.apellido}.pdf`);
   }
 }

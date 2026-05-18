@@ -75,28 +75,28 @@ interface GrupoPronostico {
             <div class="overview-card">
               <i class="fas fa-file-contract"></i>
               <div class="overview-data">
-                <span class="overview-num">{{ totalPlanillas() }}</span>
+                <span class="overview-num odometer" [style.--num]="totalPlanillas()"></span>
                 <span class="overview-label">Planillas Totales</span>
               </div>
             </div>
             <div class="overview-card">
               <i class="fas fa-house"></i>
               <div class="overview-data">
-                <span class="overview-num">{{ totalPrediccionesLocal() }}</span>
+                <span class="overview-num odometer" [style.--num]="totalPrediccionesLocal()"></span>
                 <span class="overview-label">Votos Local</span>
               </div>
             </div>
             <div class="overview-card">
               <i class="fas fa-equals"></i>
               <div class="overview-data">
-                <span class="overview-num">{{ totalPrediccionesEmpate() }}</span>
+                <span class="overview-num odometer" [style.--num]="totalPrediccionesEmpate()"></span>
                 <span class="overview-label">Votos Empate</span>
               </div>
             </div>
             <div class="overview-card">
               <i class="fas fa-plane-departure"></i>
               <div class="overview-data">
-                <span class="overview-num">{{ totalPrediccionesVisitante() }}</span>
+                <span class="overview-num odometer" [style.--num]="totalPrediccionesVisitante()"></span>
                 <span class="overview-label">Votos Visitante</span>
               </div>
             </div>
@@ -266,6 +266,24 @@ interface GrupoPronostico {
       flex-wrap: wrap;
       gap: 0.35em;
       margin-bottom: 1.5em;
+    }
+
+    /* ── Animación Odometer ──────────────────────────────────────────────── */
+    @property --num {
+      syntax: "<integer>";
+      initial-value: 0;
+      inherits: true;
+    }
+    
+    .odometer {
+      counter-reset: num var(--num);
+      transition: --num 2.5s cubic-bezier(0.1, 0.9, 0.2, 1);
+      /* Inicia en 0 si no se ha aplicado el estilo */
+      --num: 0; 
+    }
+    
+    .odometer::after {
+      content: counter(num);
     }
 
     /* ── Stats grid (predicciones) ───────────────────────────────────────── */

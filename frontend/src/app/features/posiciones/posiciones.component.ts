@@ -117,8 +117,8 @@ import { Posicion } from '../../shared/models/posicion.model';
               </tr>
             </thead>
             <tbody>
-              @for (pos of posicionesPaginadas(); track pos.codigoPlanilla) {
-                <tr [class]="getClaseRow(pos.posicion)">
+              @for (pos of posicionesPaginadas(); track pos.codigoPlanilla; let i = $index) {
+                <tr [class]="getClaseRow(pos.posicion)" [style.animation-delay.ms]="i * 50">
                   <td class="col-pos">
                     @switch (pos.posicion) {
                       @case (1) { <i class="fas fa-trophy first-place" title="1° puesto"></i> }
@@ -194,9 +194,21 @@ import { Posicion } from '../../shared/models/posicion.model';
       gap: var(--spacing-xs);
       flex: 1;
       max-width: 180px;
+      transition: transform 0.3s ease, filter 0.3s ease;
+      cursor: default;
     }
 
-    .podio-medal { font-size: 1.6rem; }
+    .podio-item:hover {
+      transform: translateY(-5px);
+      filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+    }
+
+    .podio-item:hover .podio-nombre {
+      text-shadow: 0 0 8px rgba(255,255,255,0.6);
+    }
+
+    .podio-medal { font-size: 1.6rem; transition: transform 0.3s ease; }
+    .podio-item:hover .podio-medal { transform: scale(1.15); }
     .podio-info  { text-align: center; width: 100%; }
     
     .podio-nombres-scroll {
@@ -228,11 +240,28 @@ import { Posicion } from '../../shared/models/posicion.model';
       font-weight: 700;
       color: white;
       border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      transform-origin: bottom;
+      animation: growUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
     }
 
-    .podio-base-1 { height: 72px; background: linear-gradient(180deg, #e6b800 0%, #ffd700 100%); }
-    .podio-base-2 { height: 52px; background: linear-gradient(180deg, #9a9a9a 0%, #c0c0c0 100%); }
-    .podio-base-3 { height: 38px; background: linear-gradient(180deg, #a0622a 0%, #cd7f32 100%); }
+    .podio-base-1 { 
+      height: 72px; 
+      background: linear-gradient(180deg, #e6b800 0%, #ffd700 100%); 
+      animation-delay: 0.4s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .podio-base-1::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%; width: 50%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+      animation: shimmer 3s infinite 1s;
+    }
+
+    .podio-base-2 { height: 52px; background: linear-gradient(180deg, #9a9a9a 0%, #c0c0c0 100%); animation-delay: 0.2s; }
+    .podio-base-3 { height: 38px; background: linear-gradient(180deg, #a0622a 0%, #cd7f32 100%); animation-delay: 0s; }
 
     /* ── Controles integrados en Header (th Participante) ────────────────── */
     .header-nombre-content {
@@ -312,11 +341,26 @@ import { Posicion } from '../../shared/models/posicion.model';
       vertical-align: middle;
     }
 
+    .tabla-pos tbody tr {
+      opacity: 0;
+      transform: translateY(10px);
+      animation: slideUpFade 0.4s ease forwards;
+    }
+
     .tabla-pos tbody tr:last-child td { border-bottom: none; }
     .tabla-pos tbody tr:hover td { background: var(--clr-surface-alt); }
 
     /* Filas especiales */
-    .row-gold   td { background: #fffde7; }
+    .row-gold   td { background: #fffde7; position: relative; overflow: hidden; }
+    .row-gold td::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%; width: 50%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      animation: shimmer 3s infinite 1s;
+      pointer-events: none;
+    }
+    
     .row-silver td { background: #fafafa; }
     .row-bronze td { background: #fff8f2; }
     .row-gold:hover   td { background: #fff9c4 !important; }
@@ -450,6 +494,23 @@ import { Posicion } from '../../shared/models/posicion.model';
       .podio-base-2 { height: 35px; }
       .podio-base-3 { height: 25px; }
       .podio-base { font-size: 1rem; }
+    }
+
+    /* ── Animaciones Especiales ──────────────────────────────────────────── */
+    @keyframes growUp {
+      0% { transform: scaleY(0); opacity: 0; }
+      100% { transform: scaleY(1); opacity: 1; }
+    }
+
+    @keyframes shimmer {
+      0% { left: -100%; }
+      50% { left: 200%; }
+      100% { left: 200%; }
+    }
+
+    @keyframes slideUpFade {
+      0% { opacity: 0; transform: translateY(15px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
   `]
 })
