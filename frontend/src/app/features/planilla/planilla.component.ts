@@ -4,6 +4,7 @@
 // que Angular detecta automáticamente en los templates sin trucos adicionales.
 // EDITAR PLANILLA: nuevo flow de búsqueda por código+email y actualización de predicciones.
 import { Component, OnInit, signal, computed, inject, DestroyRef } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { startWith } from 'rxjs/operators';
@@ -28,7 +29,7 @@ type VistaMode = 'nueva' | 'exito' | 'buscar-editar' | 'editando';
 @Component({
   selector: 'app-planilla',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, RouterLink],
   templateUrl: './planilla.component.html',
   styleUrl: './planilla.component.css'
 })

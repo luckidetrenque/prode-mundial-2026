@@ -802,3 +802,188 @@
   .editar-acceso > span { font-size: 0.78rem; }
 }
 
+/* ── Tarjeta de Ayuda para Principiantes ────────────────────────────────────── */
+.ayuda-principiante-card {
+  background: linear-gradient(135deg, #fdfcf7 0%, #f6f9f3 100%);
+  border: 1px solid rgba(46, 158, 45, 0.18);
+  border-radius: var(--radius-lg);
+  padding: 1.25em 1.5em;
+  margin-bottom: 1.5em;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+.ayuda-header {
+  margin-bottom: 1em;
+}
+
+.ayuda-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  background: rgba(212, 160, 23, 0.12);
+  color: #b58209;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 30px;
+  padding: 0.35em 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 0.5em;
+}
+
+.ayuda-badge i {
+  font-size: 0.8rem;
+  animation: lightbulb-glow 2.5s infinite alternate ease-in-out;
+}
+
+@keyframes lightbulb-glow {
+  0% { transform: scale(1); opacity: 0.85; filter: drop-shadow(0 0 0 gold); }
+  100% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 3px gold); }
+}
+
+.ayuda-header h3 {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--clr-primary-dark);
+  margin: 0;
+  letter-spacing: 0.2px;
+}
+
+.ayuda-cuerpo {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1em;
+}
+
+.ayuda-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85em;
+  padding: 0.85em 1em;
+  background: white;
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.015);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ayuda-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.04);
+  border-color: rgba(46, 158, 45, 0.25);
+}
+
+.ayuda-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  font-size: 1rem;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.ayuda-item:hover .ayuda-item-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.color-dice {
+  background: rgba(46, 158, 45, 0.09);
+  color: var(--clr-primary-light);
+}
+
+.color-chart {
+  background: rgba(42, 57, 141, 0.08);
+  color: var(--clr-primary-dark);
+}
+
+.ayuda-item-text {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--clr-text-muted);
+}
+
+.ayuda-item-text strong {
+  color: var(--clr-text);
+}
+
+.badge-melajuego {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-primary-light) 100%);
+  color: white;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 12px;
+  margin: 0 2px;
+  vertical-align: middle;
+  box-shadow: 0 2px 4px rgba(46, 158, 45, 0.2);
+}
+
+.link-pronosticos-ayuda {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--clr-primary-dark);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: var(--transition);
+}
+
+.link-pronosticos-ayuda:hover {
+  color: var(--clr-primary-light);
+  text-decoration: none;
+}
+
+/* pulse animation to visually emphasize the Me la juego button in the progress bar */
+.btn-auto {
+  animation: pulse-glow-btn 2.5s infinite ease-in-out;
+}
+
+@keyframes pulse-glow-btn {
+  0% {
+    box-shadow: 0 0 0 0 rgba(46, 158, 45, 0.4);
+    border-color: var(--clr-primary-light);
+  }
+  65% {
+    box-shadow: 0 0 0 6px rgba(46, 158, 45, 0);
+    border-color: var(--clr-primary);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(46, 158, 45, 0);
+    border-color: var(--clr-primary-light);
+  }
+}
+
+/* ── Responsive Ayuda ─────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .ayuda-cuerpo {
+    grid-template-columns: 1fr;
+    gap: 0.75em;
+  }
+}
+
+@media (max-width: 480px) {
+  .ayuda-principiante-card {
+    padding: 1em;
+  }
+  .ayuda-header h3 {
+    font-size: 0.88rem;
+  }
+  .ayuda-item {
+    padding: 0.75em;
+  }
+  .ayuda-item-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 0.85rem;
+  }
+}
+
+

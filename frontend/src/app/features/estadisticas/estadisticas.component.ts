@@ -1,6 +1,7 @@
 // estadisticas.component.ts — CON TABS: Estadísticas + Pronósticos
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { EstadisticaService } from '../../core/services/estadistica.service';
 import { EstadisticaPartido } from '../../shared/models/estadistica.model';
 
@@ -122,21 +123,21 @@ interface GrupoPronostico {
                 </div>
                 <div class="stat-barras">
                   <div class="barra-row">
-                    <span class="barra-label">({{ stat.votosLocal }}) {{ stat.equipoLocal }}</span>
+                    <span class="barra-label" title="{{ stat.votosLocal }} votos">({{ stat.votosLocal }}) {{ stat.equipoLocal }}</span>
                     <div class="barra-track">
                       <div class="barra-fill barra-local" [style.width.%]="getPct(stat.votosLocal, stat.totalVotos)"></div>
                     </div>
                     <span class="barra-pct">{{ getPct(stat.votosLocal, stat.totalVotos) | number:'1.0-0' }}%</span>
                   </div>
                   <div class="barra-row">
-                    <span class="barra-label">({{ stat.votosEmpate }}) Empate</span>
+                    <span class="barra-label" title="{{ stat.votosEmpate }} votos">({{ stat.votosEmpate }}) Empate</span>
                     <div class="barra-track">
                       <div class="barra-fill barra-empate" [style.width.%]="getPct(stat.votosEmpate, stat.totalVotos)"></div>
                     </div>
                     <span class="barra-pct">{{ getPct(stat.votosEmpate, stat.totalVotos) | number:'1.0-0' }}%</span>
                   </div>
                   <div class="barra-row">
-                    <span class="barra-label">({{ stat.votosVisitante }}) {{ stat.equipoVisitante }}</span>
+                    <span class="barra-label" title="{{ stat.votosVisitante }} votos">({{ stat.votosVisitante }}) {{ stat.equipoVisitante }}</span>
                     <div class="barra-track">
                       <div class="barra-fill barra-visitante" [style.width.%]="getPct(stat.votosVisitante, stat.totalVotos)"></div>
                     </div>
@@ -505,6 +506,8 @@ interface GrupoPronostico {
 })
 export class EstadisticasComponent implements OnInit {
 
+  private route = inject(ActivatedRoute);
+
   cargando     = signal(true);
   estadisticas = signal<EstadisticaPartido[]>([]);
   grupoActivo  = signal<string | null>(null);
@@ -640,6 +643,13 @@ export class EstadisticasComponent implements OnInit {
   constructor(private estadisticaService: EstadisticaService) {}
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      const tab = params['tab'];
+      if (tab === 'pronosticos' || tab === 'estadisticas') {
+        this.tabActivo.set(tab);
+      }
+    });
+
     this.estadisticaService.getEstadisticas().subscribe({
       next: data => { this.estadisticas.set(data); this.cargando.set(false); },
       error: () => this.cargando.set(false)
