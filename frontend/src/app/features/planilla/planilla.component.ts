@@ -3,7 +3,8 @@
 // Ahora las predicciones se guardan en un signal<Record<number, ResultadoPrediccion>>
 // que Angular detecta automáticamente en los templates sin trucos adicionales.
 // EDITAR PLANILLA: nuevo flow de búsqueda por código+email y actualización de predicciones.
-import { Component, OnInit, signal, computed, inject, DestroyRef } from '@angular/core';
+import { Component, OnInit, signal, computed, inject, DestroyRef, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -36,6 +37,7 @@ type VistaMode = 'nueva' | 'exito' | 'buscar-editar' | 'editando';
 export class PlanillaComponent implements OnInit {
 
   private toastService = inject(ToastService);
+  private platformId   = inject(PLATFORM_ID);
 
   cargando         = signal(true);
   guardando        = signal(false);
@@ -373,6 +375,209 @@ export class PlanillaComponent implements OnInit {
         this.guardandoEdicion.set(false);
       }
     });
+  }
+
+  descargarComprobante(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const planilla = this.planillaGuardada();
+    if (!planilla) return;
+
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1200;
+      canvas.height = 700;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // 1. Fondo gradiente
+      const gradient = ctx.createLinearGradient(0, 0, 1200, 700);
+      gradient.addColorStop(0, '#0a2710');
+      gradient.addColorStop(0.5, '#123f1b');
+      gradient.addColorStop(1, '#0c220f');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 1200, 700);
+
+      // 2. Dibujar líneas de fútbol decorativas (semi-transparentes)
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+      ctx.lineWidth = 4;
+      // Círculo central
+      ctx.beginPath();
+      ctx.arc(600, 350, 150, 0, 2 * Math.PI);
+      ctx.stroke();
+      // Línea media
+      ctx.beginPath();
+      ctx.moveTo(600, 0);
+      ctx.lineTo(600, 700);
+      ctx.stroke();
+      // Áreas de penal
+      ctx.beginPath();
+      ctx.rect(-50, 180, 230, 340);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.rect(1020, 180, 230, 340);
+      ctx.stroke();
+
+      // O y X tácticos decorativos
+      ctx.font = "bold 24px Arial";
+      ctx.fillStyle = 'rgba(212, 160, 23, 0.15)'; // dorado suave
+      ctx.fillText('X', 450, 280);
+      ctx.fillText('O', 520, 420);
+      ctx.fillText('X', 750, 430);
+      ctx.fillText('O', 680, 250);
+
+      // Línea de pase punteada
+      ctx.strokeStyle = 'rgba(212, 160, 23, 0.15)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 6]);
+      ctx.beginPath();
+      ctx.moveTo(530, 410);
+      ctx.quadraticCurveTo(600, 450, 740, 425);
+      ctx.stroke();
+      ctx.setLineDash([]); // reset
+
+      // 3. Bordes elegantes
+      ctx.strokeStyle = '#d4a017'; // dorado
+      ctx.lineWidth = 8;
+      ctx.strokeRect(20, 20, 1160, 660);
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(32, 32, 1136, 636);
+
+      // 4. Logo y cabecera
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+
+      // Título "PRODE MUNDIAL 2026"
+      ctx.fillStyle = '#ffffff';
+      ctx.font = "bold 52px 'Barlow Condensed', Arial, sans-serif";
+      ctx.fillText('PRODE MUNDIAL 2026', 600, 70);
+
+      // Badge de tipo de documento
+      const badgeText = 'COMPROBANTE OFICIAL DE PLANILLA';
+      ctx.font = "bold 16px 'DM Sans', Arial, sans-serif";
+      const badgeW = ctx.measureText(badgeText).width + 30;
+      const bx = 600 - badgeW / 2;
+      const by = 145;
+      const bh = 34;
+      const r = 17;
+      ctx.fillStyle = '#d4a017';
+      ctx.beginPath();
+      ctx.moveTo(bx + r, by);
+      ctx.lineTo(bx + badgeW - r, by);
+      ctx.quadraticCurveTo(bx + badgeW, by, bx + badgeW, by + r);
+      ctx.lineTo(bx + badgeW, by + bh - r);
+      ctx.quadraticCurveTo(bx + badgeW, by + bh, bx + badgeW - r, by + bh);
+      ctx.lineTo(bx + r, by + bh);
+      ctx.quadraticCurveTo(bx, by + bh, bx, by + bh - r);
+      ctx.lineTo(bx, by + r);
+      ctx.quadraticCurveTo(bx, by, bx + r, by);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#0a2710';
+      ctx.fillText(badgeText, 600, 153);
+
+      // 5. Contenedor principal de datos
+      const cardX = 120;
+      const cardY = 215;
+      const cardW = 960;
+      const cardH = 340;
+      const cardR = 15;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.beginPath();
+      ctx.moveTo(cardX + cardR, cardY);
+      ctx.lineTo(cardX + cardW - cardR, cardY);
+      ctx.quadraticCurveTo(cardX + cardW, cardY, cardX + cardW, cardY + cardR);
+      ctx.lineTo(cardX + cardW, cardY + cardH - cardR);
+      ctx.quadraticCurveTo(cardX + cardW, cardY + cardH, cardX + cardW - cardR, cardY + cardH);
+      ctx.lineTo(cardX + cardR, cardY + cardH);
+      ctx.quadraticCurveTo(cardX, cardY + cardH, cardX, cardY + cardH - cardR);
+      ctx.lineTo(cardX, cardY + cardR);
+      ctx.quadraticCurveTo(cardX, cardY, cardX + cardR, cardY);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Textos - Columna izquierda (Datos del Participante)
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+      ctx.font = "600 18px 'DM Sans', Arial, sans-serif";
+      ctx.fillText('PARTICIPANTE', 170, 255);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = "bold 34px 'DM Sans', Arial, sans-serif";
+      const nameStr = `${planilla.nombre} ${planilla.apellido}`.toUpperCase();
+      ctx.fillText(nameStr, 170, 285);
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+      ctx.font = "600 18px 'DM Sans', Arial, sans-serif";
+      ctx.fillText('EMAIL REGISTRADO', 170, 365);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = "500 24px 'DM Sans', Arial, sans-serif";
+      ctx.fillText(planilla.email.toLowerCase(), 170, 395);
+
+      // Línea vertical divisoria
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.beginPath();
+      ctx.moveTo(630, 245);
+      ctx.lineTo(630, 525);
+      ctx.stroke();
+
+      // Textos - Columna derecha (Código e Información)
+      ctx.textAlign = 'center';
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+      ctx.font = "600 18px 'DM Sans', Arial, sans-serif";
+      ctx.fillText('NÚMERO DE PLANILLA', 870, 255);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = "bold 64px 'Barlow Condensed', Arial, sans-serif";
+      ctx.fillText(String(planilla.codigo), 870, 285);
+
+      ctx.fillStyle = '#d4a017';
+      ctx.font = "bold 20px 'DM Sans', Arial, sans-serif";
+      ctx.fillText('PENDIENTE DE CONFIRMACIÓN', 870, 395);
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+      ctx.font = "14px 'DM Sans', Arial, sans-serif";
+      ctx.fillText('Presentá este número al administrador', 870, 435);
+      ctx.fillText('para registrar y confirmar tu planilla.', 870, 455);
+
+      // 6. Pie de página del comprobante
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.font = "italic 15px 'DM Sans', Arial, sans-serif";
+      ctx.fillText('Podés editar tus pronósticos con tu código y tu email antes de ser confirmada.', 600, 580);
+
+      const dateStr = new Date().toLocaleString('es-AR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+      ctx.font = "13px 'DM Sans', Arial, sans-serif";
+      ctx.fillText(`Comprobante generado el ${dateStr} · Prode Mundial 2026`, 600, 615);
+
+      // Descarga de la imagen
+      const dataUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = `comprobante-prode-${planilla.codigo}.png`;
+      link.href = dataUrl;
+      link.click();
+      this.toastService.success('Comprobante descargado con éxito.');
+    } catch (err) {
+      console.error('Error al generar el comprobante:', err);
+      this.toastService.error('Ocurrió un error al intentar descargar el comprobante.');
+    }
   }
 
   volverAlInicio(): void {

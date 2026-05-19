@@ -26,8 +26,13 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
       // Excluimos el endpoint de login para no hacer logout en credenciales
       // incorrectas (que también devuelven 401 desde AuthService).
       // ───────────────────────────────────────────────────────────────────────
+      const isAdminRequest =
+        req.url.includes('/admin/') ||
+        (req.url.includes('/resultados') && (req.method === 'PUT' || req.method === 'DELETE')) ||
+        (req.url.includes('/confirmar') && req.method === 'PUT');
+
       if (
-        (error.status === 401 || error.status === 403) &&
+        (error.status === 401 || (error.status === 403 && isAdminRequest)) &&
         !req.url.includes('/auth/login') &&
         !req.url.includes('/auth/logout')
       ) {
