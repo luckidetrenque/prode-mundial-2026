@@ -389,102 +389,78 @@ export class PlanillaComponent implements OnInit {
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      // 1. Fondo gradiente
+      // 1. Fondo de la tarjeta (Off-white con gradiente sutil)
       const gradient = ctx.createLinearGradient(0, 0, 1200, 700);
-      gradient.addColorStop(0, '#0a2710');
-      gradient.addColorStop(0.5, '#123f1b');
-      gradient.addColorStop(1, '#0c220f');
+      gradient.addColorStop(0, '#ffffff');
+      gradient.addColorStop(1, '#f5f7fa');
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, 1200, 700);
 
-      // 2. Dibujar líneas de fútbol decorativas (semi-transparentes)
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
-      ctx.lineWidth = 4;
+      // 2. Líneas tácticas de fútbol decorativas en verde sumamente sutil (marca de agua)
+      ctx.strokeStyle = 'rgba(46, 158, 45, 0.03)';
+      ctx.lineWidth = 3;
       // Círculo central
       ctx.beginPath();
-      ctx.arc(600, 350, 150, 0, 2 * Math.PI);
+      ctx.arc(600, 380, 150, 0, 2 * Math.PI);
       ctx.stroke();
       // Línea media
       ctx.beginPath();
-      ctx.moveTo(600, 0);
-      ctx.lineTo(600, 700);
+      ctx.moveTo(600, 130);
+      ctx.lineTo(600, 630);
       ctx.stroke();
       // Áreas de penal
       ctx.beginPath();
-      ctx.rect(-50, 180, 230, 340);
+      ctx.rect(-50, 230, 230, 300);
       ctx.stroke();
       ctx.beginPath();
-      ctx.rect(1020, 180, 230, 340);
+      ctx.rect(1020, 230, 230, 300);
       ctx.stroke();
 
-      // O y X tácticos decorativos
-      ctx.font = "bold 24px Arial";
-      ctx.fillStyle = 'rgba(212, 160, 23, 0.15)'; // dorado suave
-      ctx.fillText('X', 450, 280);
-      ctx.fillText('O', 520, 420);
-      ctx.fillText('X', 750, 430);
-      ctx.fillText('O', 680, 250);
-
-      // Línea de pase punteada
-      ctx.strokeStyle = 'rgba(212, 160, 23, 0.15)';
-      ctx.lineWidth = 2;
-      ctx.setLineDash([6, 6]);
+      // 3. Cabecera (Estilo Navbar del Sitio)
+      // Rectángulo azul de la barra de navegación (#2A398D)
+      ctx.fillStyle = '#2A398D';
       ctx.beginPath();
-      ctx.moveTo(530, 410);
-      ctx.quadraticCurveTo(600, 450, 740, 425);
-      ctx.stroke();
-      ctx.setLineDash([]); // reset
-
-      // 3. Bordes elegantes
-      ctx.strokeStyle = '#d4a017'; // dorado
-      ctx.lineWidth = 8;
-      ctx.strokeRect(20, 20, 1160, 660);
-
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(32, 32, 1136, 636);
-
-      // 4. Logo y cabecera
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'top';
-
-      // Título "PRODE MUNDIAL 2026"
-      ctx.fillStyle = '#ffffff';
-      ctx.font = "bold 52px 'Barlow Condensed', Arial, sans-serif";
-      ctx.fillText('PRODE MUNDIAL 2026', 600, 70);
-
-      // Badge de tipo de documento
-      const badgeText = 'COMPROBANTE OFICIAL DE PLANILLA';
-      ctx.font = "bold 16px 'DM Sans', Arial, sans-serif";
-      const badgeW = ctx.measureText(badgeText).width + 30;
-      const bx = 600 - badgeW / 2;
-      const by = 145;
-      const bh = 34;
-      const r = 17;
-      ctx.fillStyle = '#d4a017';
-      ctx.beginPath();
-      ctx.moveTo(bx + r, by);
-      ctx.lineTo(bx + badgeW - r, by);
-      ctx.quadraticCurveTo(bx + badgeW, by, bx + badgeW, by + r);
-      ctx.lineTo(bx + badgeW, by + bh - r);
-      ctx.quadraticCurveTo(bx + badgeW, by + bh, bx + badgeW - r, by + bh);
-      ctx.lineTo(bx + r, by + bh);
-      ctx.quadraticCurveTo(bx, by + bh, bx, by + bh - r);
-      ctx.lineTo(bx, by + r);
-      ctx.quadraticCurveTo(bx, by, bx + r, by);
+      const rx = 20, ry = 20, rw = 1160, rh = 90, rad = 12;
+      ctx.moveTo(rx + rad, ry);
+      ctx.lineTo(rx + rw - rad, ry);
+      ctx.quadraticCurveTo(rx + rw, ry, rx + rw, ry + rad);
+      ctx.lineTo(rx + rw, ry + rh);
+      ctx.lineTo(rx, ry + rh);
+      ctx.lineTo(rx, ry + rad);
+      ctx.quadraticCurveTo(rx, ry, rx + rad, ry);
       ctx.closePath();
       ctx.fill();
 
-      ctx.fillStyle = '#0a2710';
-      ctx.fillText(badgeText, 600, 153);
+      // Borde exterior de la tarjeta en azul (#2A398D)
+      ctx.strokeStyle = '#2A398D';
+      ctx.lineWidth = 6;
+      ctx.strokeRect(20, 20, 1160, 660);
 
-      // 5. Contenedor principal de datos
-      const cardX = 120;
-      const cardY = 215;
-      const cardW = 960;
-      const cardH = 340;
-      const cardR = 15;
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+      // Línea dorada divisoria debajo de la cabecera (#d4a017)
+      ctx.fillStyle = '#d4a017';
+      ctx.fillRect(20, 110, 1160, 4);
+
+      // Texto de la Cabecera "PRODE MUNDIAL 2026"
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#ffffff';
+      ctx.font = "bold 42px 'Barlow Condensed', Arial, sans-serif";
+      ctx.fillText('PRODE MUNDIAL 2026', 600, 65);
+
+      // 4. Caja principal de contenido (Estilo Glass / Tarjeta del Sitio)
+      const cardX = 80;
+      const cardY = 160;
+      const cardW = 1040;
+      const cardH = 390;
+      const cardR = 16;
+      
+      // Sombra sutil para la tarjeta blanca
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.05)';
+      ctx.shadowBlur = 15;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 5;
+      
+      ctx.fillStyle = '#ffffff';
       ctx.beginPath();
       ctx.moveTo(cardX + cardR, cardY);
       ctx.lineTo(cardX + cardW - cardR, cardY);
@@ -498,62 +474,144 @@ export class PlanillaComponent implements OnInit {
       ctx.closePath();
       ctx.fill();
 
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
-      ctx.lineWidth = 2;
+      // Borde de la tarjeta blanca
+      ctx.shadowColor = 'transparent'; // Desactivar sombra para el trazo
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)';
+      ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      // Textos - Columna izquierda (Datos del Participante)
-      ctx.textAlign = 'left';
+      // 5. Contenido de Datos
       ctx.textBaseline = 'top';
 
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
-      ctx.font = "600 18px 'DM Sans', Arial, sans-serif";
-      ctx.fillText('PARTICIPANTE', 170, 255);
+      // Columna Izquierda (Datos del Participante)
+      ctx.textAlign = 'left';
 
-      ctx.fillStyle = '#ffffff';
-      ctx.font = "bold 34px 'DM Sans', Arial, sans-serif";
-      const nameStr = `${planilla.nombre} ${planilla.apellido}`.toUpperCase();
-      ctx.fillText(nameStr, 170, 285);
+      // Título Sección Participante
+      ctx.fillStyle = '#6b7a80'; // Muted
+      ctx.font = "bold 15px 'DM Sans', Arial, sans-serif";
+      ctx.fillText('DATOS DEL PARTICIPANTE', 140, 205);
 
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
-      ctx.font = "600 18px 'DM Sans', Arial, sans-serif";
-      ctx.fillText('EMAIL REGISTRADO', 170, 365);
+      // Nombre y Apellido (Azul de identidad y negrita)
+      ctx.fillStyle = '#2A398D';
+      ctx.font = "bold 32px 'DM Sans', Arial, sans-serif";
+      const nameText = `${planilla.nombre} ${planilla.apellido}`.toUpperCase();
+      ctx.fillText(nameText, 140, 235);
 
-      ctx.fillStyle = '#ffffff';
+      // Email
+      ctx.fillStyle = '#6b7a80'; // Muted
+      ctx.font = "bold 15px 'DM Sans', Arial, sans-serif";
+      ctx.fillText('EMAIL REGISTRADO', 140, 325);
+
+      ctx.fillStyle = '#474A4A'; // Body text color
       ctx.font = "500 24px 'DM Sans', Arial, sans-serif";
-      ctx.fillText(planilla.email.toLowerCase(), 170, 395);
+      ctx.fillText(planilla.email.toLowerCase(), 140, 355);
 
-      // Línea vertical divisoria
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      // Estado "PENDIENTE DE CONFIRMACIÓN"
+      // Caja/Badge verde como en el sitio
+      const badgeX = 140;
+      const badgeY = 445;
+      const badgeW = 340;
+      const badgeH = 46;
+      const badgeR = 8;
+      
+      ctx.fillStyle = '#e8f8ef'; // verde claro bg
       ctx.beginPath();
-      ctx.moveTo(630, 245);
-      ctx.lineTo(630, 525);
+      ctx.moveTo(badgeX + badgeR, badgeY);
+      ctx.lineTo(badgeX + badgeW - badgeR, badgeY);
+      ctx.quadraticCurveTo(badgeX + badgeW, badgeY, badgeX + badgeW, badgeY + badgeR);
+      ctx.lineTo(badgeX + badgeW, badgeY + badgeH - badgeR);
+      ctx.quadraticCurveTo(badgeX + badgeW, badgeY + badgeH, badgeX + badgeW - badgeR, badgeY + badgeH);
+      ctx.lineTo(badgeX + badgeR, badgeY + badgeH);
+      ctx.quadraticCurveTo(badgeX, badgeY + badgeH, badgeX, badgeY + badgeH - badgeR);
+      ctx.lineTo(badgeX, badgeY + badgeR);
+      ctx.quadraticCurveTo(badgeX, badgeY, badgeX + badgeR, badgeY);
+      ctx.closePath();
+      ctx.fill();
+
+      // Borde del badge verde
+      ctx.strokeStyle = '#1a7a4a';
+      ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      // Textos - Columna derecha (Código e Información)
+      // Círculo del check en verde
+      ctx.beginPath();
+      ctx.arc(175, 468, 11, 0, 2 * Math.PI);
+      ctx.fillStyle = '#1a7a4a';
+      ctx.fill();
+      // Dibujar checkmark blanca adentro del círculo
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(170, 468);
+      ctx.lineTo(174, 472);
+      ctx.lineTo(180, 464);
+      ctx.stroke();
+
+      // Texto de estado
+      ctx.fillStyle = '#1a7a4a';
+      ctx.font = "bold 15px 'DM Sans', Arial, sans-serif";
+      ctx.fillText('PENDIENTE DE CONFIRMACIÓN', 200, 458);
+
+      // Línea divisoria vertical
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(600, 200);
+      ctx.lineTo(600, 510);
+      ctx.stroke();
+
+      // Columna Derecha (Código de Planilla estilo Cupón / Ticket)
       ctx.textAlign = 'center';
 
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
-      ctx.font = "600 18px 'DM Sans', Arial, sans-serif";
-      ctx.fillText('NÚMERO DE PLANILLA', 870, 255);
+      ctx.fillStyle = '#6b7a80';
+      ctx.font = "bold 15px 'DM Sans', Arial, sans-serif";
+      ctx.fillText('NÚMERO DE PLANILLA', 870, 205);
 
-      ctx.fillStyle = '#ffffff';
+      // Caja troquelada / dashed roja para el código (idéntico a la web)
+      const ticketX = 690;
+      const ticketY = 235;
+      const ticketW = 360;
+      const ticketH = 150;
+      const ticketR = 12;
+
+      ctx.fillStyle = '#f8f9fa'; // color de fondo
+      ctx.beginPath();
+      ctx.moveTo(ticketX + ticketR, ticketY);
+      ctx.lineTo(ticketX + ticketW - ticketR, ticketY);
+      ctx.quadraticCurveTo(ticketX + ticketW, ticketY, ticketX + ticketW, ticketY + ticketR);
+      ctx.lineTo(ticketX + ticketW, ticketY + ticketH - ticketR);
+      ctx.quadraticCurveTo(ticketX + ticketW, ticketY + ticketH, ticketX + ticketW - ticketR, ticketY + ticketH);
+      ctx.lineTo(ticketX + ticketR, ticketY + ticketH);
+      ctx.quadraticCurveTo(ticketX, ticketY + ticketH, ticketX, ticketY + ticketH - ticketR);
+      ctx.lineTo(ticketX, ticketY + ticketR);
+      ctx.quadraticCurveTo(ticketX, ticketY, ticketX + ticketR, ticketY);
+      ctx.closePath();
+      ctx.fill();
+
+      // Borde de guiones (dashed) en color rojo acción del sitio (#c0171d)
+      ctx.strokeStyle = '#c0171d';
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([8, 6]);
+      ctx.stroke();
+      ctx.setLineDash([]); // Reset
+
+      // El código de planilla en fuente Barlow Condensed gigante y color rojo (#c0171d)
+      ctx.fillStyle = '#c0171d';
       ctx.font = "bold 64px 'Barlow Condensed', Arial, sans-serif";
-      ctx.fillText(String(planilla.codigo), 870, 285);
+      ctx.textBaseline = 'middle';
+      ctx.fillText(String(planilla.codigo), 870, 310);
 
-      ctx.fillStyle = '#d4a017';
-      ctx.font = "bold 20px 'DM Sans', Arial, sans-serif";
-      ctx.fillText('PENDIENTE DE CONFIRMACIÓN', 870, 395);
-
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+      // Info debajo del código
+      ctx.textBaseline = 'top';
+      ctx.fillStyle = '#474A4A';
       ctx.font = "14px 'DM Sans', Arial, sans-serif";
-      ctx.fillText('Presentá este número al administrador', 870, 435);
-      ctx.fillText('para registrar y confirmar tu planilla.', 870, 455);
+      ctx.fillText('Presentá este número al administrador', 870, 420);
+      ctx.fillText('para registrar y confirmar tu planilla.', 870, 442);
 
       // 6. Pie de página del comprobante
       ctx.textAlign = 'center';
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-      ctx.font = "italic 15px 'DM Sans', Arial, sans-serif";
+      ctx.fillStyle = '#6b7a80';
+      ctx.font = "500 14px 'DM Sans', Arial, sans-serif";
       ctx.fillText('Podés editar tus pronósticos con tu código y tu email antes de ser confirmada.', 600, 580);
 
       const dateStr = new Date().toLocaleString('es-AR', {
@@ -565,7 +623,7 @@ export class PlanillaComponent implements OnInit {
         second: '2-digit'
       });
       ctx.font = "13px 'DM Sans', Arial, sans-serif";
-      ctx.fillText(`Comprobante generado el ${dateStr} · Prode Mundial 2026`, 600, 615);
+      ctx.fillText(`Comprobante generado el ${dateStr} · Prode Mundial 2026`, 600, 610);
 
       // Descarga de la imagen
       const dataUrl = canvas.toDataURL('image/png');
