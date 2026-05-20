@@ -117,11 +117,9 @@ export class PlanillaDetalleComponent implements OnInit {
     const pageWidth = doc.internal.pageSize.width;
     
     // --- Header / Top Bar ---
-    // Barra superior decorativa (Usa el azul de USA como base)
     doc.setFillColor(42, 57, 141); // #2a398d
     doc.rect(0, 0, pageWidth, 25, 'F');
     
-    // Título en blanco sobre la barra
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(22);
     doc.setTextColor(255, 255, 255);
@@ -132,14 +130,12 @@ export class PlanillaDetalleComponent implements OnInit {
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
     
-    // Bloque Izquierdo: Datos del Participante
     doc.setFont('helvetica', 'bold');
     doc.text('PARTICIPANTE', margin, 35);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(12);
     doc.text(`${p.nombre} ${p.apellido}`, margin, 44);
     
-    // Bloque Derecho: Detalle de la Planilla
     const rightCol = pageWidth - 80;
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
@@ -147,23 +143,41 @@ export class PlanillaDetalleComponent implements OnInit {
     doc.setFont('helvetica', 'normal');
     doc.text(`Número de Planilla:`, rightCol, 42);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(192, 23, 29); // Rojo Canada
+    doc.setTextColor(192, 23, 29);
     doc.text(`${p.codigo}`, rightCol + 35, 42);
     
     doc.setTextColor(40, 40, 40);
     doc.setFont('helvetica', 'normal');
     doc.text(`Estado:`, rightCol, 48);
     if (p.confirmada) {
-      doc.setTextColor(60, 172, 59); // Verde Mexico
+      doc.setTextColor(60, 172, 59);
       doc.text('CONFIRMADA', rightCol + 15, 48);
     } else {
       doc.setTextColor(150, 150, 150);
       doc.text('PENDIENTE', rightCol + 15, 48);
     }
 
-    // Línea divisoria
     doc.setDrawColor(220, 220, 220);
     doc.line(margin, 55, pageWidth - margin, 55);
+
+    // --- FIX #4: Pre-construir un mapa rowIndex -> partidoId ---
+    // La solución anterior buscaba el partido parseando el texto de la celda
+    // (parseInt de "5 (x2)" o "5"), lo que es frágil ante cambios de formato.
+    // Ahora construimos el mapa ANTES de llamar a autoTable, indexado por el
+    // número de fila real en el body (excluyendo filas de cabecera de grupo).
+    // didDrawCell recibe data.row.index que es el índice dentro de tableData,
+    // así que mapeamos ese índice al partidoId correspondiente de forma exacta.
+    const rowToPartidoId = new Map<number, number>();
+    let rowIndex = 0;
+
+    this.grupos.forEach(grupo => {
+      rowIndex++; // fila de cabecera de grupo (colSpan=4) — no es partido
+      const partidosGrupo = this.getPartidosPorGrupo(grupo);
+      partidosGrupo.forEach(partido => {
+        rowToPartidoId.set(rowIndex, partido.id);
+        rowIndex++;
+      });
+    });
 
     // --- Tabla de Partidos ---
     const tableData: any[] = [];
@@ -171,7 +185,6 @@ export class PlanillaDetalleComponent implements OnInit {
     this.grupos.forEach(grupo => {
       const partidosGrupo = this.getPartidosPorGrupo(grupo);
       
-      // Fila de encabezado de grupo
       tableData.push([
         { 
           content: `GRUPO ${grupo}`, 
@@ -187,7 +200,6 @@ export class PlanillaDetalleComponent implements OnInit {
       ]);
 
       partidosGrupo.forEach(partido => {
-        const pred = this.getPrediccion(partido.id);
         const acierto = this.esAcierto(partido.id);
         const desacierto = this.esDesacierto(partido.id);
         const real = this.getResultadoReal(partido.id);
@@ -195,21 +207,18 @@ export class PlanillaDetalleComponent implements OnInit {
         let rowStyles = {};
         if (real !== null) {
           if (acierto) {
-            rowStyles = { fillColor: [239, 248, 239] }; // Verde suave oficial (#eff8ef)
+            rowStyles = { fillColor: [239, 248, 239] };
           } else if (desacierto) {
-            rowStyles = { fillColor: [253, 237, 238] }; // Rojo suave oficial (#fdedee)
+            rowStyles = { fillColor: [253, 237, 238] };
           }
         }
 
-        let predText = '-';
-        if (pred === 'LOCAL') predText = 'LOCAL (L)';
-        else if (pred === 'EMPATE') predText = 'EMPATE (E)';
-        else if (pred === 'VISITANTE') predText = 'VISITANTE (V)';
-
-        let numeroText = String(partido.numero);
-        if (partido.multiplicador > 1) {
-          numeroText += ' (x2)';
-        }
+        // FIX #4: La columna de número ya no necesita codificar el partidoId
+        // en el texto. Mostramos número + badge x2 si aplica, pero el lookup
+        // en didDrawCell se hace por rowIndex, no parseando este texto.
+        const numeroText = partido.multiplicador > 1
+          ? `${partido.numero} (x2)`
+          : String(partido.numero);
 
         tableData.push([
           { content: numeroText, styles: { halign: 'center', ...rowStyles } },
@@ -238,23 +247,21 @@ export class PlanillaDetalleComponent implements OnInit {
         cellPadding: 3
       },
       columnStyles: {
-        0: { cellWidth: 16 }, // Ancho suficiente para evitar saltos en '1 (x2)'
+        0: { cellWidth: 16 },
         1: { cellWidth: 63 },
         2: { cellWidth: 40 },
         3: { cellWidth: 63 }
       },
+      // FIX #4: didDrawCell ahora usa rowToPartidoId (mapa preconstruido) 
+      // para encontrar el partido de forma robusta, sin depender del formato
+      // del texto de la celda ni de parseInt().
       didDrawCell: (data) => {
         if (data.section === 'body' && data.column.index === 2) {
-          // Obtener el número de partido de la primera celda de la fila
-          const numCellText = data.row.cells[0].text[0] || '';
-          const matchNum = parseInt(numCellText);
-          if (isNaN(matchNum)) return; // Ignorar cabeceras de grupo
+          // Buscar el partidoId por índice de fila — O(1), sin parsing de texto
+          const partidoId = rowToPartidoId.get(data.row.index);
+          if (partidoId === undefined) return; // es fila de cabecera de grupo
 
-          // Buscar el partido en el listado
-          const partidoObj = this.partidos().find(p => p.numero === matchNum);
-          if (!partidoObj) return;
-
-          const pred = this.getPrediccion(partidoObj.id);
+          const pred = this.getPrediccion(partidoId);
           
           const docInstance = data.doc;
           const cell = data.cell;
@@ -269,7 +276,13 @@ export class PlanillaDetalleComponent implements OnInit {
           const xE = centerX;
           const xV = centerX + spacing;
           
-          const drawOption = (x: number, label: string, isActive: boolean, activeColor: [number, number, number], activeBg: [number, number, number]) => {
+          const drawOption = (
+            x: number,
+            label: string,
+            isActive: boolean,
+            activeColor: [number, number, number],
+            activeBg: [number, number, number]
+          ) => {
             if (isActive) {
               docInstance.setFillColor(activeBg[0], activeBg[1], activeBg[2]);
               docInstance.setDrawColor(activeColor[0], activeColor[1], activeColor[2]);
@@ -288,9 +301,9 @@ export class PlanillaDetalleComponent implements OnInit {
             docInstance.text(label, x, centerY + 0.8, { align: 'center' });
           };
           
-          drawOption(xL, 'L', pred === 'LOCAL', [46, 158, 45], [232, 248, 239]); 
-          drawOption(xE, 'E', pred === 'EMPATE', [42, 57, 141], [232, 234, 246]); 
-          drawOption(xV, 'V', pred === 'VISITANTE', [192, 23, 29], [255, 235, 238]); 
+          drawOption(xL, 'L', pred === 'LOCAL',     [46, 158, 45],  [232, 248, 239]); 
+          drawOption(xE, 'E', pred === 'EMPATE',    [42, 57, 141],  [232, 234, 246]); 
+          drawOption(xV, 'V', pred === 'VISITANTE', [192, 23, 29],  [255, 235, 238]); 
         }
       }
     });
@@ -300,14 +313,12 @@ export class PlanillaDetalleComponent implements OnInit {
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
       
-      // Slogan del torneo
       doc.setFontSize(9);
       doc.setFont('helvetica', 'italic');
       doc.setTextColor(100, 100, 100);
       const slogan = 'Canadá · Estados Unidos · México 2026';
       doc.text(slogan, pageWidth / 2, doc.internal.pageSize.height - 15, { align: 'center' });
 
-      // Info de página
       doc.setFontSize(7);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(150, 150, 150);

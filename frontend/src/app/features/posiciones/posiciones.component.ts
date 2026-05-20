@@ -1,4 +1,9 @@
 // posiciones.component.ts — VERSIÓN MEJORADA
+// FIX #2: _posicionesFiltradas era un array plano (no reactivo).
+// totalPaginas() y posicionesPaginadas() eran métodos regulares que Angular
+// re-evaluaba en cada ciclo de change detection aunque los datos no hubiesen
+// cambiado. Ahora se usan signal + computed(), consistente con el patrón
+// establecido en ParticipantesComponent y el resto de la app.
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -146,7 +151,7 @@ import { Posicion } from '../../shared/models/posicion.model';
         </div>
       </div>
 
-        <!-- Paginación Mejorada -->
+        <!-- Paginación -->
         @if (totalPaginas() > 1) {
           <div class="paginacion">
             <button class="btn-pag" (click)="paginaAnterior()" [disabled]="paginaActual() === 1" title="Anterior">
@@ -175,8 +180,6 @@ import { Posicion } from '../../shared/models/posicion.model';
     </main>
   `,
   styles: [`
-    /* .subtitulo y .estado-vacio movidos a global styles.css */
-
     /* ── Podio ───────────────────────────────────────────────────────────── */
     .podio {
       display: flex;
@@ -215,12 +218,11 @@ import { Posicion } from '../../shared/models/posicion.model';
       display: flex;
       flex-direction: column;
       gap: 2px;
-      min-height: 20px; /* MEJORA: Evita colapso visual */
+      min-height: 20px;
       max-height: 52px;
       overflow-y: auto;
       margin-bottom: var(--spacing-xs);
       padding: 0 var(--spacing-xs);
-      /* Ocultar scrollbar */
       scrollbar-width: none;
       -ms-overflow-style: none;
     }
@@ -318,7 +320,6 @@ import { Posicion } from '../../shared/models/posicion.model';
     }
 
     /* ── Tabla ───────────────────────────────────────────────────────────── */
-    /* .table-container movido a global styles.css */
     .tabla-pos { margin: 0; min-width: 450px; }
 
     .tabla-pos thead th {
@@ -379,7 +380,7 @@ import { Posicion } from '../../shared/models/posicion.model';
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 180px; /* Evita que el nombre empuje las columnas en mobile */
+      max-width: 180px;
     }
 
     .pos-num { font-size: 0.8rem; font-weight: 600; color: var(--clr-text-muted); }
@@ -441,8 +442,6 @@ import { Posicion } from '../../shared/models/posicion.model';
     .btn-pag:hover:not(:disabled) { border-color: var(--clr-primary); color: var(--clr-primary); }
     .btn-pag:disabled { opacity: 0.35; cursor: not-allowed; }
 
-    .pag-info { font-size: 0.82rem; color: var(--clr-text-muted); }
-
     .pag-numeros {
       display: flex;
       gap: var(--spacing-xs);
@@ -482,9 +481,6 @@ import { Posicion } from '../../shared/models/posicion.model';
     @media (max-width: 600px) {
       .podio { gap: 0.35em; }
       .podio-nombre { font-size: 0.7rem; }
-      .tabla-controles { flex-direction: column; align-items: flex-start; gap: 0.5em; }
-      .buscador-wrap { max-width: 100%; width: 100%; }
-      .col-afil { display: none; }
     }
 
     @media (max-width: 380px) {
@@ -496,7 +492,7 @@ import { Posicion } from '../../shared/models/posicion.model';
       .podio-base { font-size: 1rem; }
     }
 
-    /* ── Animaciones Especiales ──────────────────────────────────────────── */
+    /* ── Animaciones ─────────────────────────────────────────────────────── */
     @keyframes growUp {
       0% { transform: scaleY(0); opacity: 0; }
       100% { transform: scaleY(1); opacity: 1; }
@@ -516,8 +512,8 @@ import { Posicion } from '../../shared/models/posicion.model';
 })
 export class PosicionesComponent implements OnInit {
 
-  cargando = signal(true);
-  posiciones = signal<Posicion[]>([]);
+  cargando     = signal(true);
+  posiciones   = signal<Posicion[]>([]);
   paginaActual = signal(1);
   readonly POR_PAGINA = 10;
 
@@ -526,7 +522,6 @@ export class PosicionesComponent implements OnInit {
     const all = this.posiciones();
     if (all.length === 0) return [];
 
-    // Obtenemos los 3 primeros niveles de puntos únicos
     const puntosUnicos = [...new Set(all.map(p => p.puntos))].sort((a, b) => b - a);
     const top3Puntos = puntosUnicos.slice(0, 3);
 
@@ -538,11 +533,30 @@ export class PosicionesComponent implements OnInit {
   });
 
   private termino = '';
-  private _posicionesOriginales: Posicion[] = []; // Data pura del server
-  private _posicionesProcesadas: Posicion[] = []; // Data con ranking recalculado
-  _posicionesFiltradas: Posicion[] = []; // Data para la tabla
+  private _posicionesOriginales: Posicion[] = [];
+  private _posicionesProcesadas: Posicion[] = [];
 
-  constructor(private posicionService: PosicionService) { }
+  // FIX #2: _posicionesFiltradas como signal en lugar de array plano.
+  // Esto permite que totalPaginas, paginas y posicionesPaginadas sean
+  // computed() que solo se recalculan cuando los datos realmente cambian,
+  // en lugar de en cada ciclo de change detection.
+  private posicionesFiltradas = signal<Posicion[]>([]);
+
+  // FIX #2: computed() en lugar de métodos regulares
+  totalPaginas = computed(() =>
+    Math.max(1, Math.ceil(this.posicionesFiltradas().length / this.POR_PAGINA))
+  );
+
+  paginas = computed(() =>
+    Array.from({ length: this.totalPaginas() }, (_, i) => i + 1)
+  );
+
+  posicionesPaginadas = computed(() => {
+    const inicio = (this.paginaActual() - 1) * this.POR_PAGINA;
+    return this.posicionesFiltradas().slice(inicio, inicio + this.POR_PAGINA);
+  });
+
+  constructor(private posicionService: PosicionService) {}
 
   ngOnInit(): void {
     this.posicionService.getPosiciones().subscribe({
@@ -556,10 +570,9 @@ export class PosicionesComponent implements OnInit {
   }
 
   private procesarRanking(): void {
-    // 1. Ordenar por puntos (desc)
     const sorted = [...this._posicionesOriginales].sort((a, b) => b.puntos - a.puntos);
 
-    // 2. Aplicar Dense Ranking (1, 1, 2, 3, 3, 4...)
+    // Dense Ranking (1, 1, 2, 3, 3, 4...)
     let currentRank = 0;
     let lastPoints = -1;
 
@@ -582,32 +595,24 @@ export class PosicionesComponent implements OnInit {
   }
 
   private actualizarFiltro(): void {
-    if (!this.termino) {
-      this._posicionesFiltradas = this._posicionesProcesadas;
-    } else {
-      this._posicionesFiltradas = this._posicionesProcesadas.filter(p =>
-        p.nombre.toLowerCase().includes(this.termino) ||
-        p.apellido.toLowerCase().includes(this.termino)
-      );
-    }
+    const resultado = !this.termino
+      ? this._posicionesProcesadas
+      : this._posicionesProcesadas.filter(p =>
+          p.nombre.toLowerCase().includes(this.termino) ||
+          p.apellido.toLowerCase().includes(this.termino)
+        );
+    // FIX #2: actualizar el signal para que computed() reaccione
+    this.posicionesFiltradas.set(resultado);
   }
 
-  posicionesPaginadas(): Posicion[] {
-    const inicio = (this.paginaActual() - 1) * this.POR_PAGINA;
-    return this._posicionesFiltradas.slice(inicio, inicio + this.POR_PAGINA);
+  paginaAnterior(): void {
+    if (this.paginaActual() > 1) this.irAPagina(this.paginaActual() - 1);
   }
 
-  posicionesFiltradasTotal(): number { return this._posicionesFiltradas.length; }
-  totalPaginas(): number { return Math.max(1, Math.ceil(this._posicionesFiltradas.length / this.POR_PAGINA)); }
-  
-  paginas = computed(() => {
-    const total = this.totalPaginas();
-    return Array.from({ length: total }, (_, i) => i + 1);
-  });
+  paginaSiguiente(): void {
+    if (this.paginaActual() < this.totalPaginas()) this.irAPagina(this.paginaActual() + 1);
+  }
 
-  paginaAnterior(): void { if (this.paginaActual() > 1) this.irAPagina(this.paginaActual() - 1); }
-  paginaSiguiente(): void { if (this.paginaActual() < this.totalPaginas()) this.irAPagina(this.paginaActual() + 1); }
-  
   irAPagina(p: number): void {
     this.paginaActual.set(p);
     window.scrollTo({ top: 0, behavior: 'smooth' });

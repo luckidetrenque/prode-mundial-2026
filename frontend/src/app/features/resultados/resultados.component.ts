@@ -1,3 +1,16 @@
+// resultados.component.ts
+// FIX #1: this.selecciones era un Map<number, string> plano (no reactivo),
+// inconsistente con el patrón establecido en cargar-resultados.component.ts
+// que usa signal<Record<number, string>> después del FIX #17 original.
+//
+// En este componente la UI es de solo lectura (no hay edición), por lo que
+// el Map funcionaba correctamente — los datos se cargan una sola vez en
+// ngOnInit y no cambian. Sin embargo, mantener el patrón consistente con el
+// resto de la app facilita el mantenimiento y evita confusión futura sobre
+// qué estructura usar en cada componente.
+//
+// Cambio: Map<number, string> → signal<Record<number, string>>
+// getSeleccion() lee del signal en lugar del Map.
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { forkJoin } from 'rxjs';
@@ -39,8 +52,7 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
           <span class="ref-item"><i class="fas fa-clock" style="color:var(--clr-text-muted)"></i> Pendiente</span>
         </div>
 
-
-        <!-- Resumen de progreso (Dashboard style) -->
+        <!-- Resumen de progreso -->
         <div class="stats-overview">
           <div class="overview-card">
             <i class="fas fa-futbol" aria-hidden="true"></i>
@@ -49,7 +61,6 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
               <span class="overview-label">Partidos Totales</span>
             </div>
           </div>
-          
           <div class="overview-card">
             <i class="fas fa-check-double" aria-hidden="true"></i>
             <div class="overview-data">
@@ -57,7 +68,6 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
               <span class="overview-label">Jugados</span>
             </div>
           </div>
-
           <div class="overview-card">
             <i class="fas fa-clock" aria-hidden="true"></i>
             <div class="overview-data">
@@ -65,7 +75,6 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
               <span class="overview-label">Por Jugar</span>
             </div>
           </div>
-
           <div class="overview-card">
             <i class="fas fa-chart-pie" aria-hidden="true"></i>
             <div class="overview-data">
@@ -134,7 +143,6 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
                     class="partido-row"
                     [class.guardado]="resultadosGuardados().has(partido.id)"
                   >
-
                     <span class="partido-n" aria-hidden="true">#{{ partido.numero }}</span>
 
                     <div class="partido-equipo partido-equipo--local">
@@ -148,11 +156,10 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
                       />
                     </div>
 
-                    <!-- Botones de solo lectura -->
                     <div
                       class="opciones-resultado"
                       role="group"
-                      [attr.aria-label]="'Resultado del partido ' + partido.numero + ': ' + partido.equipoLocalShow + ' vs ' + partido.equipoVisitanteShow"
+                      [attr.aria-label]="'Resultado del partido ' + partido.numero"
                     >
                       <button
                         type="button"
@@ -191,7 +198,6 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
                       <span class="equipo-txt">{{ partido.equipoVisitanteShow }}</span>
                     </div>
 
-                    <!-- Indicador de estado del partido -->
                     <div class="partido-accion">
                       @if (resultadosGuardados().has(partido.id)) {
                         <span class="badge-status badge-finalizado" title="Finalizado">
@@ -216,9 +222,6 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
     </main>
   `,
   styles: [`
-    /* ── Overview Dashboard (Estadisticas style) ─────────────────────────── */
-    /* .stats-overview y .overview-card movidos a global styles.css */
-
     /* ── Referencia de estados ───────────────────────────────────────────── */
     .referencia-estados {
       display: flex;
@@ -239,9 +242,6 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
       color: var(--clr-text-muted);
     }
 
-    /* ── Filtro grupos ───────────────────────────────────────────────────── */
-    /* .btn-grupo movido a global styles.css */
-
     /* ── Grupo bloque ────────────────────────────────────────────────────── */
     .grupo-bloque { margin-bottom: 2em; }
 
@@ -252,8 +252,6 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
       margin-bottom: 0.6em;
     }
 
-    /* .grupo-tag movido a global styles.css */
-
     .grupo-estado {
       font-size: 0.75rem;
       color: var(--clr-text-muted);
@@ -261,7 +259,7 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
 
     .group-teams-mobile { display: none; }
 
-    /* ── Lista de partidos (Grid de 2 columnas) ──────────────────────────── */
+    /* ── Lista de partidos ───────────────────────────────────────────────── */
     .partidos-lista {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -269,9 +267,7 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
     }
 
     @media (max-width: 900px) {
-      .partidos-lista {
-        grid-template-columns: 1fr;
-      }
+      .partidos-lista { grid-template-columns: 1fr; }
     }
 
     /* ── Fila de partido ─────────────────────────────────────────────────── */
@@ -300,12 +296,7 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
       text-align: center;
     }
 
-    .partido-equipo {
-      display: flex;
-      align-items: center;
-      gap: 0.45em;
-    }
-
+    .partido-equipo { display: flex; align-items: center; gap: 0.45em; }
     .partido-equipo--local  { justify-content: flex-end; }
     .partido-equipo--visit  { justify-content: flex-start; }
 
@@ -337,11 +328,10 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
       color: var(--clr-text-muted);
       font-size: 0.62rem;
       font-weight: 700;
-      letter-spacing: 0.2px;
       font-family: var(--font-body);
       padding: 0;
       line-height: 1;
-      cursor: default; /* Solo lectura */
+      cursor: default;
     }
 
     .opcion-btn.activa-local {
@@ -365,13 +355,10 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
       box-shadow: 0 2px 6px rgba(192,23,29,0.2);
     }
 
-    .opcion-btn.opaca {
-      opacity: 0.3;
-    }
+    .opcion-btn.opaca { opacity: 0.3; }
 
     .partido-accion { display: flex; justify-content: center; }
 
-    /* Badges de estado (Iconos circulares) */
     .badge-status {
       display: flex;
       align-items: center;
@@ -413,10 +400,10 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
 
     @media (max-width: 550px) {
       .grupo-header { flex-direction: column; align-items: flex-start; gap: 0.5em; }
-      .group-teams-mobile { 
-        display: flex; 
-        flex-wrap: wrap; 
-        gap: 0.7em; 
+      .group-teams-mobile {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.7em;
         width: 100%;
         padding-top: 0.3em;
         border-top: 1px solid var(--clr-border);
@@ -424,7 +411,6 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
       .mobile-team-item { display: flex; align-items: center; gap: 0.3em; }
       .flag-mini { width: 16px; height: 11px; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
       .team-name-mini { color: var(--clr-text); font-size: 0.6rem; font-weight: 700; text-transform: uppercase; }
-
       .stats-overview { grid-template-columns: 1fr; }
       .equipo-txt { display: none; }
       .partido-row { grid-template-columns: 20px auto 80px auto 30px; }
@@ -435,13 +421,14 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
 })
 export class ResultadosComponent implements OnInit {
 
-  cargando     = signal(true);
-  grupoActivo  = signal<string | null>(null);
+  cargando    = signal(true);
+  grupoActivo = signal<string | null>(null);
+  partidos    = signal<Partido[]>([]);
 
-  partidos = signal<Partido[]>([]);
-
-  private selecciones = new Map<number, string>();
-  resultadosGuardados = signal<Set<number>>(new Set());
+  // FIX #1: signal<Record<number, string>> en lugar de Map plano.
+  // Patrón consistente con cargar-resultados.component.ts.
+  private seleccionesSignal = signal<Record<number, string>>({});
+  resultadosGuardados       = signal<Set<number>>(new Set());
 
   grupos = GRUPOS;
 
@@ -452,51 +439,51 @@ export class ResultadosComponent implements OnInit {
 
   ngOnInit(): void {
     forkJoin({
-      partidos: this.partidoService.getPartidos(),
+      partidos:   this.partidoService.getPartidos(),
       resultados: this.resultadoService.getResultados()
     }).subscribe({
       next: ({ partidos, resultados }) => {
-        const filtrados = partidos.filter(p => p.fase === 'GRUPOS');
-        this.partidos.set(filtrados);
+        this.partidos.set(partidos.filter(p => p.fase === 'GRUPOS'));
 
-        const guardados = new Set<number>();
+        const guardados: Set<number> = new Set();
+        const selecciones: Record<number, string> = {};
+
         resultados.forEach(r => {
-          const partidoId = r.partido.id;
-          this.selecciones.set(partidoId, r.resultado);
-          guardados.add(partidoId);
+          const id = r.partido.id;
+          selecciones[id] = r.resultado;
+          guardados.add(id);
         });
 
+        this.seleccionesSignal.set(selecciones);
         this.resultadosGuardados.set(guardados);
         this.cargando.set(false);
       },
-      error: () => {
-        this.cargando.set(false);
-      }
+      error: () => this.cargando.set(false)
     });
   }
 
   gruposMostrados(): string[] {
     const activo = this.grupoActivo();
-    if (activo) return [activo];
-    return this.grupos;
+    return activo ? [activo] : this.grupos;
   }
 
   getPartidosPorGrupo(grupo: string): Partido[] {
     return this.partidos().filter(p => p.grupo === grupo);
   }
 
-  getEquiposDelGrupo(grupo: string): { nombre: string, bandera: string }[] {
+  getEquiposDelGrupo(grupo: string): { nombre: string; bandera: string }[] {
     const partidos = this.getPartidosPorGrupo(grupo);
     const equipos = new Map<string, string>();
     partidos.forEach(p => {
-      if (p.equipoLocalShow) equipos.set(p.equipoLocalShow, p.equipoLocalBandera);
+      if (p.equipoLocalShow)     equipos.set(p.equipoLocalShow,     p.equipoLocalBandera);
       if (p.equipoVisitanteShow) equipos.set(p.equipoVisitanteShow, p.equipoVisitanteBandera);
     });
     return Array.from(equipos.entries()).map(([nombre, bandera]) => ({ nombre, bandera }));
   }
 
+  // FIX #1: lee del signal en lugar del Map
   getSeleccion(partidoId: number): string {
-    return this.selecciones.get(partidoId) ?? '';
+    return this.seleccionesSignal()[partidoId] ?? '';
   }
 
   contarGuardadosEnGrupo(grupo: string): number {
@@ -505,9 +492,7 @@ export class ResultadosComponent implements OnInit {
   }
 
   grupoCompleto(grupo: string): boolean {
-    const partidos = this.getPartidosPorGrupo(grupo);
-    return partidos.length > 0 &&
-      partidos.every(p => this.resultadosGuardados().has(p.id));
+    const ps = this.getPartidosPorGrupo(grupo);
+    return ps.length > 0 && ps.every(p => this.resultadosGuardados().has(p.id));
   }
-
 }

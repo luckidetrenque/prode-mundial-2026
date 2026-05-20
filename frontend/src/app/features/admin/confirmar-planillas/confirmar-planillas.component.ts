@@ -1,8 +1,7 @@
-// confirmar-planillas.component.ts
-// FIX #13: Actualizado para consumir la respuesta paginada del AdminController.
-// El endpoint ahora devuelve { content, totalElements, totalPages, currentPage, pageSize }
-// en lugar de un array plano. Se agrega paginación en la UI para manejar
-// grandes volúmenes sin cargar todo en memoria.
+// FIX #13: Paginación del endpoint /admin/planillas.
+// FIX #9  (frontend): estimación mejorada de totalPendientes.
+// FIX backend #3 (frontend): ahora se usa data.totalPendientes que el backend
+// calcula con countPendientes() — valor exacto sin estimaciones propias.
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -15,12 +14,14 @@ interface PlanillaConCheck extends PlanillaResponse {
   seleccionada: boolean;
 }
 
+// FIX backend #3: se agrega el campo totalPendientes a la interfaz
 interface PaginatedResponse {
   content: PlanillaResponse[];
   totalElements: number;
   totalPages: number;
   currentPage: number;
   pageSize: number;
+  totalPendientes: number;  // ← nuevo campo del backend
 }
 
 @Component({
@@ -65,7 +66,7 @@ interface PaginatedResponse {
             </span>
           </div>
           <div class="controles-der">
-            <!-- FIX #13: Mostrar total real (no solo la página actual) -->
+            <!-- FIX backend #3: totalPendientes viene exacto del backend -->
             <span class="total-pendientes">
               <i class="fas fa-hourglass-half" style="font-size:0.75rem;color:var(--clr-primary-light)"></i>
               {{ totalPendientes() }} pendiente{{ totalPendientes() !== 1 ? 's' : '' }} en total
@@ -101,7 +102,7 @@ interface PaginatedResponse {
           }
         </div>
 
-        <!-- FIX #13: Paginación -->
+        <!-- Paginación -->
         @if (totalPaginas() > 1) {
           <div class="paginacion">
             <button class="btn-pag" (click)="irAPagina(paginaActual() - 1)" [disabled]="paginaActual() === 0">
@@ -135,8 +136,6 @@ interface PaginatedResponse {
     </main>
   `,
   styles: [`
-    /* .estado-vacio movido a global styles.css */
-
     .controles-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75em; padding: 0.85em 1.1em; background: var(--clr-surface-alt); border: 1px solid var(--clr-border-strong); border-radius: var(--radius-md); margin-bottom: 1.25em; }
     .controles-izq { display: flex; align-items: center; gap: 0.85em; flex-wrap: wrap; }
     .controles-der { display: flex; align-items: center; gap: 0.75em; flex-wrap: wrap; width: 100%; }
@@ -164,7 +163,6 @@ interface PaginatedResponse {
     .codigo-num { font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: var(--clr-primary); }
     .planilla-card.seleccionada .codigo-num { color: var(--clr-primary-dark); }
 
-    /* Paginación */
     .paginacion { display: flex; align-items: center; justify-content: center; gap: 1em; margin: 1em 0 1.5em; }
     .btn-pag { display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border: 1.5px solid var(--clr-border-strong); border-radius: 50%; background: var(--clr-surface); color: var(--clr-text); font-size: 0.8rem; cursor: pointer; transition: var(--transition); font-family: var(--font-body); }
     .btn-pag:hover:not(:disabled) { border-color: var(--clr-primary); color: var(--clr-primary); }
@@ -187,14 +185,14 @@ interface PaginatedResponse {
 })
 export class ConfirmarPlanillasComponent implements OnInit {
 
-  cargando      = signal(true);
-  confirmando   = signal(false);
-  mensajeExito  = signal<string | null>(null);
-  planillas     = signal<PlanillaConCheck[]>([]);
+  cargando = signal(true);
+  confirmando = signal(false);
+  mensajeExito = signal<string | null>(null);
+  planillas = signal<PlanillaConCheck[]>([]);
 
-  // FIX #13: estado de paginación
-  paginaActual  = signal(0);
-  totalPaginas  = signal(1);
+  paginaActual = signal(0);
+  totalPaginas = signal(1);
+  // FIX backend #3: viene exacto del campo totalPendientes del backend
   totalPendientes = signal(0);
 
   private _cantidadSeleccionadas = signal(0);
@@ -205,13 +203,12 @@ export class ConfirmarPlanillasComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private planillaService: PlanillaService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.cargarPendientes(0);
   }
 
-  // FIX #13: carga una página específica del endpoint paginado
   cargarPendientes(page: number): void {
     this.cargando.set(true);
     this.http.get<PaginatedResponse>(`${this.adminUrl}?page=${page}&size=100`)
@@ -224,11 +221,14 @@ export class ConfirmarPlanillasComponent implements OnInit {
           this.planillas.set(pendientes);
           this.paginaActual.set(data.currentPage);
           this.totalPaginas.set(data.totalPages);
-          // Contar solo las pendientes en el total
+
+          // FIX backend #3: usar el campo exacto del backend en lugar de
+          // estimaciones propias. Si el backend es anterior al fix y no
+          // incluye el campo, se hace fallback al conteo de la página actual.
           this.totalPendientes.set(
-            data.content.filter(p => !p.confirmada).length +
-            (data.totalPages > 1 ? (data.totalElements - data.content.length) : 0)
+            data.totalPendientes ?? pendientes.length
           );
+
           this._cantidadSeleccionadas.set(0);
           this.cargando.set(false);
         },
@@ -275,7 +275,7 @@ export class ConfirmarPlanillasComponent implements OnInit {
         return;
       }
       this.planillaService.confirmar(seleccionadas[index].codigo).subscribe({
-        next:  () => confirmarSiguiente(index + 1),
+        next: () => confirmarSiguiente(index + 1),
         error: () => confirmarSiguiente(index + 1)
       });
     };

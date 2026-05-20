@@ -1,70 +1,26 @@
 import { Component, HostListener, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+// FIX #7: Se eliminaron los estilos inline del decorador @Component.
+// El componente tenía estilos definidos en DOS lugares:
+//   1. En styles: [`...`] dentro de @Component (bottom: 20px en mobile)
+//   2. En scroll-to-top.css (bottom: 80px en mobile, correcto para no
+//      quedar tapado por el bottom-nav de 65px de altura)
+//
+// Los estilos inline tienen la misma especificidad que el .css externo
+// pero al competir, generaban confusión y el valor incorrecto podía ganar
+// dependiendo del orden de carga. La versión correcta es la del .css externo
+// (bottom: 80px en mobile) porque ese valor es el que convive bien con
+// .bottom-nav que mide 65px.
+//
+// Solución: dejar SOLO el archivo .css externo y eliminar el bloque styles:[].
+
 @Component({
   selector: 'app-scroll-to-top',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <button 
-      class="scroll-to-top" 
-      [class.visible]="mostrar()"
-      (click)="scrollToTop()"
-      aria-label="Volver arriba"
-      type="button">
-      <i class="fas fa-chevron-up" aria-hidden="true"></i>
-    </button>
-  `,
-  styles: [`
-    .scroll-to-top {
-      position: fixed;
-      bottom: 25px;
-      right: 25px;
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      background: var(--clr-primary-dark);
-      color: white;
-      border: 2px solid rgba(255, 255, 255, 0.2);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      box-shadow: var(--shadow-lg);
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(20px);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      z-index: 1000;
-    }
-
-    .scroll-to-top.visible {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-    }
-
-    .scroll-to-top:hover {
-      background: var(--clr-primary);
-      transform: scale(1.1);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-    }
-
-    .scroll-to-top:active {
-      transform: scale(0.95);
-    }
-
-    @media (max-width: 768px) {
-      .scroll-to-top {
-        bottom: 20px;
-        right: 20px;
-        width: 40px;
-        height: 40px;
-        font-size: 1rem;
-      }
-    }
-  `]
+  templateUrl: './scroll-to-top.html',
+  styleUrl: './scroll-to-top.css'
 })
 export class ScrollToTopComponent {
   mostrar = signal(false);

@@ -77,6 +77,12 @@
   --spacing-xl: 2rem;
   --spacing-2xl: 3rem;
 
+  /* FIX #6: --navbar-height se mantiene como valor numérico en TODOS los contextos.
+     La altura real del navbar en mobile es dinámica (flex-wrap), pero la variable
+     debe permanecer numérica para que calc(var(--navbar-height) + X) funcione
+     correctamente en toast-container y cualquier otro uso futuro.
+     Los componentes con necesidades específicas en mobile usan sus propios
+     media queries (ej: toast-container ya tiene top: 0.5rem en mobile). */
   --navbar-height: 60px;
 }
 
@@ -972,10 +978,13 @@ input[type="radio"] {
 @media (max-width: 768px) {
 
   /* ── MEJORA 5: Navbar mobile con hamburguesa ────────────────────────── */
-  :root {
-    --navbar-height: auto;
-    /* altura dinámica en mobile */
-  }
+  /* FIX #6: Se eliminó "--navbar-height: auto" de este bloque.
+     Ese valor rompía calc(var(--navbar-height) + X) en toast-container
+     y cualquier otro uso. El navbar sigue siendo height:auto en mobile
+     mediante la propiedad directa del elemento, pero la VARIABLE CSS
+     permanece en 60px para que los calc() sean válidos en todos los
+     contextos. Los componentes con necesidades de posicionamiento móvil
+     específicas (ej: toast-container) tienen sus propios media queries. */
 
   .navbar {
     flex-wrap: wrap;

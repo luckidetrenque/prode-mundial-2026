@@ -87,9 +87,7 @@ export class App {
       }
     });
 
-    /** 
-     * Reaccionamos al cambio de admin (login/logout).
-    /** 
+    /**
      * Reaccionamos al cambio de admin (login/logout).
      * Si hay un admin, iniciamos un timer que consulta cada 30 segundos.
      */
@@ -130,7 +128,7 @@ export class App {
       const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const segundos = Math.floor((diff % (1000 * 60)) / 1000);
 
-      // MEJORA: En pantallas muy chicas (<400px), mostramos solo días y horas para que no se corte
+      // En pantallas muy chicas (<400px), mostramos solo días y horas
       const isBrowser = typeof window !== 'undefined';
       const isMobile = isBrowser && window.innerWidth < 400;
       

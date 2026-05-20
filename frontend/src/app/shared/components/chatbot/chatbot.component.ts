@@ -1,7 +1,18 @@
-import { Component, ElementRef, ViewChild, AfterViewChecked, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, signal, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ChatbotService } from '../../../core/services/chatbot.service';
+
+// FIX #3: Se eliminó ChangeDetectorRef y CommonModule.
+// El componente original usaba:
+//   - *ngIf / *ngFor  → directivas legacy que requieren CommonModule
+//   - ChangeDetectorRef.detectChanges() → para forzar re-render tras
+//     actualizar arrays mutables
+//
+// Con signals + @if/@for (Angular 17+):
+//   - El template reacciona automáticamente a los cambios de signals
+//   - No se necesita detectChanges() ni CDR
+//   - CommonModule ya no es necesario (el nuevo control flow es built-in)
+//   - El código es consistente con el resto de la app
 
 interface Message {
   text: string;
@@ -11,24 +22,22 @@ interface Message {
 @Component({
   selector: 'app-chatbot',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './chatbot.component.html',
   styleUrls: ['./chatbot.component.css']
 })
 export class ChatbotComponent implements AfterViewChecked {
   @ViewChild('scrollMe') private myScrollContainer!: ElementRef;
 
-  isOpen = false;
-  userMessage = '';
-  isLoading = false;
-  messages: Message[] = [
+  isOpen    = signal(false);
+  isLoading = signal(false);
+  messages  = signal<Message[]>([
     { text: '¡Hola! Soy tu asistente de Prode 2026. ¿En qué puedo ayudarte hoy?', type: 'bot' }
-  ];
+  ]);
 
-  constructor(
-    private chatbotService: ChatbotService, 
-    private cdr: ChangeDetectorRef
-  ) {}
+  userMessage = '';
+
+  constructor(private chatbotService: ChatbotService) {}
 
   ngAfterViewChecked() {
     this.scrollToBottom();
@@ -37,37 +46,36 @@ export class ChatbotComponent implements AfterViewChecked {
   scrollToBottom(): void {
     setTimeout(() => {
       try {
-        this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
-      } catch (err) { }
+        this.myScrollContainer.nativeElement.scrollTop =
+          this.myScrollContainer.nativeElement.scrollHeight;
+      } catch (err) {}
     }, 0);
   }
 
-  toggleChat() {
-    this.isOpen = !this.isOpen;
+  toggleChat(): void {
+    this.isOpen.update(v => !v);
   }
 
-  sendMessage() {
-    if (!this.userMessage.trim() || this.isLoading) return;
+  sendMessage(): void {
+    const text = this.userMessage.trim();
+    if (!text || this.isLoading()) return;
 
-    const userText = this.userMessage;
-    this.messages.push({ text: userText, type: 'user' });
+    // Agrega el mensaje del usuario y limpia el input
+    this.messages.update(msgs => [...msgs, { text, type: 'user' }]);
     this.userMessage = '';
-    this.isLoading = true;
-    this.cdr.detectChanges(); // fuerza el render del loading
+    this.isLoading.set(true);
 
-    this.chatbotService.ask(userText).subscribe({
+    this.chatbotService.ask(text).subscribe({
       next: (res) => {
-        this.messages.push({ text: res.response, type: 'bot' });
-        this.isLoading = false;
-        this.cdr.detectChanges(); // fuerza el render de la respuesta
+        this.messages.update(msgs => [...msgs, { text: res.response, type: 'bot' }]);
+        this.isLoading.set(false);
       },
       error: (err) => {
-        this.messages.push({ 
-          text: 'Lo siento, no puedo responder en este momento.', 
-          type: 'bot' 
-        });
-        this.isLoading = false;
-        this.cdr.detectChanges();
+        this.messages.update(msgs => [
+          ...msgs,
+          { text: 'Lo siento, no puedo responder en este momento.', type: 'bot' }
+        ]);
+        this.isLoading.set(false);
         console.error('Chatbot error:', err);
       }
     });
