@@ -194,7 +194,7 @@ public class EmailService {
             null),
         new Articulo("8", "Los Premios", "🎁",
             "El pozo recaudado se reparte así:<br/><strong>1° Puesto:</strong> 60%%<br/><strong>2° Puesto:</strong> 30%%<br/><strong>3° Puesto:</strong> 10%%",
-            null),
+            "Si hay empate en un puesto, el monto se divide en partes iguales entre los ganadores."),
         new Articulo("9", "Entrega de Premios", "🤝",
             "Los premios se entregarán dentro de los <strong>5 días hábiles</strong> posteriores a la finalización de la fase de grupos del Mundial.",
             null));

@@ -39,14 +39,13 @@ public interface PosicionRepository extends JpaRepository<Planilla, Long> {
                 u.apellido,
                 u.email,
                 pl.codigo,
-                SUM(p.multiplicador) AS puntos
+                COALESCE(SUM(CASE WHEN pr.prediccion = r.resultado THEN p.multiplicador ELSE 0 END), 0) AS puntos
             FROM Planilla pl
             JOIN pl.usuario u
-            JOIN pl.predicciones pr
-            JOIN pr.partido p
-            JOIN Resultado r ON r.partido = p
+            LEFT JOIN pl.predicciones pr
+            LEFT JOIN pr.partido p
+            LEFT JOIN Resultado r ON r.partido = p
             WHERE pl.confirmada = true
-              AND pr.prediccion = r.resultado
             GROUP BY pl.id, u.nombre, u.apellido, u.email, pl.codigo
             ORDER BY puntos DESC
             """)

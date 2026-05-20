@@ -20,4 +20,8 @@ public interface ResultadoRepository extends JpaRepository<Resultado, Long> {
     @Modifying
     @Query("DELETE FROM Resultado r WHERE r.partido.id IN :partidoIds")
     int deleteByPartidoIdIn(@org.springframework.data.repository.query.Param("partidoIds") List<Long> partidoIds);
+
+    @Modifying
+    @Query("DELETE FROM Resultado r")
+    int deleteAllBulk();
 }

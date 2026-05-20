@@ -37,9 +37,7 @@ public class ResultadoService {
 
     @Transactional
     public int resetearTodos() {
-        long count = resultadoRepository.count();
-        resultadoRepository.deleteAll();
-        return (int) count;
+        return resultadoRepository.deleteAllBulk();
     }
 
     @Transactional
