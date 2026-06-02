@@ -174,6 +174,69 @@ import { PlanillaResponse } from '../../shared/models/planilla.model';
     .tabla-participantes td:first-child { text-align: left; font-weight: 500; }
     .tabla-participantes td:last-child { text-align: right; }
 
+        /* ── Paginación ──────────────────────────────────────────────────────── */
+    .paginacion {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1em;
+      margin-top: 1.25em;
+    }
+
+    .btn-pag {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border: 1.5px solid var(--clr-border-strong);
+      border-radius: 50%;
+      background: var(--clr-surface);
+      color: var(--clr-text);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: var(--font-body);
+    }
+
+    .btn-pag:hover:not(:disabled) { border-color: var(--clr-primary); color: var(--clr-primary); }
+    .btn-pag:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .pag-numeros {
+      display: flex;
+      gap: var(--spacing-xs);
+    }
+
+    .btn-num {
+      width: 34px;
+      height: 34px;
+      border: 1.5px solid var(--clr-border-strong);
+      border-radius: 8px;
+      background: var(--clr-surface);
+      color: var(--clr-text-muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-body);
+    }
+
+    .btn-num:hover:not(.activo) {
+      border-color: var(--clr-primary);
+      color: var(--clr-primary);
+      background: rgba(46, 158, 45, 0.05);
+    }
+
+    .btn-num.activo {
+      background: var(--clr-primary);
+      border-color: var(--clr-primary);
+      color: white;
+      box-shadow: 0 4px 10px rgba(46, 158, 45, 0.2);
+    }
+
     @media (max-width: 600px) {
       .tabla-participantes thead { display: none; }
       .tabla-participantes tr { display: flex; flex-direction: column; padding: 1rem; gap: 0.5rem; border-bottom: 1px solid var(--clr-border); }
