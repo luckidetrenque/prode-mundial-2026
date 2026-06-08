@@ -194,7 +194,6 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
                           </button>
                           <button class="btn-accion-circular btn-cancelar-edit" (click)="cancelarEdicion(partido.id)" [disabled]="guardando() === partido.id" title="Cancelar edición"><i class="fas fa-xmark"></i></button>
                         } @else {
-                          <span class="btn-accion-circular badge-guardado" title="Resultado guardado"><i class="fas fa-check"></i></span>
                           <button class="btn-accion-circular btn-editar" (click)="habilitarEdicion(partido.id)" title="Editar resultado"><i class="fas fa-pen"></i></button>
                         }
                       } @else {
