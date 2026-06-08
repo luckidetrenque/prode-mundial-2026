@@ -94,7 +94,7 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
                       <td class="th-num col-muted">{{ partido.numero }}</td>
                       <td class="td-equipo">
                         <div class="equipo-vertical">
-                          <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" class="flag" width="24" height="16" />
+                          <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" [title]="partido.equipoLocalShow" class="flag" width="24" height="16" />
                           <span class="equipo-txt">{{ partido.equipoLocalShow | shortCountry }}</span>
                         </div>
                       </td>
@@ -109,7 +109,7 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
                       </td>
                       <td class="td-equipo">
                         <div class="equipo-vertical">
-                          <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow" class="flag" width="24" height="16" />
+                          <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow" [title]="partido.equipoVisitanteShow" class="flag" width="24" height="16" />
                           <span class="equipo-txt">{{ partido.equipoVisitanteShow | shortCountry }}</span>
                         </div>
                       </td>
