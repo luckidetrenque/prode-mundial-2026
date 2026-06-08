@@ -1,3 +1,12 @@
+// src/app/features/planilla-detalle/planilla-detalle.component.ts
+//
+// CAMBIO vs versión anterior:
+//   - Se agrega getEquiposDelGrupo() — mismo patrón que fixture y planilla
+//   - Se agrega ShortCountryPipe a imports
+//   - El HTML del group-caption ahora incluye el bloque .group-teams-mobile
+//     con banderas + nombres abreviados, visible solo en mobile (≤576px)
+//     mediante los estilos ya definidos en el .css del componente.
+
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -7,6 +16,7 @@ import { ResultadoService } from '../../core/services/resultado.service';
 import { PlanillaResponse, ResultadoPrediccion } from '../../shared/models/planilla.model';
 import { Resultado } from '../../shared/models/resultado.model';
 import { Partido } from '../../shared/models/partido.model';
+import { ShortCountryPipe } from '../../shared/pipes/short-country.pipe';
 import { forkJoin } from 'rxjs';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -16,20 +26,19 @@ const GRUPOS_2026 = ['A','B','C','D','E','F','G','H','I','J','K','L'];
 @Component({
   selector: 'app-planilla-detalle',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ShortCountryPipe],
   templateUrl: './planilla-detalle.component.html',
   styleUrl: './planilla-detalle.component.css'
 })
 export class PlanillaDetalleComponent implements OnInit {
 
-  cargando = signal(true);
-  planilla = signal<PlanillaResponse | null>(null);
-  partidos = signal<Partido[]>([]);
-  resultados = signal<Resultado[]>([]);
+  cargando     = signal(true);
+  planilla     = signal<PlanillaResponse | null>(null);
+  partidos     = signal<Partido[]>([]);
+  resultados   = signal<Resultado[]>([]);
   errorMensaje = signal<string | null>(null);
-  grupos = GRUPOS_2026;
+  grupos       = GRUPOS_2026;
 
-  // Mapa para búsqueda rápida: partidoId -> prediccion
   prediccionesMap = computed(() => {
     const p = this.planilla();
     const map = new Map<number, ResultadoPrediccion>();
@@ -39,7 +48,6 @@ export class PlanillaDetalleComponent implements OnInit {
     return map;
   });
 
-  // Mapa de resultados reales: partidoId -> ResultadoPrediccion
   resultadosMap = computed(() => {
     const res = this.resultados();
     const map = new Map<number, ResultadoPrediccion>();
@@ -56,18 +64,17 @@ export class PlanillaDetalleComponent implements OnInit {
 
   ngOnInit(): void {
     const codigoStr = this.route.snapshot.paramMap.get('codigo');
-    const codigo = Number(codigoStr);
-    
+    const codigo    = Number(codigoStr);
+
     if (!codigoStr || isNaN(codigo)) {
       this.errorMensaje.set('Código de planilla inválido.');
       this.cargando.set(false);
       return;
     }
 
-    // Cargamos planilla, partidos y resultados en paralelo
     forkJoin({
-      planilla: this.planillaService.obtener(codigo),
-      partidos: this.partidoService.getPartidos(),
+      planilla:   this.planillaService.obtener(codigo),
+      partidos:   this.partidoService.getPartidos(),
       resultados: this.resultadoService.getResultados()
     }).subscribe({
       next: ({ planilla, partidos, resultados }) => {
@@ -86,6 +93,18 @@ export class PlanillaDetalleComponent implements OnInit {
 
   getPartidosPorGrupo(grupo: string): Partido[] {
     return this.partidos().filter(p => p.grupo === grupo);
+  }
+
+  /** Devuelve los 4 equipos únicos del grupo con su bandera.
+   *  Mismo patrón que fixture.component.ts y planilla.component.ts. */
+  getEquiposDelGrupo(grupo: string): { nombre: string; bandera: string }[] {
+    const partidos = this.getPartidosPorGrupo(grupo);
+    const equipos  = new Map<string, string>();
+    partidos.forEach(p => {
+      if (p.equipoLocalShow)     equipos.set(p.equipoLocalShow,     p.equipoLocalBandera);
+      if (p.equipoVisitanteShow) equipos.set(p.equipoVisitanteShow, p.equipoVisitanteBandera);
+    });
+    return Array.from(equipos.entries()).map(([nombre, bandera]) => ({ nombre, bandera }));
   }
 
   getPrediccion(partidoId: number): ResultadoPrediccion | null {
@@ -112,43 +131,38 @@ export class PlanillaDetalleComponent implements OnInit {
     const p = this.planilla();
     if (!p) return;
 
-    const doc = new jsPDF();
-    const margin = 14;
+    const doc       = new jsPDF();
+    const margin    = 14;
     const pageWidth = doc.internal.pageSize.width;
-    
-    // --- Header / Top Bar ---
-    doc.setFillColor(42, 57, 141); // #2a398d
+
+    doc.setFillColor(42, 57, 141);
     doc.rect(0, 0, pageWidth, 25, 'F');
-    
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(22);
     doc.setTextColor(255, 255, 255);
     doc.text('PRODE MUNDIAL 2026', margin, 17);
 
-    // --- Información de la Planilla ---
     doc.setTextColor(40, 40, 40);
     doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    
     doc.setFont('helvetica', 'bold');
     doc.text('PARTICIPANTE', margin, 35);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(12);
     doc.text(`${p.nombre} ${p.apellido}`, margin, 44);
-    
+
     const rightCol = pageWidth - 80;
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
     doc.text('DETALLE DE REGISTRO', rightCol, 35);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Número de Planilla:`, rightCol, 42);
+    doc.text('Número de Planilla:', rightCol, 42);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(192, 23, 29);
     doc.text(`${p.codigo}`, rightCol + 35, 42);
-    
+
     doc.setTextColor(40, 40, 40);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Estado:`, rightCol, 48);
+    doc.text('Estado:', rightCol, 48);
     if (p.confirmada) {
       doc.setTextColor(60, 172, 59);
       doc.text('CONFIRMADA', rightCol + 15, 48);
@@ -160,18 +174,10 @@ export class PlanillaDetalleComponent implements OnInit {
     doc.setDrawColor(220, 220, 220);
     doc.line(margin, 55, pageWidth - margin, 55);
 
-    // --- FIX #4: Pre-construir un mapa rowIndex -> partidoId ---
-    // La solución anterior buscaba el partido parseando el texto de la celda
-    // (parseInt de "5 (x2)" o "5"), lo que es frágil ante cambios de formato.
-    // Ahora construimos el mapa ANTES de llamar a autoTable, indexado por el
-    // número de fila real en el body (excluyendo filas de cabecera de grupo).
-    // didDrawCell recibe data.row.index que es el índice dentro de tableData,
-    // así que mapeamos ese índice al partidoId correspondiente de forma exacta.
     const rowToPartidoId = new Map<number, number>();
     let rowIndex = 0;
-
     this.grupos.forEach(grupo => {
-      rowIndex++; // fila de cabecera de grupo (colSpan=4) — no es partido
+      rowIndex++;
       const partidosGrupo = this.getPartidosPorGrupo(grupo);
       partidosGrupo.forEach(partido => {
         rowToPartidoId.set(rowIndex, partido.id);
@@ -179,54 +185,38 @@ export class PlanillaDetalleComponent implements OnInit {
       });
     });
 
-    // --- Tabla de Partidos ---
     const tableData: any[] = [];
-    
     this.grupos.forEach(grupo => {
       const partidosGrupo = this.getPartidosPorGrupo(grupo);
-      
-      tableData.push([
-        { 
-          content: `GRUPO ${grupo}`, 
-          colSpan: 4, 
-          styles: { 
-            fillColor: [240, 240, 240], 
-            textColor: [42, 57, 141], 
-            fontStyle: 'bold', 
-            halign: 'center',
-            fontSize: 10
-          } 
+      tableData.push([{
+        content: `GRUPO ${grupo}`,
+        colSpan: 4,
+        styles: {
+          fillColor: [240, 240, 240],
+          textColor: [42, 57, 141],
+          fontStyle: 'bold',
+          halign: 'center',
+          fontSize: 10
         }
-      ]);
+      }]);
 
       partidosGrupo.forEach(partido => {
-        const acierto = this.esAcierto(partido.id);
+        const acierto    = this.esAcierto(partido.id);
         const desacierto = this.esDesacierto(partido.id);
-        const real = this.getResultadoReal(partido.id);
-        
-        let rowStyles = {};
+        const real       = this.getResultadoReal(partido.id);
+        let rowStyles    = {};
         if (real !== null) {
-          if (acierto) {
-            rowStyles = { fillColor: [239, 248, 239] };
-          } else if (desacierto) {
-            rowStyles = { fillColor: [253, 237, 238] };
-          }
+          if (acierto)    rowStyles = { fillColor: [239, 248, 239] };
+          else if (desacierto) rowStyles = { fillColor: [253, 237, 238] };
         }
-
-        // FIX #4: La columna de número ya no necesita codificar el partidoId
-        // en el texto. Mostramos número + badge x2 si aplica, pero el lookup
-        // en didDrawCell se hace por rowIndex, no parseando este texto.
         const numeroText = partido.multiplicador > 1
           ? `${partido.numero} (x2)`
           : String(partido.numero);
 
         tableData.push([
-          { content: numeroText, styles: { halign: 'center', ...rowStyles } },
-          { content: partido.equipoLocalShow, styles: { halign: 'right', ...rowStyles } },
-          { 
-            content: '', 
-            styles: { halign: 'center', ...rowStyles } 
-          },
+          { content: numeroText,               styles: { halign: 'center', ...rowStyles } },
+          { content: partido.equipoLocalShow,  styles: { halign: 'right',  ...rowStyles } },
+          { content: '',                        styles: { halign: 'center', ...rowStyles } },
           { content: partido.equipoVisitanteShow, styles: { halign: 'left', ...rowStyles } }
         ]);
       });
@@ -237,45 +227,29 @@ export class PlanillaDetalleComponent implements OnInit {
       head: [['#', 'Equipo Local', 'Tu Predicción', 'Equipo Visitante']],
       body: tableData,
       theme: 'grid',
-      headStyles: { 
-        fillColor: [42, 57, 141], 
-        textColor: [255, 255, 255],
-        halign: 'center'
-      },
-      styles: { 
-        fontSize: 8,
-        cellPadding: 3
-      },
+      headStyles: { fillColor: [42, 57, 141], textColor: [255, 255, 255], halign: 'center' },
+      styles: { fontSize: 8, cellPadding: 3 },
       columnStyles: {
         0: { cellWidth: 16 },
         1: { cellWidth: 63 },
         2: { cellWidth: 40 },
         3: { cellWidth: 63 }
       },
-      // FIX #4: didDrawCell ahora usa rowToPartidoId (mapa preconstruido) 
-      // para encontrar el partido de forma robusta, sin depender del formato
-      // del texto de la celda ni de parseInt().
       didDrawCell: (data) => {
         if (data.section === 'body' && data.column.index === 2) {
-          // Buscar el partidoId por índice de fila — O(1), sin parsing de texto
           const partidoId = rowToPartidoId.get(data.row.index);
-          if (partidoId === undefined) return; // es fila de cabecera de grupo
-
-          const pred = this.getPrediccion(partidoId);
-          
+          if (partidoId === undefined) return;
+          const pred        = this.getPrediccion(partidoId);
           const docInstance = data.doc;
-          const cell = data.cell;
-          
-          const centerY = cell.y + cell.height / 2;
-          const centerX = cell.x + cell.width / 2;
-          
-          const radius = 2.4; 
-          const spacing = 7.5;
-          
+          const cell        = data.cell;
+          const centerY     = cell.y + cell.height / 2;
+          const centerX     = cell.x + cell.width / 2;
+          const radius      = 2.4;
+          const spacing     = 7.5;
           const xL = centerX - spacing;
           const xE = centerX;
           const xV = centerX + spacing;
-          
+
           const drawOption = (
             x: number,
             label: string,
@@ -300,25 +274,21 @@ export class PlanillaDetalleComponent implements OnInit {
             docInstance.setFontSize(5.5);
             docInstance.text(label, x, centerY + 0.8, { align: 'center' });
           };
-          
-          drawOption(xL, 'L', pred === 'LOCAL',     [46, 158, 45],  [232, 248, 239]); 
-          drawOption(xE, 'E', pred === 'EMPATE',    [42, 57, 141],  [232, 234, 246]); 
-          drawOption(xV, 'V', pred === 'VISITANTE', [192, 23, 29],  [255, 235, 238]); 
+
+          drawOption(xL, 'L', pred === 'LOCAL',     [46, 158, 45],  [232, 248, 239]);
+          drawOption(xE, 'E', pred === 'EMPATE',    [42, 57, 141],  [232, 234, 246]);
+          drawOption(xV, 'V', pred === 'VISITANTE', [192, 23, 29],  [255, 235, 238]);
         }
       }
     });
 
-    // --- Footer y Numeración ---
     const pageCount = (doc as any).internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
-      
       doc.setFontSize(9);
       doc.setFont('helvetica', 'italic');
       doc.setTextColor(100, 100, 100);
-      const slogan = 'Canadá · Estados Unidos · México 2026';
-      doc.text(slogan, pageWidth / 2, doc.internal.pageSize.height - 15, { align: 'center' });
-
+      doc.text('Canadá · Estados Unidos · México 2026', pageWidth / 2, doc.internal.pageSize.height - 15, { align: 'center' });
       doc.setFontSize(7);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(150, 150, 150);
@@ -327,13 +297,7 @@ export class PlanillaDetalleComponent implements OnInit {
         margin,
         doc.internal.pageSize.height - 10
       );
-      
-      doc.text(
-        'Prode Mundial 2026 - Sitio Oficial',
-        pageWidth - margin,
-        doc.internal.pageSize.height - 10,
-        { align: 'right' }
-      );
+      doc.text('Prode Mundial 2026 - Sitio Oficial', pageWidth - margin, doc.internal.pageSize.height - 10, { align: 'right' });
     }
 
     doc.save(`Planilla_${p.codigo}_${p.nombre}_${p.apellido}.pdf`);

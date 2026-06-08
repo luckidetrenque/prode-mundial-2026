@@ -11,7 +11,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5em;
-  background-color: #d32f2f; /* Rojo PDF */
+  background-color: #d32f2f;
   border-color: #b71c1c;
 }
 
@@ -84,7 +84,8 @@
 
 .header-instrucciones {
   color: var(--clr-text-muted);
-  font-size: 0.9rem;}
+  font-size: 0.9rem;
+}
 
 /* ── Layout ──────────────────────────────────────────────────────────────── */
 .groups-grid {
@@ -104,13 +105,26 @@
   background: var(--clr-surface);
 }
 
+/* ── Encabezado del grupo ────────────────────────────────────────────────── */
 .group-caption {
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  flex-direction: column;
   gap: 0.4em;
   padding: 0.6em 1em;
   background: linear-gradient(to right, var(--wc-usa), #3a4bb0);
+}
+
+.caption-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.caption-left {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
 }
 
 .group-letter {
@@ -128,6 +142,11 @@
   color: rgba(255, 255, 255, 0.7);
 }
 
+/* ── Banderas mobile: ocultas en desktop, visibles en mobile ─────────────── */
+.group-teams-mobile {
+  display: none; /* oculto por defecto; se activa en el media query de abajo */
+}
+
 /* ── Fila de partido ──────────────────────────────────────────────────────── */
 .partido-row {
   display: grid;
@@ -138,7 +157,7 @@
 }
 
 .partido-row.fila-acierto {
-  background-color: rgba(60, 172, 59, 0.08); /* Verde oficial tenso */
+  background-color: rgba(60, 172, 59, 0.08);
 }
 
 .partido-row.fila-acierto .partido-num {
@@ -147,15 +166,8 @@
   font-weight: 700;
 }
 
-.partido-row.fila-acierto .opciones-centro,
-.partido-row.fila-acierto .equipo-local,
-.partido-row.fila-acierto .equipo-visitante {
-  color: var(--clr-text);
-  background-color: transparent;
-}
-
 .partido-row.fila-desacierto {
-  background-color: rgba(230, 29, 37, 0.08); /* Rojo oficial tenso */
+  background-color: rgba(230, 29, 37, 0.08);
 }
 
 .partido-row.fila-desacierto .partido-num {
@@ -164,17 +176,9 @@
   font-weight: 700;
 }
 
-.partido-row.fila-desacierto .opciones-centro,
-.partido-row.fila-desacierto .equipo-local,
-.partido-row.fila-desacierto .equipo-visitante {
-  color: var(--clr-text);
-  background-color: transparent;
-}
-
-
 .partido-row:last-child { border-bottom: none; }
 
-/* Badge x2 en detalle (estilo flotante como en planilla) */
+/* Badge x2 */
 .multi-badge-detalle {
   position: absolute;
   left: 26px;
@@ -212,8 +216,8 @@
   padding: 0.6em 0.5em;
 }
 
-.equipo-local { justify-content: flex-end; }
-.equipo-visitante { justify-content: flex-start; }
+.equipo-local    { justify-content: flex-end; }
+.equipo-visitante{ justify-content: flex-start; }
 
 .equipo-nombre {
   font-size: 0.75rem;
@@ -226,13 +230,8 @@
   flex: 1;
 }
 
-.equipo-local .equipo-nombre {
-  text-align: right;
-}
-
-.equipo-visitante .equipo-nombre {
-  text-align: left;
-}
+.equipo-local .equipo-nombre    { text-align: right; }
+.equipo-visitante .equipo-nombre{ text-align: left; }
 
 .opciones-centro {
   display: flex;
@@ -259,29 +258,26 @@
   background: white;
 }
 
-.opcion-btn.readonly {
-  cursor: default;
-  opacity: 0.4;
-}
+.opcion-btn.readonly { cursor: default; opacity: 0.4; }
 
-.opcion-btn.activa-local { 
-  border-color: var(--clr-primary); 
-  background-color: rgba(46, 158, 45, 0.15); 
-  color: var(--clr-primary); 
+.opcion-btn.activa-local {
+  border-color: var(--clr-primary);
+  background-color: rgba(46, 158, 45, 0.15);
+  color: var(--clr-primary);
   opacity: 1;
   box-shadow: 0 2px 4px rgba(46, 158, 45, 0.2);
 }
-.opcion-btn.activa-empate { 
-  border-color: var(--clr-primary-dark); 
-  background-color: rgba(42, 57, 141, 0.12); 
-  color: var(--clr-primary-dark); 
+.opcion-btn.activa-empate {
+  border-color: var(--clr-primary-dark);
+  background-color: rgba(42, 57, 141, 0.12);
+  color: var(--clr-primary-dark);
   opacity: 1;
   box-shadow: 0 2px 4px rgba(42, 57, 141, 0.15);
 }
-.opcion-btn.activa-visitante { 
-  border-color: var(--clr-maroon); 
-  background-color: rgba(192, 23, 29, 0.12); 
-  color: var(--clr-maroon); 
+.opcion-btn.activa-visitante {
+  border-color: var(--clr-maroon);
+  background-color: rgba(192, 23, 29, 0.12);
+  color: var(--clr-maroon);
   opacity: 1;
   box-shadow: 0 2px 4px rgba(192, 23, 29, 0.15);
 }
@@ -295,8 +291,13 @@
   color: var(--clr-text-muted);
 }
 
+/* ── Responsive ──────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .planilla-header-card { flex-direction: column; align-items: flex-start; gap: 1em; }
+  .planilla-header-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1em;
+  }
   .groups-grid { grid-template-columns: 1fr; }
   .header-acciones {
     flex-direction: column;
@@ -305,6 +306,41 @@
   }
 }
 
+/* Punto de quiebre donde los nombres de equipo desaparecen:
+   el mismo que planilla.component.css y fixture.component.ts */
 @media (max-width: 576px) {
+  /* Ocultar nombres de equipo en las filas (ya no hay espacio) */
   .equipo-nombre { display: none; }
+
+  /* Mostrar el bloque de banderas en el encabezado del grupo */
+  .group-teams-mobile {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8em;
+    width: 100%;
+    padding-top: 0.4em;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .mobile-team-item {
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+  }
+
+  .flag-mini {
+    width: 18px;
+    height: 12px;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
+  }
+
+  .team-name-mini {
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+  }
 }
