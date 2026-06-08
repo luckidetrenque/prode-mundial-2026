@@ -90,7 +90,7 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
                 </thead>
                 <tbody>
                   @for (partido of getPartidosPorGrupo(grupo); track partido.id) {
-                    <tr [class.partido-jugado]="esJugado(partido)">
+                    <tr [class.partido-jugado]="esJugado(partido)" [class.partido-hoy]="esHoy(partido)">
                       <td class="th-num col-muted">{{ partido.numero }}</td>
                       <td class="td-equipo">
                         <div class="equipo-vertical">
@@ -101,6 +101,8 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
                       <td class="th-center">
                         @if (esJugado(partido)) {
                           <span class="badge-final">Final</span>
+                        } @else if (esHoy(partido)) {
+                          <span class="badge-hoy">Hoy</span>
                         } @else {
                           <span class="badge-vs">VS</span>
                         }
@@ -353,6 +355,37 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
 
     .partido-jugado td { opacity: 0.6; }
 
+    /* ── Partido de HOY ─────────────────────────────────────────────────── */
+    .partido-hoy {
+      background: linear-gradient(90deg, rgba(46,158,45,0.08) 0%, transparent 100%);
+      border-left: 3px solid var(--clr-primary);
+      box-shadow: inset 0 0 0 1px rgba(46,158,45,0.15);
+    }
+
+    .partido-hoy td { color: var(--wc-neutral-dark); }
+    .partido-hoy .equipo-txt { color: var(--clr-primary-dark); font-weight: 800; }
+    .partido-hoy .date-vertical { color: var(--clr-primary-dark); font-weight: 800; }
+
+    .badge-hoy {
+      display: inline-block;
+      background: var(--clr-primary);
+      color: white;
+      font-size: 0.58rem;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 0.25em 0.55em;
+      border-radius: 8px;
+      box-shadow: 0 0 0 0 rgba(46,158,45,0.6);
+      animation: pulse-hoy 1.8s ease-in-out infinite;
+    }
+
+    @keyframes pulse-hoy {
+      0%   { box-shadow: 0 0 0 0 rgba(46,158,45,0.55); }
+      60%  { box-shadow: 0 0 0 6px rgba(46,158,45,0); }
+      100% { box-shadow: 0 0 0 0 rgba(46,158,45,0); }
+    }
+
     /* ── Eliminatorias ───────────────────────────────────────────────────── */
     .elim-wrap {
       display: flex;
@@ -515,6 +548,16 @@ export class FixtureComponent implements OnInit {
 
   esJugado(partido: Partido): boolean {
     return new Date(partido.fechaHora) < new Date();
+  }
+
+  esHoy(partido: Partido): boolean {
+    const fechaPartido = new Date(partido.fechaHora);
+    const hoy = new Date();
+    return (
+      fechaPartido.getFullYear() === hoy.getFullYear() &&
+      fechaPartido.getMonth()    === hoy.getMonth()    &&
+      fechaPartido.getDate()     === hoy.getDate()
+    );
   }
 
   formatEstadio(sede: string): string {
