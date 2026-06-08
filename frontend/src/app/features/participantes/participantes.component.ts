@@ -33,7 +33,7 @@ import { PlanillaResponse } from '../../shared/models/planilla.model';
         <div class="table-container">
           <table class="tabla-participantes">
           <caption>
-            Total confirmados al {{ hoy | date:'dd/MM/yyyy' }}: {{ planillas().length }}
+            Total confirmados al {{ fechaCaption() | date:'dd/MM/yyyy' }}: {{ planillas().length }}
           </caption>
           <thead>
             <tr>
@@ -286,10 +286,18 @@ import { PlanillaResponse } from '../../shared/models/planilla.model';
 })
 export class ParticipantesComponent implements OnInit {
 
+  // Fecha de cierre de inscripciones: 10/06/2026 a las 14:00 hora Argentina (UTC-3)
+  private readonly FECHA_CIERRE = new Date('2026-06-10T17:00:00Z'); // 14:00 ARG = 17:00 UTC
+
   cargando = signal(true);
   planillas = signal<PlanillaResponse[]>([]);
   planillasFiltradas = signal<PlanillaResponse[]>([]);
-  hoy = new Date();
+
+  // Muestra la fecha de cierre si ya pasó el límite, o la fecha de hoy si aún estamos en inscripción
+  fechaCaption = computed(() => {
+    const ahora = new Date();
+    return ahora >= this.FECHA_CIERRE ? this.FECHA_CIERRE : ahora;
+  });
 
   // Paginación
   paginaActual = signal(1);
