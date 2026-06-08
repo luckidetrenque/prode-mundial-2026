@@ -47,11 +47,7 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
       }
 
       @if (!cargando() && partidos().length > 0 && resultadosGuardados().size > 0) {
-        <div class="referencia-estados">
-          <span class="ref-item"><i class="fas fa-check-circle" style="color:var(--clr-success-text)"></i> Finalizado</span>
-          <span class="ref-item"><i class="fas fa-clock" style="color:var(--clr-text-muted)"></i> Pendiente</span>
-        </div>
-
+  
         <!-- Resumen de progreso -->
         <div class="stats-overview">
           <div class="overview-card">
@@ -113,6 +109,10 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
               }
             </button>
           }
+          <div class="referencia-estados">
+            <span class="ref-item"><i class="fas fa-check-circle" style="color:var(--clr-success-text)"></i> Finalizado</span>
+            <span class="ref-item"><i class="fas fa-clock" style="color:var(--clr-text-muted)"></i> Pendiente</span>
+          </div>
         </div>
 
         <!-- Partidos por grupo -->
@@ -201,7 +201,7 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
                     <div class="partido-accion">
                       @if (resultadosGuardados().has(partido.id)) {
                         <span class="badge-status badge-finalizado" title="Finalizado">
-                          <i class="fas fa-check" aria-hidden="true"></i>
+                          <i class="fas fa-check-circle" aria-hidden="true"></i>
                         </span>
                       } @else {
                         <span class="badge-status badge-pendiente" title="Pendiente">
@@ -226,7 +226,6 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
     .referencia-estados {
       display: flex;
       gap: var(--spacing-md);
-      margin-bottom: var(--spacing-lg);
       padding: var(--spacing-sm) var(--spacing-md);
       background: var(--clr-surface-alt);
       border-radius: var(--radius-md);
