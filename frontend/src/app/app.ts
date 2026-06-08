@@ -1,9 +1,17 @@
-// src/app/app.ts — MEJORADO CON TOAST CONTAINER
+// src/app/app.ts — MIGRADO A TorneoService
+//
+// CAMBIOS vs versión anterior:
+//   - Se elimina el timer inline del countdown (lógica movida a TorneoService)
+//   - Se elimina `private deadline`
+//   - tiempoExpirado y countdownText ahora son aliases a las signals del servicio
+//   - Todo lo demás permanece igual (breadcrumb, pendientesCount, menú mobile)
+
 import { Component, signal, HostListener, inject } from '@angular/core';
 import { Router, NavigationEnd, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter } from 'rxjs';
 import { PlanillaService } from './core/services/planilla.service';
 import { AuthService } from './core/services/auth.service';
+import { TorneoService } from './core/services/torneo.service';
 import { switchMap, of, catchError, timer } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { ToastContainerComponent } from './shared/components/toast-container/toast-container.component';
@@ -32,35 +40,34 @@ const ROUTE_LABELS: Record<string, string> = {
   styleUrl: './app.css'
 })
 export class App {
-  /** Inyectamos servicios */
-  private authService = inject(AuthService);
+  private authService    = inject(AuthService);
   private planillaService = inject(PlanillaService);
-  private router = inject(Router);
+  private router         = inject(Router);
+  private torneoService  = inject(TorneoService);
 
-  /** Signal para el admin actual */
-  admin = this.authService.adminActual;
-
-  /** Signal para la cantidad de planillas pendientes */
+  admin          = this.authService.adminActual;
   pendientesCount = signal(0);
 
-  /** Countdown signals */
-  countdownText = signal('');
-  tiempoExpirado = signal(false);
-  private deadline = new Date('2026-06-10T14:00:00-03:00');
+  // ── Countdown: delegado al servicio ──────────────────────────────────────
+  // Los signals son readonly refs al mismo objeto del servicio,
+  // por lo que el template sigue usando {{ countdownText() }} y tiempoExpirado()
+  // sin ningún cambio en app.html.
+  countdownText  = this.torneoService.countdownText;
+  tiempoExpirado = this.torneoService.tiempoExpirado;
 
-  /** Breadcrumb signals */
+  // ── Breadcrumb ────────────────────────────────────────────────────────────
   breadcrumbRootLabel = signal<string | null>(null);
   breadcrumbRootLink  = signal<string | null>(null);
   breadcrumbPageLabel = signal<string | null>(null);
 
   constructor() {
-    /** Lógica de Breadcrumb */
+    // Breadcrumb
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd),
       takeUntilDestroyed()
     ).subscribe(() => {
-      const url = this.router.url.split('?')[0]; // Ignorar query params
-      
+      const url = this.router.url.split('?')[0];
+
       if (url === '/home' || url === '/') {
         this.breadcrumbRootLabel.set(null);
         return;
@@ -77,8 +84,6 @@ export class App {
       } else {
         this.breadcrumbRootLabel.set('Inicio');
         this.breadcrumbRootLink.set('/home');
-        
-        // Manejo especial para rutas dinámicas como /planillas/CODIGO
         if (url.startsWith('/planillas/')) {
           this.breadcrumbPageLabel.set('Planilla Detalle');
         } else {
@@ -87,14 +92,10 @@ export class App {
       }
     });
 
-    /**
-     * Reaccionamos al cambio de admin (login/logout).
-     * Si hay un admin, iniciamos un timer que consulta cada 30 segundos.
-     */
+    // Badge de planillas pendientes (solo cuando hay admin logueado)
     toObservable(this.admin).pipe(
       switchMap(adminUser => {
         if (adminUser) {
-          // timer(0, 30000) -> ejecuta inmediatamente y luego cada 30s
           return timer(0, 30000).pipe(
             switchMap(() => this.planillaService.getPendientesCount().pipe(
               catchError(() => of(0))
@@ -107,53 +108,18 @@ export class App {
     ).subscribe(count => {
       this.pendientesCount.set(count);
     });
-
-    /** 
-     * Timer para el countdown (se actualiza cada segundo)
-     */
-    timer(0, 1000).pipe(
-      takeUntilDestroyed()
-    ).subscribe(() => {
-      const ahora = new Date();
-      const diff = this.deadline.getTime() - ahora.getTime();
-
-      if (diff <= 0) {
-        this.countdownText.set('¡Tiempo agotado!');
-        this.tiempoExpirado.set(true);
-        return;
-      }
-
-      const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const horas = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const segundos = Math.floor((diff % (1000 * 60)) / 1000);
-
-      // En pantallas muy chicas (<400px), mostramos solo días y horas
-      const isBrowser = typeof window !== 'undefined';
-      const isMobile = isBrowser && window.innerWidth < 400;
-      
-      if (isMobile && dias > 0) {
-        this.countdownText.set(`${dias}d ${horas}h`);
-      } else {
-        this.countdownText.set(`${dias}d ${horas}h ${minutos}m ${segundos}s`);
-      }
-      this.tiempoExpirado.set(false);
-    });
   }
 
-  /** Controla si el menú mobile está abierto */
   menuAbierto = signal(false);
 
   toggleMenu(): void {
     this.menuAbierto.update(v => !v);
   }
 
-  /** Cierra el menú al hacer click en cualquier enlace */
   cerrarMenu(): void {
     this.menuAbierto.set(false);
   }
 
-  /** Cierra el menú si se hace click fuera del navbar */
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     const navbar = document.querySelector('.navbar');
@@ -162,7 +128,6 @@ export class App {
     }
   }
 
-  /** Cierra el menú con Escape */
   @HostListener('document:keydown.escape')
   onEscape(): void {
     this.menuAbierto.set(false);
