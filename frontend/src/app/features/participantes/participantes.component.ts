@@ -1,16 +1,21 @@
 // src/app/features/participantes/participantes.component.ts
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PlanillaService } from '../../core/services/planilla.service';
 import { PlanillaResponse } from '../../shared/models/planilla.model';
+import { TorneoService } from '../../core/services/torneo.service';
+import { SplashBienvenidaComponent } from '../../shared/components/splash-bienvenida/splash-bienvenida.component';
 
 @Component({
   selector: 'app-participantes',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, SplashBienvenidaComponent],
   template: `
     <main class="main">
+      @if (torneoService.tiempoExpirado()) {
+        <app-splash-bienvenida />
+      }
       <h2><i class="fas fa-user-group"></i> Participantes Confirmados</h2>
       <p class="subtitulo">
         <i class="fas fa-circle-info" style="color:var(--clr-primary-light);font-size:0.8rem"></i>
@@ -285,6 +290,8 @@ import { PlanillaResponse } from '../../shared/models/planilla.model';
   `]
 })
 export class ParticipantesComponent implements OnInit {
+
+  torneoService = inject(TorneoService);
 
   // Fecha de cierre de inscripciones: 10/06/2026 a las 14:00 hora Argentina (UTC-3)
   private readonly FECHA_CIERRE = new Date('2026-06-10T17:00:00Z'); // 14:00 ARG = 17:00 UTC

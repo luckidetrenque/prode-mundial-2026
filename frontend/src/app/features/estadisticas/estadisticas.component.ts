@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { EstadisticaService } from '../../core/services/estadistica.service';
 import { EstadisticaPartido } from '../../shared/models/estadistica.model';
+import { TorneoService } from '../../core/services/torneo.service';
+import { SplashBienvenidaComponent } from '../../shared/components/splash-bienvenida/splash-bienvenida.component';
 
 type TabActivo = 'estadisticas' | 'pronosticos';
 
@@ -22,9 +24,12 @@ interface GrupoPronostico {
 @Component({
   selector: 'app-estadisticas',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SplashBienvenidaComponent],
   template: `
     <main class="main">
+      @if (torneoService.tiempoExpirado()) {
+        <app-splash-bienvenida />
+      }
       <h2><i class="fas fa-chart-simple"></i> Estadísticas y Pronósticos</h2>
       <p class="subtitulo">
         <i class="fas fa-circle-info" style="color:var(--clr-primary-light);font-size:0.8rem"></i>
@@ -507,6 +512,7 @@ interface GrupoPronostico {
 export class EstadisticasComponent implements OnInit {
 
   private route = inject(ActivatedRoute);
+  torneoService = inject(TorneoService);
 
   cargando     = signal(true);
   estadisticas = signal<EstadisticaPartido[]>([]);

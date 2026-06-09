@@ -11,21 +11,26 @@
 //
 // Cambio: Map<number, string> → signal<Record<number, string>>
 // getSeleccion() lee del signal en lugar del Map.
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { forkJoin } from 'rxjs';
 import { PartidoService } from '../../core/services/partido.service';
 import { ResultadoService } from '../../core/services/resultado.service';
 import { Partido } from '../../shared/models/partido.model';
+import { TorneoService } from '../../core/services/torneo.service';
+import { SplashBienvenidaComponent } from '../../shared/components/splash-bienvenida/splash-bienvenida.component';
 
 const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
 
 @Component({
   selector: 'app-resultados',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SplashBienvenidaComponent],
   template: `
     <main class="main">
+      @if (torneoService.tiempoExpirado()) {
+        <app-splash-bienvenida />
+      }
       <h2><i class="fas fa-futbol" aria-hidden="true"></i> Resultados de los Partidos</h2>
       <p class="subtitulo">
         <i class="fas fa-circle-info" style="color:var(--clr-primary-light);font-size:0.8rem"></i>
@@ -419,6 +424,8 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
   `]
 })
 export class ResultadosComponent implements OnInit {
+
+  torneoService = inject(TorneoService);
 
   cargando    = signal(true);
   grupoActivo = signal<string | null>(null);

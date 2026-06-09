@@ -7,7 +7,7 @@
 //     con banderas + nombres abreviados, visible solo en mobile (≤576px)
 //     mediante los estilos ya definidos en el .css del componente.
 
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { PlanillaService } from '../../core/services/planilla.service';
@@ -20,17 +20,21 @@ import { ShortCountryPipe } from '../../shared/pipes/short-country.pipe';
 import { forkJoin } from 'rxjs';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { TorneoService } from '../../core/services/torneo.service';
+import { SplashBienvenidaComponent } from '../../shared/components/splash-bienvenida/splash-bienvenida.component';
 
 const GRUPOS_2026 = ['A','B','C','D','E','F','G','H','I','J','K','L'];
 
 @Component({
   selector: 'app-planilla-detalle',
   standalone: true,
-  imports: [CommonModule, RouterLink, ShortCountryPipe],
+  imports: [CommonModule, RouterLink, ShortCountryPipe, SplashBienvenidaComponent],
   templateUrl: './planilla-detalle.component.html',
   styleUrl: './planilla-detalle.component.css'
 })
 export class PlanillaDetalleComponent implements OnInit {
+
+  torneoService = inject(TorneoService);
 
   cargando     = signal(true);
   planilla     = signal<PlanillaResponse | null>(null);

@@ -11,13 +11,19 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TorneoService } from '../../core/services/torneo.service';
+import { SplashBienvenidaComponent } from '../../shared/components/splash-bienvenida/splash-bienvenida.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, SplashBienvenidaComponent],
   template: `
     <main class="main home">
+
+      <!-- Splash post-cierre: se muestra una sola vez por dispositivo (localStorage) -->
+      @if (torneoService.tiempoExpirado()) {
+        <app-splash-bienvenida />
+      }
 
       <!-- ══ HERO ══════════════════════════════════════════════════════════ -->
       <section class="hero">

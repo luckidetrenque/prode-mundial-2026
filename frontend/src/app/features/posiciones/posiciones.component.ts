@@ -4,18 +4,23 @@
 // re-evaluaba en cada ciclo de change detection aunque los datos no hubiesen
 // cambiado. Ahora se usan signal + computed(), consistente con el patrón
 // establecido en ParticipantesComponent y el resto de la app.
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PosicionService } from '../../core/services/posicion.service';
 import { Posicion } from '../../shared/models/posicion.model';
+import { TorneoService } from '../../core/services/torneo.service';
+import { SplashBienvenidaComponent } from '../../shared/components/splash-bienvenida/splash-bienvenida.component';
 
 @Component({
   selector: 'app-posiciones',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, SplashBienvenidaComponent],
   template: `
     <main class="main">
+      @if (torneoService.tiempoExpirado()) {
+        <app-splash-bienvenida />
+      }
       <h2><i class="fas fa-trophy"></i> Tabla de Posiciones</h2>
       <p class="subtitulo">
         <i class="fas fa-circle-info" style="color:var(--clr-primary-light);font-size:0.8rem"></i>
@@ -511,6 +516,8 @@ import { Posicion } from '../../shared/models/posicion.model';
   `]
 })
 export class PosicionesComponent implements OnInit {
+
+  torneoService = inject(TorneoService);
 
   cargando     = signal(true);
   posiciones   = signal<Posicion[]>([]);

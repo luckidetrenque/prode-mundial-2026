@@ -1,4 +1,7 @@
 <main class="main">
+  @if (torneoService.tiempoExpirado()) {
+    <app-splash-bienvenida />
+  }
   <div class="header-acciones">
     <a routerLink="/participantes" class="btn btn-secondary btn-back">
       <i class="fas fa-arrow-left"></i> Volver a participantes
