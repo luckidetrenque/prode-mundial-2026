@@ -40,6 +40,14 @@
   margin-bottom: 1.5em;
 }
 
+.badge-fila-codigo {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  flex-wrap: wrap;
+  margin-bottom: 0.4em;
+}
+
 .badge-codigo {
   display: inline-block;
   background: var(--clr-surface-alt);
@@ -49,7 +57,6 @@
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 1px;
-  margin-bottom: 0.5em;
   border: 1px solid rgba(134, 18, 51, 0.2);
 }
 
@@ -85,6 +92,54 @@
 .header-instrucciones {
   color: var(--clr-text-muted);
   font-size: 0.9rem;
+}
+
+/* ── Aciertos counter ───────────────────────────────────────────────────── */
+.aciertos-counter {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  flex-wrap: wrap;
+  margin-top: 0.5em;
+}
+
+.aciertos-pill,
+.puntaje-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  padding: 0.3em 0.75em;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.aciertos-pill {
+  background: rgba(60, 172, 59, 0.12);
+  color: #2b7d2a;
+  border: 1px solid rgba(60, 172, 59, 0.3);
+}
+
+.puntaje-pill {
+  background: rgba(255, 193, 7, 0.15);
+  color: #856404;
+  border: 1px solid rgba(255, 193, 7, 0.4);
+}
+
+.aciertos-label {
+  opacity: 0.75;
+  font-weight: 500;
+}
+
+.aciertos-valor {
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+.puntaje-valor {
+  font-weight: 800;
+  font-size: 0.85rem;
 }
 
 /* ── Layout ──────────────────────────────────────────────────────────────── */

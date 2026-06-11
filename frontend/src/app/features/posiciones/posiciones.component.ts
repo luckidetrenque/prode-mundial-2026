@@ -147,7 +147,7 @@ import { SplashBienvenidaComponent } from '../../shared/components/splash-bienve
                     </a>
                   </td>
                   <td class="col-pts">
-                    <span class="pts-badge" [class.pts-top]="pos.posicion <= 3">{{ pos.puntos }}</span>
+                    <span class="pts-badge" [class.pts-top]="pos.posicion <= 3 && pos.puntos > 0">{{ pos.puntos }}</span>
                   </td>
                 </tr>
               }
@@ -529,7 +529,11 @@ export class PosicionesComponent implements OnInit {
     const all = this.posiciones();
     if (all.length === 0) return [];
 
-    const puntosUnicos = [...new Set(all.map(p => p.puntos))].sort((a, b) => b - a);
+    // Filtramos puntajes 0: no tiene sentido mostrar en el podio
+    // a alguien que todavía no sumó ningún punto.
+    const puntosUnicos = [...new Set(all.map(p => p.puntos))]
+      .filter(pts => pts > 0)
+      .sort((a, b) => b - a);
     const top3Puntos = puntosUnicos.slice(0, 3);
 
     return top3Puntos.map((pts, index) => ({

@@ -9,13 +9,20 @@
     </a>
   </div>
 
-  <div class="countdown-nav" [class.expirado]="tiempoExpirado()" title="Tiempo restante para cargar y confirmar planillas">
-    <i class="fas fa-clock" aria-hidden="true"></i>
-    <div class="countdown-content">
-      <span class="countdown-label">Cierra en:</span>
-      <span class="countdown-timer">{{ countdownText() }}</span>
+  @if (!tiempoExpirado()) {
+    <div class="countdown-nav" title="Tiempo restante para cargar y confirmar planillas">
+      <i class="fas fa-clock" aria-hidden="true"></i>
+      <div class="countdown-content">
+        <span class="countdown-label">Cierra en:</span>
+        <span class="countdown-timer">{{ countdownText() }}</span>
+      </div>
     </div>
-  </div>
+  } @else {
+    <div class="torneo-activo-badge-nav" title="El torneo está en curso">
+      <span class="torneo-activo-dot-nav"></span>
+      Torneo en curso
+    </div>
+  }
 
   <a [routerLink]="admin() ? '/admin' : '/admin/login'" class="btn-admin" aria-label="Acceso al panel de administración">
     <i class="fas fa-lock" aria-hidden="true"></i>

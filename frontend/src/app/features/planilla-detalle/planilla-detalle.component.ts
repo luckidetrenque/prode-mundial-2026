@@ -59,6 +59,35 @@ export class PlanillaDetalleComponent implements OnInit {
     return map;
   });
 
+  /** Cantidad de resultados cargados (partidos con resultado real) */
+  totalResultadosCargados = computed(() => this.resultadosMap().size);
+
+  /** Aciertos: partidos donde predicción == resultado real */
+  totalAciertos = computed(() => {
+    const predMap = this.prediccionesMap();
+    const resMap  = this.resultadosMap();
+    let count = 0;
+    resMap.forEach((resultado, partidoId) => {
+      if (predMap.get(partidoId) === resultado) count++;
+    });
+    return count;
+  });
+
+  /** Puntaje total considerando multiplicadores */
+  puntajeTotal = computed(() => {
+    const predMap  = this.prediccionesMap();
+    const resMap   = this.resultadosMap();
+    const partidos = this.partidos();
+    let puntaje = 0;
+    resMap.forEach((resultado, partidoId) => {
+      if (predMap.get(partidoId) === resultado) {
+        const partido = partidos.find(p => p.id === partidoId);
+        puntaje += partido?.multiplicador ?? 1;
+      }
+    });
+    return puntaje;
+  });
+
   constructor(
     private route: ActivatedRoute,
     private planillaService: PlanillaService,

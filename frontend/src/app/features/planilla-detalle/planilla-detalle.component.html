@@ -26,17 +26,32 @@
     <!-- Info Cabecera -->
     <div class="planilla-header-card">
       <div class="header-main">
-        <div class="badge-codigo">PLANILLA #{{ planilla()!.codigo }}</div>
+        <div class="badge-fila-codigo">
+          <div class="badge-codigo">PLANILLA #{{ planilla()!.codigo }}</div>
+          <span class="status-badge" [class.confirmada]="planilla()!.confirmada">
+            @if (planilla()!.confirmada) {
+              <i class="fas fa-check-circle"></i> Confirmada
+            } @else {
+              <i class="fas fa-clock"></i> Pendiente
+            }
+          </span>
+        </div>
         <h2>{{ planilla()!.nombre }} {{ planilla()!.apellido }}</h2>
-      </div>
-      <div class="header-status">
-        <span class="status-badge" [class.confirmada]="planilla()!.confirmada">
-          @if (planilla()!.confirmada) {
-            <i class="fas fa-check-circle"></i> Confirmada
-          } @else {
-            <i class="fas fa-clock"></i> Pendiente
-          }
-        </span>
+
+        @if (totalResultadosCargados() > 0) {
+          <div class="aciertos-counter">
+            <div class="aciertos-pill">
+              <i class="fas fa-bullseye"></i>
+              <span class="aciertos-label">Aciertos</span>
+              <span class="aciertos-valor">{{ totalAciertos() }} / {{ totalResultadosCargados() }}</span>
+            </div>
+            <div class="puntaje-pill">
+              <i class="fas fa-star"></i>
+              <span class="aciertos-label">Puntaje</span>
+              <span class="puntaje-valor">{{ puntajeTotal() }} pts</span>
+            </div>
+          </div>
+        }
       </div>
       <div class="header-instrucciones">
         El icono <span

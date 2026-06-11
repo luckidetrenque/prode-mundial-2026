@@ -608,6 +608,41 @@ table {
   }
 }
 
+/* ── Badge "Torneo en curso" (navbar, reemplaza countdown expirado) ───────── */
+.torneo-activo-badge-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.35em 0.9em;
+  background: rgba(60, 172, 59, 0.18);
+  border: 1.5px solid rgba(60, 172, 59, 0.45);
+  border-radius: 20px;
+  color: #a8ffab;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.torneo-activo-dot-nav {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4cff50;
+  flex-shrink: 0;
+  animation: livePulseNav 1.5s infinite;
+}
+
+@keyframes livePulseNav {
+  0%  { box-shadow: 0 0 0 0 rgba(76, 255, 80, 0.6); }
+  70% { box-shadow: 0 0 0 7px rgba(76, 255, 80, 0); }
+  100%{ box-shadow: 0 0 0 0 rgba(76, 255, 80, 0); }
+}
+
+
+
 /* Link deshabilitado */
 .nav-link-disabled {
   display: inline-block;
