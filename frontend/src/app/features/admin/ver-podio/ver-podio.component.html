@@ -1,0 +1,252 @@
+<main class="main">
+  <h2>
+    <i class="fas fa-trophy"></i>
+    Análisis de posibilidades de podio
+  </h2>
+
+  <!-- Metrics / Stats Overview -->
+  <div class="stats-overview podio-metrics">
+    <div class="overview-card">
+      <i class="fas fa-users"></i>
+      <div class="overview-data">
+        <span class="overview-num">70</span>
+        <span class="overview-label">Participantes</span>
+      </div>
+    </div>
+    <div class="overview-card">
+      <i class="fas fa-futbol"></i>
+      <div class="overview-data">
+        <span class="overview-num">72</span>
+        <span class="overview-label">Partidos fase grupos</span>
+      </div>
+    </div>
+    <div class="overview-card">
+      <i class="fas fa-star"></i>
+      <div class="overview-data">
+        <span class="overview-num">84</span>
+        <span class="overview-label">Puntaje máximo</span>
+      </div>
+    </div>
+    <div class="overview-card">
+      <i class="fas fa-database"></i>
+      <div class="overview-data">
+        <span class="overview-num">0</span>
+        <span class="overview-label">Resultados cargados</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alert informativa -->
+  <div class="podio-alert">
+    <i class="fas fa-circle-info"></i>
+    <span>
+      Todos los participantes arrancan con <strong>0 puntos</strong>.
+      El análisis muestra quién puede diferenciarse más en el mejor escenario posible
+      para cada uno (que todos sus pronósticos aciertan).
+    </span>
+  </div>
+
+  <!-- Tabs -->
+  <div class="podio-tabs">
+    <button
+      class="podio-tab"
+      [class.active]="tabActiva() === 'ranking'"
+      (click)="setTab('ranking')">
+      Ranking de independencia
+    </button>
+    <button
+      class="podio-tab"
+      [class.active]="tabActiva() === 'pares'"
+      (click)="setTab('pares')">
+      Pares más similares
+    </button>
+    <button
+      class="podio-tab"
+      [class.active]="tabActiva() === 'info'"
+      (click)="setTab('info')">
+      Cómo funciona
+    </button>
+  </div>
+
+  <!-- TAB: Ranking -->
+  @if (tabActiva() === 'ranking') {
+    <!-- Top 3 cards -->
+    <div class="top3-grid">
+      @for (d of top3; track d.nombre; let i = $index) {
+        <div class="top-card" [ngClass]="'top-card-' + (i + 1)">
+          <div class="top-medal">{{ ['🥇','🥈','🥉'][i] }}</div>
+          <div class="top-pos">{{ ['1er puesto','2do puesto','3er puesto'][i] }} — candidato</div>
+          <div class="top-name">{{ d.nombre }}</div>
+          <div class="top-detail">Ventaja máx: +{{ d.ventaja }} pts sobre {{ d.rival }}</div>
+        </div>
+      }
+    </div>
+
+    <!-- Buscador -->
+    <div class="search-wrap">
+      <i class="fas fa-magnifying-glass search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Buscar participante o rival..."
+        [ngModel]="busqueda()"
+        (ngModelChange)="busqueda.set($event)"
+      />
+    </div>
+
+    <!-- Tabla ranking -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Participante</th>
+            <th>Rival más cercano</th>
+            <th class="text-right">Pts rival</th>
+            <th class="text-right">Ventaja máx</th>
+            <th>Dificultad de ganar</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (d of dataFiltrada(); track d.nombre; let i = $index) {
+            <tr [ngClass]="trClass(i)">
+              <td class="rank">{{ i + 1 }}</td>
+              <td class="name">{{ d.nombre }}</td>
+              <td class="muted">{{ d.rival }}</td>
+              <td class="text-right">{{ d.rival_pts }}</td>
+              <td class="text-right weight-500">+{{ d.ventaja }}</td>
+              <td>
+                <span class="badge" [ngClass]="getDificultad(d.ventaja).clase">
+                  {{ getDificultad(d.ventaja).label }}
+                </span>
+              </td>
+            </tr>
+          }
+          @if (dataFiltrada().length === 0) {
+            <tr>
+              <td colspan="6" class="empty-row">No se encontraron participantes para esa búsqueda.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <p class="table-footnote">
+      "Pts rival" = puntaje que tendría el rival más cercano si el participante acertara todos sus pronósticos.
+      "Ventaja máx" = diferencia resultante.
+    </p>
+  }
+
+  <!-- TAB: Pares -->
+  @if (tabActiva() === 'pares') {
+    <p class="subtitulo">
+      Los pares con más puntos en común van a subir y bajar juntos.
+      Si el torneo favorece a uno, el otro probablemente esté cerca.
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Participante A</th>
+            <th>Participante B</th>
+            <th class="text-right">Pts en común</th>
+            <th class="text-right">Pts que los separan</th>
+            <th>Similitud</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (d of pares; track $index; let i = $index) {
+            <tr>
+              <td class="rank">{{ i + 1 }}</td>
+              <td class="name">{{ d.a }}</td>
+              <td class="name">{{ d.b }}</td>
+              <td class="text-right">{{ d.comun }} pts</td>
+              <td class="text-right">{{ d.dif }} pts</td>
+              <td>
+                <span class="badge" [ngClass]="getSimil(d.comun).clase">
+                  {{ getSimil(d.comun).label }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- TAB: Info -->
+  @if (tabActiva() === 'info') {
+    <div class="info-grid">
+
+      <div class="info-card">
+        <h3><i class="fas fa-list-ol"></i> Sistema de puntos</h3>
+        <div class="info-row">
+          <span class="info-row-label">Partidos con multiplicador ×1</span>
+          <span class="info-row-val">60 partidos</span>
+        </div>
+        <div class="info-row">
+          <span class="info-row-label">Partidos con multiplicador ×2</span>
+          <span class="info-row-val">12 partidos</span>
+        </div>
+        <div class="info-row">
+          <span class="info-row-label">Puntaje máximo posible</span>
+          <span class="info-row-val">84 pts</span>
+        </div>
+        <div class="info-row">
+          <span class="info-row-label">Partidos totales (fase grupos)</span>
+          <span class="info-row-val">72</span>
+        </div>
+        <div class="info-row">
+          <span class="info-row-label">Planillas idénticas</span>
+          <span class="info-row-val">Ninguna</span>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h3><i class="fas fa-table"></i> ¿Cómo se lee la tabla?</h3>
+        <p class="info-text">
+          Para cada participante, se simula el escenario donde <strong>todos sus pronósticos aciertan</strong>.
+          En ese escenario el participante obtiene 84 pts. La columna <em>"Pts rival"</em> muestra cuántos
+          puntos tendría en ese mismo escenario el rival que más coincide con él.
+        </p>
+        <p class="info-text">
+          La <em>ventaja máxima</em> es 84 menos esos puntos del rival.
+          Cuanto mayor es la ventaja, más "independiente" es la planilla.
+        </p>
+      </div>
+
+      <div class="info-card">
+        <h3><i class="fas fa-medal"></i> ¿Quién puede ganar?</h3>
+        <p class="info-text">
+          Matemáticamente, los <strong>70 participantes</strong> pueden terminar en 1°, 2° o 3° puesto.
+          No hay planillas idénticas, por lo que siempre existe algún resultado del torneo que pone
+          a cualquier participante en el podio.
+        </p>
+      </div>
+
+      <div class="info-card">
+        <h3><i class="fas fa-tag"></i> Badges de dificultad</h3>
+        <div class="badges-legend">
+          <div class="badge-legend-row">
+            <span class="badge badge-green">Fácil de separarse</span>
+            <span class="info-row-label">Ventaja ≥ 35 pts</span>
+          </div>
+          <div class="badge-legend-row">
+            <span class="badge badge-blue">Moderada</span>
+            <span class="info-row-label">Ventaja 25–34 pts</span>
+          </div>
+          <div class="badge-legend-row">
+            <span class="badge badge-amber">Difícil</span>
+            <span class="info-row-label">Ventaja 18–24 pts</span>
+          </div>
+          <div class="badge-legend-row">
+            <span class="badge badge-gray">Muy difícil</span>
+            <span class="info-row-label">Ventaja &lt; 18 pts</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  }
+</main>

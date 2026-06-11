@@ -26,6 +26,10 @@ import { AuthService } from '../../../core/services/auth.service';
           <i class="fas fa-3x fa-database"></i>
           <a routerLink="/admin/resultados">Cargar Resultados</a>
         </li>
+        <li class="menu__li">
+          <i class="fas fa-3x fa-trophy"></i>
+          <a routerLink="/admin/podio">Ver Podio</a>
+        </li>
         <li class="menu__li" (click)="auth.logout()" style="cursor:pointer">
           <i class="fas fa-3x fa-right-from-bracket"></i>
           <span>Salir</span>
@@ -35,7 +39,7 @@ import { AuthService } from '../../../core/services/auth.service';
   `,
   styles: [`
     .admin-name { font-size: 0.8rem; color: #888; font-weight: normal; }
-    .menu { grid-template-columns: repeat(3, 1fr); }
+    .menu { grid-template-columns: repeat(4, 1fr); }
   `]
 })
 export class DashboardComponent {
