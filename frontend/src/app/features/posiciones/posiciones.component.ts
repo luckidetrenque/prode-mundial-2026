@@ -117,9 +117,6 @@ import { SplashBienvenidaComponent } from '../../shared/components/splash-bienve
                         (input)="filtrar($event)"
                       />
                     </div>
-                    <span class="total-chip">
-                      {{ posiciones()[0]?.totalPartidos ?? 0 }} partidos jugados
-                    </span>
                   </div>
                 </th>
                 <th class="col-planilla">Planilla</th>
@@ -325,7 +322,7 @@ import { SplashBienvenidaComponent } from '../../shared/components/splash-bienve
     }
 
     /* ── Tabla ───────────────────────────────────────────────────────────── */
-    .tabla-pos { margin: 0; min-width: 450px; }
+    .tabla-pos { margin: 0; width: 100%; }
 
     .tabla-pos thead th {
       background: var(--clr-surface-alt);
@@ -486,6 +483,11 @@ import { SplashBienvenidaComponent } from '../../shared/components/splash-bienve
     @media (max-width: 600px) {
       .podio { gap: 0.35em; }
       .podio-nombre { font-size: 0.7rem; }
+      .col-planilla { display: none; }
+      .header-nombre-content { flex-direction: column; align-items: flex-start; gap: 4px; }
+      .buscador-inline { max-width: 100%; width: 100%; }
+      .col-pts { width: 60px; }
+      .col-pos { width: 40px; }
     }
 
     @media (max-width: 380px) {

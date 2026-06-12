@@ -39,7 +39,13 @@ import { AuthService } from '../../../core/services/auth.service';
   `,
   styles: [`
     .admin-name { font-size: 0.8rem; color: #888; font-weight: normal; }
-    .menu { grid-template-columns: repeat(4, 1fr); }
+    .menu { grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    @media (max-width: 768px) {
+      .menu { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .menu { grid-template-columns: 1fr; }
+    }
   `]
 })
 export class DashboardComponent {

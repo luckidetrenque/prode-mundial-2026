@@ -35,6 +35,19 @@ import { SplashBienvenidaComponent } from '../../shared/components/splash-bienve
       }
 
       @if (!cargando() && planillas().length > 0) {
+        <div class="acciones-tabla">
+          <div class="buscador-inline">
+            <i class="fas fa-magnifying-glass"></i>
+            <input
+              type="text"
+              id="buscarParticipante"
+              name="buscarParticipante"
+              class="buscador-input"
+              placeholder="Buscar participante..."
+              (input)="filtrar($event)"
+            />
+          </div>
+        </div>
         <div class="table-container">
           <table class="tabla-participantes">
           <caption>
@@ -42,25 +55,7 @@ import { SplashBienvenidaComponent } from '../../shared/components/splash-bienve
           </caption>
           <thead>
             <tr>
-              <th class="col-nombre">
-                <div class="header-nombre-content">
-                  <span class="header-label">Nombre y Apellido</span>
-                  <div class="buscador-inline">
-                    <i class="fas fa-magnifying-glass"></i>
-                    <input
-                      type="text"
-                      id="buscarParticipante"
-                      name="buscarParticipante"
-                      class="buscador-input"
-                      placeholder="Buscar..."
-                      (input)="filtrar($event)"
-                    />
-                  </div>
-                  <span class="total-chip">
-                    ({{ planillasFiltradas().length }} participantes)
-                  </span>
-                </div>
-              </th>
+              <th class="col-nombre">Nombre y Apellido</th>
               <th style="width: 150px;">Planilla N°</th>
             </tr>
           </thead>
@@ -131,48 +126,35 @@ import { SplashBienvenidaComponent } from '../../shared/components/splash-bienve
     }
     .tabla-participantes th.col-nombre { text-align: left; }
     
-    .header-nombre-content {
+    .acciones-tabla {
       display: flex;
-      align-items: center;
-      gap: var(--spacing-md);
+      justify-content: flex-end;
+      margin-bottom: 1rem;
     }
-
-    .header-label { flex-shrink: 0; }
 
     .buscador-inline {
       display: flex;
       align-items: center;
-      background: rgba(255, 255, 255, 0.6);
+      background: var(--clr-surface);
       border: 1px solid var(--clr-border-strong);
-      border-radius: 4px;
-      padding: 0 var(--spacing-sm);
-      gap: var(--spacing-xs);
-      flex: 1;
-      max-width: 160px;
-      height: 24px;
+      border-radius: var(--radius-md);
+      padding: 0.4rem 0.8rem;
+      gap: 0.5rem;
+      width: 100%;
+      max-width: 300px;
     }
 
-    .buscador-inline i { font-size: 0.65rem; color: var(--clr-text-muted); }
+    .buscador-inline i { font-size: 0.85rem; color: var(--clr-text-muted); }
 
     .buscador-input {
       background: transparent;
       border: none;
       width: 100%;
       font-family: var(--font-body);
-      font-size: 0.75rem;
+      font-size: 0.85rem;
       color: var(--clr-text);
       padding: 0;
-      height: 100%;
       outline: none;
-    }
-
-    .total-chip {
-      font-size: 0.62rem;
-      color: var(--clr-text-muted);
-      white-space: nowrap;
-      text-transform: none;
-      letter-spacing: normal;
-      font-weight: 500;
     }
 
     .tabla-participantes td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--clr-border); font-size: 0.9rem; }
@@ -257,19 +239,8 @@ import { SplashBienvenidaComponent } from '../../shared/components/splash-bienve
         text-transform: uppercase;
       }
 
-      .header-nombre-content {
-        flex-direction: column;
-        align-items: stretch;
-        gap: var(--spacing-sm);
-      }
-
       .buscador-inline {
         max-width: 100%;
-        order: 2;
-      }
-
-      .total-chip {
-        order: 3;
       }
     }
 

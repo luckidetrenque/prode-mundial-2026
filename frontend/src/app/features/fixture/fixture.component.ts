@@ -101,6 +101,8 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
                       <td class="th-center">
                         @if (esJugado(partido)) {
                           <span class="badge-final">Final</span>
+                        } @else if (esJugando(partido)) {
+                          <span class="badge-playing">Jugando</span>
                         } @else if (esHoy(partido)) {
                           <span class="badge-hoy">Hoy</span>
                         } @else {
@@ -345,6 +347,25 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
       border-radius: 8px;
     }
 
+    .badge-playing {
+      display: inline-block;
+      background: #e3f2fd;
+      color: #1976d2;
+      font-size: 0.58rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 0.2em 0.6em;
+      border-radius: 8px;
+      animation: pulse-playing 1.5s infinite;
+    }
+
+    @keyframes pulse-playing {
+      0% { box-shadow: 0 0 0 0 rgba(25, 118, 210, 0.4); }
+      70% { box-shadow: 0 0 0 4px rgba(25, 118, 210, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(25, 118, 210, 0); }
+    }
+
     .badge-vs {
       display: inline-block;
       font-size: 0.65rem;
@@ -547,7 +568,16 @@ export class FixtureComponent implements OnInit {
   }
 
   esJugado(partido: Partido): boolean {
-    return new Date(partido.fechaHora) < new Date();
+    const fechaHora = new Date(partido.fechaHora);
+    const horaFinal = new Date(fechaHora.getTime() + 2 * 60 * 60 * 1000);
+    return new Date() >= horaFinal;
+  }
+
+  esJugando(partido: Partido): boolean {
+    const fechaHora = new Date(partido.fechaHora);
+    const horaFinal = new Date(fechaHora.getTime() + 2 * 60 * 60 * 1000);
+    const ahora = new Date();
+    return ahora >= fechaHora && ahora < horaFinal;
   }
 
   esHoy(partido: Partido): boolean {
