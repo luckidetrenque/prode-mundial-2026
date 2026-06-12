@@ -35,13 +35,12 @@ import { SplashBienvenidaComponent } from '../../shared/components/splash-bienve
       }
 
       @if (!cargando() && planillas().length > 0) {
-        <div class="acciones-tabla">
+        <div class="acciones-tabla mobile-only">
           <div class="buscador-inline">
             <i class="fas fa-magnifying-glass"></i>
             <input
               type="text"
-              id="buscarParticipante"
-              name="buscarParticipante"
+              name="buscarParticipanteMobile"
               class="buscador-input"
               placeholder="Buscar participante..."
               (input)="filtrar($event)"
@@ -55,7 +54,21 @@ import { SplashBienvenidaComponent } from '../../shared/components/splash-bienve
           </caption>
           <thead>
             <tr>
-              <th class="col-nombre">Nombre y Apellido</th>
+              <th class="col-nombre">
+                <div class="header-nombre-content">
+                  <span class="header-label">Nombre y Apellido</span>
+                  <div class="buscador-inline desktop-only">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <input
+                      type="text"
+                      name="buscarParticipante"
+                      class="buscador-input"
+                      placeholder="Buscar..."
+                      (input)="filtrar($event)"
+                    />
+                  </div>
+                </div>
+              </th>
               <th style="width: 150px;">Planilla N°</th>
             </tr>
           </thead>
@@ -131,6 +144,17 @@ import { SplashBienvenidaComponent } from '../../shared/components/splash-bienve
       justify-content: flex-end;
       margin-bottom: 1rem;
     }
+
+    .mobile-only { display: none !important; }
+    .desktop-only { display: flex; }
+
+    .header-nombre-content {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+    }
+
+    .header-label { flex-shrink: 0; }
 
     .buscador-inline {
       display: flex;
@@ -229,6 +253,9 @@ import { SplashBienvenidaComponent } from '../../shared/components/splash-bienve
       .tabla-participantes tr { display: flex; flex-direction: column; padding: 1rem; gap: 0.5rem; border-bottom: 1px solid var(--clr-border); }
       .tabla-participantes td { display: flex; justify-content: space-between; padding: 0; border: none; }
       .tabla-participantes td:last-child { text-align: left; }
+      
+      .mobile-only { display: flex !important; }
+      .desktop-only { display: none !important; }
       
       /* Labels para modo stack */
       .tabla-participantes td::before {

@@ -96,6 +96,20 @@ import { SplashBienvenidaComponent } from '../../shared/components/splash-bienve
           </div>
         }
         
+        <!-- Buscador Mobile -->
+        <div class="acciones-tabla mobile-only">
+          <div class="buscador-inline">
+            <i class="fas fa-magnifying-glass"></i>
+            <input
+              type="text"
+              name="buscarPosicionMobile"
+              class="buscador-input"
+              placeholder="Buscar participante..."
+              (input)="filtrar($event)"
+            />
+          </div>
+        </div>
+
         <!-- Tabla limpia -->
         <div class="table-container">
           <div class="table-wrap">
@@ -106,11 +120,10 @@ import { SplashBienvenidaComponent } from '../../shared/components/splash-bienve
                 <th class="col-nombre">
                   <div class="header-nombre-content">
                     <span class="header-label">Participante</span>
-                    <div class="buscador-inline">
+                    <div class="buscador-inline desktop-only">
                       <i class="fas fa-magnifying-glass"></i>
                       <input
                         type="text"
-                        id="buscarPosicion"
                         name="buscarPosicion"
                         class="buscador-input"
                         placeholder="Buscar..."
@@ -285,30 +298,25 @@ import { SplashBienvenidaComponent } from '../../shared/components/splash-bienve
     .buscador-inline {
       display: flex;
       align-items: center;
-      background: rgba(255, 255, 255, 0.6);
+      background: var(--clr-surface);
       border: 1px solid var(--clr-border-strong);
-      border-radius: 4px;
-      padding: 0 var(--spacing-sm);
-      gap: var(--spacing-xs);
-      flex: 1;
-      max-width: 140px;
-      height: 24px;
+      border-radius: var(--radius-md);
+      padding: 0.4rem 0.8rem;
+      gap: 0.5rem;
+      width: 100%;
+      max-width: 300px;
     }
 
-    .buscador-inline i {
-      font-size: 0.65rem;
-      color: var(--clr-text-muted);
-    }
+    .buscador-inline i { font-size: 0.85rem; color: var(--clr-text-muted); }
 
     .buscador-input {
       background: transparent;
       border: none;
       width: 100%;
       font-family: var(--font-body);
-      font-size: 0.75rem;
+      font-size: 0.85rem;
       color: var(--clr-text);
       padding: 0;
-      height: 100%;
       outline: none;
     }
 
@@ -320,6 +328,15 @@ import { SplashBienvenidaComponent } from '../../shared/components/splash-bienve
       letter-spacing: normal;
       font-weight: 500;
     }
+
+    .acciones-tabla {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 1rem;
+    }
+
+    .mobile-only { display: none !important; }
+    .desktop-only { display: flex; }
 
     /* ── Tabla ───────────────────────────────────────────────────────────── */
     .tabla-pos { margin: 0; width: 100%; }
@@ -485,6 +502,10 @@ import { SplashBienvenidaComponent } from '../../shared/components/splash-bienve
       .podio-nombre { font-size: 0.7rem; }
       .col-planilla { display: none; }
       .header-nombre-content { flex-direction: column; align-items: flex-start; gap: 4px; }
+      
+      .mobile-only { display: flex !important; }
+      .desktop-only { display: none !important; }
+      
       .buscador-inline { max-width: 100%; width: 100%; }
       .col-pts { width: 60px; }
       .col-pos { width: 40px; }
