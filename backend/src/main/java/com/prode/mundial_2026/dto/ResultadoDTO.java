@@ -14,6 +14,8 @@ public class ResultadoDTO {
     // Solo exponemos lo que necesita el frontend
     private PartidoResumenDTO partido;
     private String resultado; // "LOCAL" | "EMPATE" | "VISITANTE"
+    private Integer golesLocal;
+    private Integer golesVisitante;
 
     @Data
     @AllArgsConstructor

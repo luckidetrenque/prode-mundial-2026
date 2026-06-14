@@ -2,7 +2,9 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { PartidoService } from '../../core/services/partido.service';
+import { ResultadoService } from '../../core/services/resultado.service';
 import { Partido } from '../../shared/models/partido.model';
 import { ShortCountryPipe } from '../../shared/pipes/short-country.pipe';
 
@@ -122,7 +124,14 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
                       <td class="th-center">
                         <div style="display:flex; justify-content:center; align-items:center; width:100%">
                           @if (esJugado(partido)) {
-                            <span class="badge-final">Final</span>
+                            <div style="display:flex; flex-direction:column; align-items:center; gap:2px">
+                              <span class="badge-final">Final</span>
+                              @if (getGolesLocal(partido.id) !== null) {
+                                <span style="font-size:0.75rem; font-weight:800; color:var(--wc-neutral-dark)">
+                                  {{ getGolesLocal(partido.id) }} - {{ getGolesVisitante(partido.id) }}
+                                </span>
+                              }
+                            </div>
                           } @else if (esJugando(partido)) {
                             <span class="badge-playing">Jugando</span>
                           } @else if (esHoy(partido)) {
@@ -611,6 +620,7 @@ export class FixtureComponent implements OnInit {
   grupoActivo  = signal<string | null>(null);
 
   private todosLosPartidos: Partido[] = [];
+  private golesSignal = signal<Record<number, { local: number | null, visitante: number | null }>>({});
 
   grupos = ['A','B','C','D','E','F','G','H','I','J','K','L'];
 
@@ -629,16 +639,34 @@ export class FixtureComponent implements OnInit {
 
   cantidadFiltrada = computed(() => this.partidosFiltrados().length);
 
-  constructor(private partidoService: PartidoService) {}
+  constructor(private partidoService: PartidoService, private resultadoService: ResultadoService) {}
 
   ngOnInit(): void {
-    this.partidoService.getPartidos().subscribe({
-      next: partidos => {
+    forkJoin({
+      partidos: this.partidoService.getPartidos(),
+      resultados: this.resultadoService.getResultados()
+    }).subscribe({
+      next: ({ partidos, resultados }) => {
         this.todosLosPartidos = partidos;
+        
+        const goles: Record<number, { local: number | null, visitante: number | null }> = {};
+        resultados.forEach(r => {
+          goles[r.partido.id] = { local: r.golesLocal ?? null, visitante: r.golesVisitante ?? null };
+        });
+        this.golesSignal.set(goles);
+
         this.cargando.set(false);
       },
       error: () => this.cargando.set(false)
     });
+  }
+
+  getGolesLocal(partidoId: number): number | null {
+    return this.golesSignal()[partidoId]?.local ?? null;
+  }
+
+  getGolesVisitante(partidoId: number): number | null {
+    return this.golesSignal()[partidoId]?.visitante ?? null;
   }
 
   gruposMostrados(): string[] {

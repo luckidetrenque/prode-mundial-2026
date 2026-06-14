@@ -38,7 +38,9 @@ public class ResultadoController {
                                                 new ResultadoDTO.PartidoResumenDTO(
                                                                 r.getPartido().getId(),
                                                                 r.getPartido().getNumero()),
-                                                r.getResultado().name()))
+                                                r.getResultado().name(),
+                                                r.getGolesLocal(),
+                                                r.getGolesVisitante()))
                                 .toList();
                 return ResponseEntity.ok(dtos);
         }
@@ -60,6 +62,8 @@ public class ResultadoController {
                 resultado.setPartido(partido);
                 resultado.setResultado(
                                 Prediccion.ResultadoPrediccion.valueOf(request.getResultado()));
+                resultado.setGolesLocal(request.getGolesLocal());
+                resultado.setGolesVisitante(request.getGolesVisitante());
 
                 Resultado guardado = resultadoRepository.save(resultado);
 
@@ -67,7 +71,9 @@ public class ResultadoController {
                                 new ResultadoDTO.PartidoResumenDTO(
                                                 guardado.getPartido().getId(),
                                                 guardado.getPartido().getNumero()),
-                                guardado.getResultado().name()));
+                                guardado.getResultado().name(),
+                                guardado.getGolesLocal(),
+                                guardado.getGolesVisitante()));
         }
 
         @DeleteMapping("/grupo/{grupo}")

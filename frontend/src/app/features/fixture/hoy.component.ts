@@ -2,7 +2,9 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { PartidoService } from '../../core/services/partido.service';
+import { ResultadoService } from '../../core/services/resultado.service';
 import { Partido } from '../../shared/models/partido.model';
 import { ShortCountryPipe } from '../../shared/pipes/short-country.pipe';
 
@@ -73,7 +75,14 @@ import { ShortCountryPipe } from '../../shared/pipes/short-country.pipe';
                   <!-- Separador central -->
                   <div class="card-center">
                     @if (esJugado(partido)) {
-                      <span class="badge-final">Final</span>
+                      <div style="display:flex; flex-direction:column; align-items:center; gap:3px">
+                        <span class="badge-final">Final</span>
+                        @if (getGolesLocal(partido.id) !== null) {
+                          <span style="font-size:1.1rem; font-weight:800; color:var(--wc-neutral-dark); font-family:var(--font-display)">
+                            {{ getGolesLocal(partido.id) }} - {{ getGolesVisitante(partido.id) }}
+                          </span>
+                        }
+                      </div>
                     } @else if (esJugando(partido)) {
                       <span class="badge-jugando">En vivo</span>
                     } @else {
@@ -405,6 +414,7 @@ export class HoyComponent implements OnInit {
   cargando = signal(true);
 
   private todosLosPartidos: Partido[] = [];
+  private golesSignal = signal<Record<number, { local: number | null, visitante: number | null }>>({});
 
   partidosHoy = signal<Partido[]>([]);
 
@@ -418,12 +428,22 @@ export class HoyComponent implements OnInit {
     });
   });
 
-  constructor(private partidoService: PartidoService) {}
+  constructor(private partidoService: PartidoService, private resultadoService: ResultadoService) {}
 
   ngOnInit(): void {
-    this.partidoService.getPartidos().subscribe({
-      next: partidos => {
+    forkJoin({
+      partidos: this.partidoService.getPartidos(),
+      resultados: this.resultadoService.getResultados()
+    }).subscribe({
+      next: ({ partidos, resultados }) => {
         this.todosLosPartidos = partidos;
+        
+        const goles: Record<number, { local: number | null, visitante: number | null }> = {};
+        resultados.forEach(r => {
+          goles[r.partido.id] = { local: r.golesLocal ?? null, visitante: r.golesVisitante ?? null };
+        });
+        this.golesSignal.set(goles);
+
         const hoy = partidos
           .filter(p => this.esHoy(p))
           .sort((a, b) => new Date(a.fechaHora).getTime() - new Date(b.fechaHora).getTime());
@@ -432,6 +452,14 @@ export class HoyComponent implements OnInit {
       },
       error: () => this.cargando.set(false)
     });
+  }
+
+  getGolesLocal(partidoId: number): number | null {
+    return this.golesSignal()[partidoId]?.local ?? null;
+  }
+
+  getGolesVisitante(partidoId: number): number | null {
+    return this.golesSignal()[partidoId]?.visitante ?? null;
   }
 
   esHoy(partido: Partido): boolean {

@@ -162,6 +162,10 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
                   <div class="partido-row" [class.guardado]="resultadosGuardados().has(partido.id)">
                     <span class="partido-n">#{{ partido.numero }}</span>
                     <div class="partido-equipo partido-equipo--local">
+                      <input type="number" class="input-goles" min="0" placeholder="-" 
+                        [ngModel]="getGolesLocal(partido.id)"
+                        (ngModelChange)="seleccionarGolesLocal(partido.id, $event)"
+                        [disabled]="(resultadosGuardados().has(partido.id) && editando() !== partido.id) || guardando() === partido.id">
                       <span class="equipo-txt">{{ partido.equipoLocalShow }}</span>
                       <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" class="flag" width="24" height="16" />
                     </div>
@@ -185,6 +189,10 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
                     <div class="partido-equipo partido-equipo--visit">
                       <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow" class="flag" width="24" height="16" />
                       <span class="equipo-txt">{{ partido.equipoVisitanteShow }}</span>
+                      <input type="number" class="input-goles" min="0" placeholder="-"
+                        [ngModel]="getGolesVisitante(partido.id)"
+                        (ngModelChange)="seleccionarGolesVisitante(partido.id, $event)"
+                        [disabled]="(resultadosGuardados().has(partido.id) && editando() !== partido.id) || guardando() === partido.id">
                     </div>
                     <div class="partido-accion">
                       @if (resultadosGuardados().has(partido.id)) {
@@ -233,6 +241,10 @@ export class CargarResultadosComponent implements OnInit {
   // FIX #17 aplicado también acá: Record reactivo en lugar de Map + _selVersion
   private seleccionesSignal         = signal<Record<number, string>>({});
   private seleccionesOriginalesMap  = new Map<number, string>();
+  
+  private golesSignal               = signal<Record<number, { local: number | null, visitante: number | null }>>({});
+  private golesOriginalesMap        = new Map<number, { local: number | null, visitante: number | null }>();
+  
   resultadosGuardados               = signal<Set<number>>(new Set());
 
   grupos = GRUPOS;
@@ -258,15 +270,21 @@ export class CargarResultadosComponent implements OnInit {
 
         const guardados = new Set<number>();
         const selecciones: Record<number, string> = {};
+        const goles: Record<number, { local: number | null, visitante: number | null }> = {};
 
         resultados.forEach(r => {
           const id = r.partido.id;
           selecciones[id] = r.resultado;
           this.seleccionesOriginalesMap.set(id, r.resultado);
+          
+          goles[id] = { local: r.golesLocal ?? null, visitante: r.golesVisitante ?? null };
+          this.golesOriginalesMap.set(id, { local: r.golesLocal ?? null, visitante: r.golesVisitante ?? null });
+          
           guardados.add(id);
         });
 
         this.seleccionesSignal.set(selecciones);
+        this.golesSignal.set(goles);
         this.resultadosGuardados.set(guardados);
         this.cargando.set(false);
       },
@@ -294,6 +312,28 @@ export class CargarResultadosComponent implements OnInit {
     return this.seleccionesSignal()[partidoId] ?? '';
   }
 
+  seleccionarGolesLocal(partidoId: number, valor: number | null): void {
+    this.golesSignal.update(s => ({
+      ...s,
+      [partidoId]: { ...s[partidoId], local: valor }
+    }));
+  }
+
+  seleccionarGolesVisitante(partidoId: number, valor: number | null): void {
+    this.golesSignal.update(s => ({
+      ...s,
+      [partidoId]: { ...s[partidoId], visitante: valor }
+    }));
+  }
+
+  getGolesLocal(partidoId: number): number | null {
+    return this.golesSignal()[partidoId]?.local ?? null;
+  }
+
+  getGolesVisitante(partidoId: number): number | null {
+    return this.golesSignal()[partidoId]?.visitante ?? null;
+  }
+
   contarGuardadosEnGrupo(grupo: string): number {
     return this.getPartidosPorGrupo(grupo).filter(p => this.resultadosGuardados().has(p.id)).length;
   }
@@ -310,6 +350,19 @@ export class CargarResultadosComponent implements OnInit {
     if (original) {
       this.seleccionesSignal.update(s => ({ ...s, [partidoId]: original }));
     }
+    
+    const golesOriginales = this.golesOriginalesMap.get(partidoId);
+    if (golesOriginales) {
+      this.golesSignal.update(s => ({ ...s, [partidoId]: golesOriginales }));
+    } else {
+      // Si no estaba guardado, lo blanqueamos
+      this.golesSignal.update(s => {
+        const copy = { ...s };
+        delete copy[partidoId];
+        return copy;
+      });
+    }
+    
     this.editando.set(null);
   }
 
@@ -317,8 +370,10 @@ export class CargarResultadosComponent implements OnInit {
     const resultado = this.seleccionesSignal()[partidoId];
     if (!resultado) return;
 
+    const goles = this.golesSignal()[partidoId] || { local: null, visitante: null };
+
     this.guardando.set(partidoId);
-    this.resultadoService.guardar(partidoId, resultado).subscribe({
+    this.resultadoService.guardar(partidoId, resultado, goles.local, goles.visitante).subscribe({
       next: () => {
         this.guardando.set(null);
         this.editando.set(null);
@@ -326,6 +381,7 @@ export class CargarResultadosComponent implements OnInit {
         guardados.add(partidoId);
         this.resultadosGuardados.set(guardados);
         this.seleccionesOriginalesMap.set(partidoId, resultado);
+        this.golesOriginalesMap.set(partidoId, { local: goles.local, visitante: goles.visitante });
         this.toastService.success('Resultado guardado exitosamente.');
       },
       error: () => {
@@ -349,9 +405,18 @@ export class CargarResultadosComponent implements OnInit {
     this.resultadoService.resetearGrupo(grupo).subscribe({
       next: res => {
         const guardados = new Set(this.resultadosGuardados());
-        ids.forEach(id => { guardados.delete(id); this.seleccionesOriginalesMap.delete(id); });
+        ids.forEach(id => { 
+          guardados.delete(id); 
+          this.seleccionesOriginalesMap.delete(id);
+          this.golesOriginalesMap.delete(id);
+        });
         this.resultadosGuardados.set(guardados);
         this.seleccionesSignal.update(s => {
+          const copia = { ...s };
+          ids.forEach(id => delete copia[id]);
+          return copia;
+        });
+        this.golesSignal.update(s => {
           const copia = { ...s };
           ids.forEach(id => delete copia[id]);
           return copia;
@@ -371,7 +436,9 @@ export class CargarResultadosComponent implements OnInit {
       next: res => {
         this.resultadosGuardados.set(new Set());
         this.seleccionesSignal.set({});
+        this.golesSignal.set({});
         this.seleccionesOriginalesMap.clear();
+        this.golesOriginalesMap.clear();
         this.reseteando.set(false);
         this.cerrarModalResetAll();
         this.toastService.success(res.mensaje);

@@ -151,6 +151,7 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
                     <span class="partido-n" aria-hidden="true">#{{ partido.numero }}</span>
 
                     <div class="partido-equipo partido-equipo--local">
+                      <span class="goles-txt">{{ getGolesLocal(partido.id) !== null ? getGolesLocal(partido.id) : '-' }}</span>
                       <span class="equipo-txt">{{ partido.equipoLocalShow }}</span>
                       <img
                         [src]="partido.equipoLocalBandera"
@@ -201,6 +202,7 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
                         height="16"
                       />
                       <span class="equipo-txt">{{ partido.equipoVisitanteShow }}</span>
+                      <span class="goles-txt">{{ getGolesVisitante(partido.id) !== null ? getGolesVisitante(partido.id) : '-' }}</span>
                     </div>
 
                     <div class="partido-accion">
@@ -310,6 +312,15 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
       text-transform: uppercase;
       letter-spacing: 0.2px;
       color: var(--clr-text);
+    }
+    
+    .goles-txt {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--clr-primary-dark);
+      width: 24px;
+      text-align: center;
+      font-family: var(--font-display);
     }
 
     /* ── Botones de solo lectura ─────────────────────────────────────────── */
@@ -433,6 +444,7 @@ export class ResultadosComponent implements OnInit {
   // FIX #1: signal<Record<number, string>> en lugar de Map plano.
   // Patrón consistente con cargar-resultados.component.ts.
   private seleccionesSignal = signal<Record<number, string>>({});
+  private golesSignal       = signal<Record<number, { local: number | null, visitante: number | null }>>({});
   resultadosGuardados       = signal<Set<number>>(new Set());
 
   grupos = GRUPOS;
@@ -452,14 +464,17 @@ export class ResultadosComponent implements OnInit {
 
         const guardados: Set<number> = new Set();
         const selecciones: Record<number, string> = {};
+        const goles: Record<number, { local: number | null, visitante: number | null }> = {};
 
         resultados.forEach(r => {
           const id = r.partido.id;
           selecciones[id] = r.resultado;
+          goles[id] = { local: r.golesLocal ?? null, visitante: r.golesVisitante ?? null };
           guardados.add(id);
         });
 
         this.seleccionesSignal.set(selecciones);
+        this.golesSignal.set(goles);
         this.resultadosGuardados.set(guardados);
         this.cargando.set(false);
       },
@@ -489,6 +504,14 @@ export class ResultadosComponent implements OnInit {
   // FIX #1: lee del signal en lugar del Map
   getSeleccion(partidoId: number): string {
     return this.seleccionesSignal()[partidoId] ?? '';
+  }
+
+  getGolesLocal(partidoId: number): number | null {
+    return this.golesSignal()[partidoId]?.local ?? null;
+  }
+
+  getGolesVisitante(partidoId: number): number | null {
+    return this.golesSignal()[partidoId]?.visitante ?? null;
   }
 
   contarGuardadosEnGrupo(grupo: string): number {
