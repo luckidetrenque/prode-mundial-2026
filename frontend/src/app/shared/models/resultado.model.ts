@@ -8,4 +8,6 @@ export interface Resultado {
     numero: number;
   };
   resultado: ResultadoPrediccion;
+  golesLocal?: number;
+  golesVisitante?: number;
 }

@@ -25,4 +25,10 @@ public class Resultado {
     @Column(nullable = false, length = 20)
     private Prediccion.ResultadoPrediccion resultado;
     // Reutilizamos el mismo enum de Prediccion: LOCAL, EMPATE, VISITANTE
+
+    @Column(name = "goles_local")
+    private Integer golesLocal;
+
+    @Column(name = "goles_visitante")
+    private Integer golesVisitante;
 }

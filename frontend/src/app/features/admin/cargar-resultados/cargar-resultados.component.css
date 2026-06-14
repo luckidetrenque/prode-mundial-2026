@@ -277,6 +277,30 @@
   text-overflow: ellipsis;
 }
 
+/* ── Inputs de goles ──────────────────────────────────────────────────────── */
+.input-goles {
+  width: 32px;
+  height: 24px;
+  text-align: center;
+  border: 1px solid var(--clr-border-strong);
+  border-radius: 4px;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  -moz-appearance: textfield;
+}
+.input-goles::-webkit-outer-spin-button,
+.input-goles::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.input-goles:disabled {
+  background-color: var(--clr-surface-alt);
+  color: var(--clr-text-muted);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
 /* ── Opciones L/E/V ──────────────────────────────────────────────────────── */
 .opciones-resultado {
   display: flex;
