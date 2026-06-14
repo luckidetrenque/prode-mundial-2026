@@ -502,13 +502,26 @@ import { SplashBienvenidaComponent } from '../../shared/components/splash-bienve
       .podio-nombre { font-size: 0.7rem; }
       .col-planilla { display: none; }
       .header-nombre-content { flex-direction: column; align-items: flex-start; gap: 4px; }
-      
+
       .mobile-only { display: flex !important; }
       .desktop-only { display: none !important; }
-      
+
       .buscador-inline { max-width: 100%; width: 100%; }
-      .col-pts { width: 60px; }
-      .col-pos { width: 40px; }
+
+      .col-pts { width: 50px; }
+      .col-pos { width: 36px; }
+
+      .tabla-pos thead th,
+      .tabla-pos tbody td {
+        padding: 0.6rem 0.4rem;
+      }
+
+      .nombre-participante {
+        max-width: none;
+        font-size: 0.82rem;
+      }
+
+      .pts-badge { font-size: 0.9rem; min-width: 28px; }
     }
 
     @media (max-width: 380px) {

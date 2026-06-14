@@ -91,7 +91,17 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
                 <tbody>
                   @for (partido of getPartidosPorGrupo(grupo); track partido.id) {
                     <tr [class.partido-jugado]="esJugado(partido)" [class.partido-hoy]="esHoy(partido)">
-                      <td class="th-num col-muted">{{ partido.numero }}</td>
+                      <td class="th-num col-muted">
+                        <div style="position:relative; display:flex; align-items:center; justify-content:center;">
+                          <span>{{ partido.numero }}</span>
+                          @if (partido.multiplicador > 1) {
+                            <span class="multi-badge-fixture" title="Partido vale doble puntaje"
+                                  style="position:absolute; top:50%; transform:translateY(-50%); right:-18px;">
+                              <i class="fas fa-bolt" style="font-size:0.55rem"></i>x2
+                            </span>
+                          }
+                        </div>
+                      </td>
                       <td class="td-equipo">
                         <div class="equipo-vertical">
                           <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" [title]="partido.equipoLocalShow" class="flag" width="24" height="16" />
@@ -99,15 +109,17 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
                         </div>
                       </td>
                       <td class="th-center">
-                        @if (esJugado(partido)) {
-                          <span class="badge-final">Final</span>
-                        } @else if (esJugando(partido)) {
-                          <span class="badge-playing">Jugando</span>
-                        } @else if (esHoy(partido)) {
-                          <span class="badge-hoy">Hoy</span>
-                        } @else {
-                          <span class="badge-vs">VS</span>
-                        }
+                        <div style="display:flex; justify-content:center; align-items:center; width:100%">
+                          @if (esJugado(partido)) {
+                            <span class="badge-final">Final</span>
+                          } @else if (esJugando(partido)) {
+                            <span class="badge-playing">Jugando</span>
+                          } @else if (esHoy(partido)) {
+                            <span class="badge-hoy">Hoy</span>
+                          } @else {
+                            <span class="badge-vs">VS</span>
+                          }
+                        </div>
                       </td>
                       <td class="td-equipo">
                         <div class="equipo-vertical">
@@ -279,7 +291,7 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
 
     .group-teams-mobile { display: none; }
 
-    .tabla-grupo { margin: 0; table-layout: fixed; }
+    .tabla-grupo { margin: 0; table-layout: fixed; width: 100%; }
     .tabla-grupo thead th { 
       background: #f8fafb; 
       border-bottom: 1px solid var(--clr-border-strong);
@@ -293,8 +305,21 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
     }
 
     /* Columnas optimizadas */
-    .th-num   { width: 22px; text-align: center; }
-    .th-center { text-align: center; width: 28px; }
+    .th-num   { width: 54px; text-align: center; }
+    .th-center { 
+      text-align: center; 
+      width: 58px; 
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .th-center .badge-final,
+    .th-center .badge-playing,
+    .th-center .badge-hoy,
+    .th-center .badge-vs {
+      display: inline-block;
+      margin: 0 auto;
+    }
     .th-date  { width: 45px; text-align: center; }
     .th-sede  { width: 85px; line-height: 1.1; white-space: normal !important; }
     .col-muted { color: var(--clr-text-muted); }
@@ -484,6 +509,21 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
     .elim-sede  { font-size: 0.68rem; color: var(--clr-text-muted); max-width: 120px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.8; }
 
     .por-definir { font-size: 0.78rem; color: var(--clr-text-muted); font-style: italic; font-weight: 500; }
+
+    /* Badge x2 */
+    .multi-badge-fixture {
+      display: inline-flex;
+      align-items: center;
+      gap: 1px;
+      background: #ffc107;
+      color: #856404;
+      font-size: 0.55rem;
+      font-weight: 800;
+      padding: 1px 3px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+    }
 
     /* ── Responsive ──────────────────────────────────────────────────────── */
     @media (max-width: 640px) {

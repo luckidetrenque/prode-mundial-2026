@@ -4,7 +4,7 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
 
   // Redirige la raíz a /home
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: '', redirectTo: 'fixture', pathMatch: 'full' },
 
   // ── Rutas públicas ──────────────────────────────────────────────────────
   {

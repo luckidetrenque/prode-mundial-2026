@@ -82,7 +82,7 @@ interface GrupoPronostico {
               <i class="fas fa-file-contract"></i>
               <div class="overview-data">
                 <span class="overview-num odometer" [style.--num]="totalPlanillas()"></span>
-                <span class="overview-label">Planillas Totales</span>
+                <span class="overview-label">Planillas</span>
               </div>
             </div>
             <div class="overview-card">
@@ -505,7 +505,25 @@ interface GrupoPronostico {
     }
 
     @media (max-width: 600px) {
-      .stats-overview { grid-template-columns: 1fr; }
+      .filtro-grupos {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 0.4em;
+        justify-items: center;
+      }
+
+      .filtro-grupos .btn-grupo {
+        width: 100%;
+        max-width: 40px;
+        aspect-ratio: 1;
+      }
+
+      .filtro-grupos .btn-grupo:first-child {
+        grid-column: 1 / -1;
+        width: auto;
+        max-width: none;
+        aspect-ratio: auto;
+      }
     }
   `]
 })

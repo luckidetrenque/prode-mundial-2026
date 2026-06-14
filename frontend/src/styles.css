@@ -1624,3 +1624,30 @@ input[type="radio"] {
   .ayuda-item { padding: 0.75em; }
   .ayuda-item-icon { width: 28px; height: 28px; font-size: 0.85rem; }
 }
+
+@media (max-width: 600px) {
+  .filtro-grupos {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.4em;
+    justify-items: center;
+  }
+
+  .btn-grupo {
+    width: 100%;
+    max-width: 40px;
+    aspect-ratio: 1;
+  }
+
+  /* "Todos" ocupa toda la fila */
+  .btn-grupo:first-child {
+    grid-column: 1 / -1;
+    width: auto;
+    max-width: none;
+    aspect-ratio: auto;
+  }
+
+  .referencia-estados {
+    grid-column: 1 / -1;
+  }
+}

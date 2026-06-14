@@ -59,7 +59,7 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
             <i class="fas fa-futbol" aria-hidden="true"></i>
             <div class="overview-data">
               <span class="overview-num">{{ partidos().length }}</span>
-              <span class="overview-label">Partidos Totales</span>
+              <span class="overview-label">Partidos</span>
             </div>
           </div>
           <div class="overview-card">
@@ -415,7 +415,6 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
       .mobile-team-item { display: flex; align-items: center; gap: 0.3em; }
       .flag-mini { width: 16px; height: 11px; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
       .team-name-mini { color: var(--clr-text); font-size: 0.6rem; font-weight: 700; text-transform: uppercase; }
-      .stats-overview { grid-template-columns: 1fr; }
       .equipo-txt { display: none; }
       .partido-row { grid-template-columns: 20px auto 80px auto 30px; }
       .badge-status { width: 20px; height: 20px; font-size: 0.6rem; }
