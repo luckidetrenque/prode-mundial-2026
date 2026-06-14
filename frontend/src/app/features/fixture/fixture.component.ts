@@ -1,6 +1,7 @@
 // fixture.component.ts — VERSIÓN MEJORADA
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { PartidoService } from '../../core/services/partido.service';
 import { Partido } from '../../shared/models/partido.model';
 import { ShortCountryPipe } from '../../shared/pipes/short-country.pipe';
@@ -10,7 +11,7 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
 @Component({
   selector: 'app-fixture',
   standalone: true,
-  imports: [CommonModule, DatePipe, ShortCountryPipe],
+  imports: [CommonModule, DatePipe, ShortCountryPipe, RouterLink, RouterLinkActive],
   template: `
     <main class="main">
       <h2><i class="fas fa-calendar-days"></i> Fixture de la Copa del Mundo 2026</h2>
@@ -19,6 +20,16 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
         <i class="fas fa-circle-info" style="color:var(--clr-primary-light);font-size:0.8rem"></i>
         Calendario completo de los <strong>72 partidos</strong> de la fase de grupos.
       </p>
+
+      <!-- Toggle de vistas -->
+      <div class="vista-toggle">
+        <a routerLink="/fixture" class="pill-btn">
+          <i class="fas fa-bolt"></i> Partidos de hoy
+        </a>
+        <a routerLink="/fixture/completo" routerLinkActive="pill-btn--activo" [routerLinkActiveOptions]="{exact:true}" class="pill-btn">
+          <i class="fas fa-list"></i> Fixture completo
+        </a>
+      </div>
 
       <!-- Filtro de fases (Oculto temporalmente)
       <div class="fase-tabs">
@@ -185,6 +196,49 @@ type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFIN
   styles: [`
     /* ── Subtítulo ───────────────────────────────────────────────────────── */
     /* .subtitulo movido a global styles.css */
+
+    /* ── Toggle de vistas ────────────────────────────────────────────────── */
+    .vista-toggle {
+      display: flex;
+      gap: 0.5em;
+      margin-bottom: 1.5em;
+    }
+
+    .pill-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4em;
+      padding: 0.45em 1.1em;
+      border: 1px solid var(--clr-border-strong);
+      border-radius: 20px;
+      background: var(--clr-surface);
+      color: var(--clr-text-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: var(--transition);
+      font-family: var(--font-body);
+    }
+
+    .pill-btn:hover {
+      border-color: var(--wc-mexico);
+      color: var(--wc-mexico);
+      background: rgba(60,172,59,0.05);
+    }
+
+    .pill-btn--activo {
+      border-color: var(--wc-usa);
+      background: linear-gradient(135deg, var(--wc-usa), #3a4bb0);
+      color: white;
+      box-shadow: 0 4px 12px rgba(42,57,141,0.3);
+    }
+
+    .pill-btn--activo:hover {
+      border-color: var(--wc-usa);
+      color: white;
+      background: linear-gradient(135deg, var(--wc-usa), #3a4bb0);
+    }
 
     /* ── Tabs de fase ────────────────────────────────────────────────────── */
     .fase-tabs {

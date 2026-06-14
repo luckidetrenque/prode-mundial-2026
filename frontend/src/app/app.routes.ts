@@ -15,7 +15,7 @@ export const routes: Routes = [
   {
     path: 'fixture',
     loadComponent: () =>
-      import('./features/fixture/fixture.component').then(m => m.FixtureComponent)
+      import('./features/fixture/hoy.component').then(m => m.HoyComponent)
   },
   {
     path: 'planilla',
@@ -55,6 +55,12 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/reglamento/reglamento.component')
         .then(m => m.ReglamentoComponent)
+  },
+
+  {
+    path: 'fixture/completo',
+    loadComponent: () =>
+      import('./features/fixture/fixture.component').then(m => m.FixtureComponent)
   },
 
   {
