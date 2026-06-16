@@ -560,12 +560,27 @@
         text-transform: uppercase;
     }
 
+    .col-opcional {
+        display: none !important;
+    }
+
+    /* Ajuste extra por si el texto del país queda muy grande en celulares */
+    .equipo-txt {
+        font-size: 0.9rem;
+    }
+
+    .tabla-grupo th,
+    .tabla-grupo td {
+        padding: 0.6rem 0.4rem;
+        /* Un padding un poco más compacto en móvil */
+    }
+
     .th-date {
         width: 60px;
     }
 
     .equipo-txt {
-        display: none;
+        font-size: 0.7rem;
     }
 
     .th-sede {

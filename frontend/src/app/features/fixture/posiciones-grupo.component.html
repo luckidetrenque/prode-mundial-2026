@@ -42,11 +42,11 @@
                         <th class="text-left">Equipo</th>
                         <th class="th-center">PTS</th>
                         <th class="th-center">PJ</th>
-                        <th class="th-center">PG</th>
-                        <th class="th-center">PE</th>
-                        <th class="th-center">PP</th>
-                        <th class="th-center">GF</th>
-                        <th class="th-center">GC</th>
+                        <th class="th-center col-opcional">PG</th>
+                        <th class="th-center col-opcional">PE</th>
+                        <th class="th-center col-opcional">PP</th>
+                        <th class="th-center col-opcional">GF</th>
+                        <th class="th-center col-opcional">GC</th>
                         <th class="th-center">DG</th>
                     </tr>
                 </thead>
@@ -63,11 +63,11 @@
                         </td>
                         <td class="th-center font-bold text-emerald-400">{{ fila.puntos }}</td>
                         <td class="th-center">{{ fila.partidosJugados }}</td>
-                        <td class="th-center">{{ fila.partidosGanados }}</td>
-                        <td class="th-center">{{ fila.partidosEmpatados }}</td>
-                        <td class="th-center">{{ fila.partidosPerdidos }}</td>
-                        <td class="th-center">{{ fila.golesFavor }}</td>
-                        <td class="th-center">{{ fila.golesContra }}</td>
+                        <td class="th-center col-opcional">{{ fila.partidosGanados }}</td>
+                        <td class="th-center col-opcional">{{ fila.partidosEmpatados }}</td>
+                        <td class="th-center col-opcional">{{ fila.partidosPerdidos }}</td>
+                        <td class="th-center col-opcional">{{ fila.golesFavor }}</td>
+                        <td class="th-center col-opcional">{{ fila.golesContra }}</td>
                         <td class="th-center">{{ fila.diferenciaGoles }}</td>
                     </tr>
                     }
