@@ -1,636 +1,55 @@
 // fixture.component.ts — VERSIÓN MEJORADA
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { PartidoService } from '../../core/services/partido.service';
 import { ResultadoService } from '../../core/services/resultado.service';
 import { Partido } from '../../shared/models/partido.model';
 import { ShortCountryPipe } from '../../shared/pipes/short-country.pipe';
 
+export interface EquipoPosicion {
+  nombre: string;
+  bandera: string;
+  grupo: string;
+  puntos: number;
+  pj: number;
+  pg: number;
+  pe: number;
+  pp: number;
+  gf: number;
+  gc: number;
+  dif: number;
+}
 type VistaFiltro = 'GRUPOS' | 'DIECISEISAVOS' | 'OCTAVOS' | 'CUARTOS' | 'SEMIFINAL' | 'FINAL';
 
 @Component({
   selector: 'app-fixture',
   standalone: true,
-  imports: [CommonModule, DatePipe, ShortCountryPipe, RouterLink, RouterLinkActive],
-  template: `
-    <main class="main">
-      <h2><i class="fas fa-calendar-days"></i> Fixture de la Copa del Mundo 2026</h2>
-
-      <p class="subtitulo">
-        <i class="fas fa-circle-info" style="color:var(--clr-primary-light);font-size:0.8rem"></i>
-        Calendario completo de los <strong>72 partidos</strong> de la fase de grupos.
-      </p>
-
-      <!-- Toggle de vistas -->
-      <div class="vista-toggle">
-        <a routerLink="/fixture" class="pill-btn">
-          <i class="fas fa-bolt"></i> Partidos de hoy
-        </a>
-        <a routerLink="/fixture/completo" routerLinkActive="pill-btn--activo" [routerLinkActiveOptions]="{exact:true}" class="pill-btn">
-          <i class="fas fa-list"></i> Fixture completo
-        </a>
-      </div>
-
-      <!-- Filtro de fases (Oculto temporalmente)
-      <div class="fase-tabs">
-        @for (fase of fases; track fase.valor) {
-          <button
-            class="fase-tab"
-            [class.activo]="filtroActual() === fase.valor"
-            (click)="filtroActual.set(fase.valor)"
-          >
-            <i [class]="fase.icono" style="font-size:0.75rem"></i>
-            {{ fase.label }}
-            @if (filtroActual() === fase.valor && !cargando()) {
-              <span class="fase-count">{{ cantidadFiltrada() }}</span>
-            }
-          </button>
-        }
-      </div>
-      -->
-
-      @if (cargando()) {
-        <div class="spinner-container"><div class="spinner"></div></div>
-      }
-
-      <!-- Vista grupos -->
-      @if (!cargando() && filtroActual() === 'GRUPOS') {
-
-        <!-- Sub-filtro de grupo (Oculto temporalmente)
-        <div class="filtro-grupos">
-          <button class="btn-grupo" [class.activo]="grupoActivo() === null" (click)="grupoActivo.set(null)">
-            Todos
-          </button>
-          @for (g of grupos; track g) {
-            <button class="btn-grupo" [class.activo]="grupoActivo() === g" (click)="grupoActivo.set(g)">
-              {{ g }}
-            </button>
-          }
-        </div>
-        -->
-
-        <div class="groups-grid">
-          @for (grupo of gruposMostrados(); track grupo) {
-            <div class="group-table-wrap">
-              <div class="group-caption">
-                <div class="caption-header-row">
-                  <div class="caption-left">
-                    <span class="group-label">GRUPO</span>
-                    <span class="group-letter">{{ grupo }}</span>
-                  </div>
-                </div>
-                <div class="group-teams-mobile">
-                  @for (eq of getEquiposDelGrupo(grupo); track eq.nombre) {
-                    <div class="mobile-team-item">
-                      <img [src]="eq.bandera" [alt]="eq.nombre" class="flag-mini" />
-                      <span class="team-name-mini">{{ eq.nombre | shortCountry }}</span>
-                    </div>
-                  }
-                </div>
-              </div>
-              <table class="tabla-grupo">
-                <thead>
-                  <tr>
-                    <th class="th-num">#</th>
-                    <th>Local</th>
-                    <th class="th-center"></th>
-                    <th>Visitante</th>
-                    <th class="th-date">Fecha</th>
-                    <th class="th-sede">Sede</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (partido of getPartidosPorGrupo(grupo); track partido.id) {
-                    <tr [class.partido-jugado]="esJugado(partido)" [class.partido-hoy]="esHoy(partido)">
-                      <td class="th-num col-muted">
-                        <div style="position:relative; display:flex; align-items:center; justify-content:center;">
-                          <span>{{ partido.numero }}</span>
-                          @if (partido.multiplicador > 1) {
-                            <span class="multi-badge-fixture" title="Partido vale doble puntaje"
-                                  style="position:absolute; top:50%; transform:translateY(-50%); right:-18px;">
-                              <i class="fas fa-bolt" style="font-size:0.55rem"></i>x2
-                            </span>
-                          }
-                        </div>
-                      </td>
-                      <td class="td-equipo">
-                        <div class="equipo-vertical">
-                          <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" [title]="partido.equipoLocalShow" class="flag" width="24" height="16" />
-                          <span class="equipo-txt">{{ partido.equipoLocalShow | shortCountry }}</span>
-                        </div>
-                      </td>
-                      <td class="th-center">
-                        <div style="display:flex; justify-content:center; align-items:center; width:100%">
-                          @if (esJugado(partido)) {
-                            <div style="display:flex; flex-direction:column; align-items:center; gap:2px">
-                              <span class="badge-final">Final</span>
-                              @if (getGolesLocal(partido.id) !== null) {
-                                <span style="font-size:0.75rem; font-weight:800; color:var(--wc-neutral-dark)">
-                                  {{ getGolesLocal(partido.id) }} - {{ getGolesVisitante(partido.id) }}
-                                </span>
-                              }
-                            </div>
-                          } @else if (esJugando(partido)) {
-                            <span class="badge-playing">Jugando</span>
-                          } @else if (esHoy(partido)) {
-                            <span class="badge-hoy">Hoy</span>
-                          } @else {
-                            <span class="badge-vs">VS</span>
-                          }
-                        </div>
-                      </td>
-                      <td class="td-equipo">
-                        <div class="equipo-vertical">
-                          <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow" [title]="partido.equipoVisitanteShow" class="flag" width="24" height="16" />
-                          <span class="equipo-txt">{{ partido.equipoVisitanteShow | shortCountry }}</span>
-                        </div>
-                      </td>
-                      <td class="th-date col-muted">
-                        <div class="date-vertical">
-                          <span>{{ partido.fechaHora | date:'dd/MM' }}</span>
-                          <span class="time-txt">{{ partido.fechaHora | date:'HH:mm' }}</span>
-                        </div>
-                      </td>
-                      <td class="th-sede col-muted">{{ formatEstadio(partido.sede) }}</td>
-                    </tr>
-                  }
-                </tbody>
-              </table>
-            </div>
-          }
-        </div>
-      }
-
-      <!-- Vista eliminatorias -->
-      @if (!cargando() && filtroActual() !== 'GRUPOS') {
-        <div class="elim-wrap">
-          @for (partido of partidosFiltrados(); track partido.id) {
-            <div class="elim-card">
-              <span class="elim-num">#{{ partido.numero }}</span>
-
-              <div class="elim-equipo elim-equipo--local">
-                @if (partido.equipoLocalShow) {
-                  <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" class="flag flag-elim" width="32" height="21" />
-                  <span class="elim-nomb">{{ partido.equipoLocalShow | shortCountry }}</span>
-                } @else {
-                  <span class="por-definir">Por definir</span>
-                }
-              </div>
-
-              <div class="elim-vs">VS</div>
-
-              <div class="elim-equipo elim-equipo--visit">
-                @if (partido.equipoVisitanteShow) {
-                  <span class="elim-nomb">{{ partido.equipoVisitanteShow | shortCountry }}</span>
-                  <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow" class="flag flag-elim" width="32" height="21" />
-                } @else {
-                  <span class="por-definir">Por definir</span>
-                }
-              </div>
-
-              <div class="elim-meta">
-                <span class="elim-fecha">{{ partido.fechaHora | date:'dd/MM/yyyy' }}</span>
-                <span class="elim-hora">{{ partido.fechaHora | date:'HH:mm' }} hs</span>
-                <span class="elim-sede">{{ formatEstadio(partido.sede) }}</span>
-              </div>
-            </div>
-          }
-        </div>
-      }
-
-    </main>
-  `,
-  styles: [`
-    /* ── Subtítulo ───────────────────────────────────────────────────────── */
-    /* .subtitulo movido a global styles.css */
-
-    /* ── Toggle de vistas ────────────────────────────────────────────────── */
-    .vista-toggle {
-      display: flex;
-      gap: 0.5em;
-      margin-bottom: 1.5em;
-    }
-
-    .pill-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4em;
-      padding: 0.45em 1.1em;
-      border: 1px solid var(--clr-border-strong);
-      border-radius: 20px;
-      background: var(--clr-surface);
-      color: var(--clr-text-muted);
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      transition: var(--transition);
-      font-family: var(--font-body);
-    }
-
-    .pill-btn:hover {
-      border-color: var(--wc-mexico);
-      color: var(--wc-mexico);
-      background: rgba(60,172,59,0.05);
-    }
-
-    .pill-btn--activo {
-      border-color: var(--wc-usa);
-      background: linear-gradient(135deg, var(--wc-usa), #3a4bb0);
-      color: white;
-      box-shadow: 0 4px 12px rgba(42,57,141,0.3);
-    }
-
-    .pill-btn--activo:hover {
-      border-color: var(--wc-usa);
-      color: white;
-      background: linear-gradient(135deg, var(--wc-usa), #3a4bb0);
-    }
-
-    /* ── Tabs de fase ────────────────────────────────────────────────────── */
-    .fase-tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4em;
-      margin-bottom: 1.25em;
-      padding-bottom: 1em;
-      border-bottom: 1px solid var(--clr-border);
-    }
-
-    .fase-tab {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4em;
-      padding: 0.5em 1.2em;
-      border: 1px solid var(--clr-border-strong);
-      border-radius: 20px;
-      background: var(--clr-surface);
-      color: var(--clr-text-muted);
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: var(--transition);
-      font-family: var(--font-body);
-    }
-
-    .fase-tab:hover { border-color: var(--wc-mexico); color: var(--wc-mexico); background: rgba(60, 172, 59, 0.05); }
-    .fase-tab.activo { 
-      border-color: var(--wc-usa); 
-      background: linear-gradient(135deg, var(--wc-usa), #3a4bb0); 
-      color: white; 
-      box-shadow: 0 4px 12px rgba(42, 57, 141, 0.3);
-    }
-
-    .fase-count {
-      background: rgba(255,255,255,0.2);
-      border-radius: 10px;
-      padding: 0 6px;
-      font-size: 0.7rem;
-    }
-
-    .fase-tab:not(.activo) .fase-count {
-      background: var(--clr-surface-alt);
-      color: var(--clr-text-muted);
-    }
-
-    /* ── Sub-filtro grupos ───────────────────────────────────────────────── */
-    .filtro-grupos {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.3em;
-      margin-bottom: 1.25em;
-    }
-
-    /* .btn-grupo movido a global styles.css */
-
-    /* ── Groups grid ─────────────────────────────────────────────────────── */
-    .groups-grid { gap: 1.25em; }
-
-    .group-table-wrap {
-      border: 1px solid var(--clr-border-strong);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
-      background: var(--clr-surface);
-    }
-
-    .group-caption {
-      display: flex;
-      flex-direction: column;       /* ← igual que planilla */
-      gap: 0.4em;
-      padding: 0.6em 1em;
-      background: linear-gradient(to right, var(--wc-usa), #3a4bb0);
-    }
-
-    .caption-header-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-    }
-
-    .caption-left {
-      display: flex;
-      align-items: center;
-      gap: 0.4em;
-    }
-
-    .group-letter {
-      font-family: var(--font-display);
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: white;
-    }
-
-    .group-label {
-      font-family: var(--font-display);
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 2px;
-      color: rgba(255,255,255,0.7);
-    }
-
-    .group-teams-mobile { display: none; }
-
-    .tabla-grupo { margin: 0; table-layout: fixed; width: 100%; }
-    .tabla-grupo thead th { 
-      background: #f8fafb; 
-      border-bottom: 1px solid var(--clr-border-strong);
-      padding: var(--spacing-xs) var(--spacing-sm);
-      font-size: 0.65rem;
-    }
-
-    .tabla-grupo tbody td {
-      padding: var(--spacing-sm);
-      font-size: 0.78rem;
-    }
-
-    /* Columnas optimizadas */
-    .th-num   { width: 54px; text-align: center; }
-    .th-center { 
-      text-align: center; 
-      width: 58px; 
-      padding-left: 0;
-      padding-right: 0;
-    }
-
-    .th-center .badge-final,
-    .th-center .badge-playing,
-    .th-center .badge-hoy,
-    .th-center .badge-vs {
-      display: inline-block;
-      margin: 0 auto;
-    }
-    .th-date  { width: 45px; text-align: center; }
-    .th-sede  { width: 85px; line-height: 1.1; white-space: normal !important; }
-    .col-muted { color: var(--clr-text-muted); }
-
-    .date-vertical {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      line-height: 1.1;
-      font-size: 0.7rem;
-      font-weight: 600;
-    }
-
-    .time-txt {
-      font-size: 0.65rem;
-      font-weight: 400;
-      opacity: 0.8;
-    }
-
-    .equipo-vertical {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-    }
-
-    .equipo-txt {
-      font-size: 0.65rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1px;
-      color: var(--wc-neutral-dark);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 65px;
-      line-height: 1;
-      margin-top: 2px;
-    }
-
-    /* Badges */
-    .badge-final {
-      display: inline-block;
-      background: #e8f5e9;
-      color: var(--wc-mexico);
-      font-size: 0.62rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      padding: 0.2em 0.6em;
-      border-radius: 8px;
-    }
-
-    .badge-playing {
-      display: inline-block;
-      background: #e3f2fd;
-      color: #1976d2;
-      font-size: 0.58rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      padding: 0.2em 0.6em;
-      border-radius: 8px;
-      animation: pulse-playing 1.5s infinite;
-    }
-
-    @keyframes pulse-playing {
-      0% { box-shadow: 0 0 0 0 rgba(25, 118, 210, 0.4); }
-      70% { box-shadow: 0 0 0 4px rgba(25, 118, 210, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(25, 118, 210, 0); }
-    }
-
-    .badge-vs {
-      display: inline-block;
-      font-size: 0.65rem;
-      font-weight: 700;
-      color: var(--clr-text-muted);
-      letter-spacing: 1px;
-    }
-
-    .partido-jugado td { opacity: 0.6; }
-
-    /* ── Partido de HOY ─────────────────────────────────────────────────── */
-    .partido-hoy {
-      background: linear-gradient(90deg, rgba(46,158,45,0.08) 0%, transparent 100%);
-      border-left: 3px solid var(--clr-primary);
-      box-shadow: inset 0 0 0 1px rgba(46,158,45,0.15);
-    }
-
-    .partido-hoy td { color: var(--wc-neutral-dark); }
-    .partido-hoy .equipo-txt { color: var(--clr-primary-dark); font-weight: 800; }
-    .partido-hoy .date-vertical { color: var(--clr-primary-dark); font-weight: 800; }
-
-    .badge-hoy {
-      display: inline-block;
-      background: var(--clr-primary);
-      color: white;
-      font-size: 0.58rem;
-      font-weight: 800;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      padding: 0.25em 0.55em;
-      border-radius: 8px;
-      box-shadow: 0 0 0 0 rgba(46,158,45,0.6);
-      animation: pulse-hoy 1.8s ease-in-out infinite;
-    }
-
-    @keyframes pulse-hoy {
-      0%   { box-shadow: 0 0 0 0 rgba(46,158,45,0.55); }
-      60%  { box-shadow: 0 0 0 6px rgba(46,158,45,0); }
-      100% { box-shadow: 0 0 0 0 rgba(46,158,45,0); }
-    }
-
-    /* ── Eliminatorias ───────────────────────────────────────────────────── */
-    .elim-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 0.8em;
-    }
-
-    .elim-card {
-      display: grid;
-      grid-template-columns: 28px 1fr 44px 1fr auto;
-      align-items: center;
-      gap: 1em;
-      padding: 1em 1.25em;
-      background: var(--clr-surface);
-      border: 1px solid var(--clr-border);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-sm);
-      transition: var(--transition);
-    }
-
-    .elim-card:hover { 
-      border-color: var(--wc-usa); 
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08); 
-      transform: scale(1.01);
-    }
-
-    .elim-num { font-size: 0.7rem; font-weight: 700; color: var(--clr-text-muted); text-align: center; }
-
-    .elim-equipo {
-      display: flex;
-      align-items: center;
-      gap: 0.6em;
-    }
-
-    .elim-equipo--local  { justify-content: flex-end; }
-    .elim-equipo--visit  { justify-content: flex-start; }
-
-    .elim-nomb {
-      font-size: 0.85rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      color: var(--wc-neutral-dark);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 140px;
-    }
-
-    .flag-elim { 
-      border-radius: 4px; 
-      box-shadow: 0 2px 5px rgba(0,0,0,0.15); 
-      flex-shrink: 0; 
-      border: 1px solid rgba(0,0,0,0.05);
-    }
-
-    .elim-vs {
-      text-align: center;
-      font-family: var(--font-display);
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--wc-canada);
-      letter-spacing: 1px;
-    }
-
-    .elim-meta {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 0.15em;
-    }
-
-    .elim-fecha { font-size: 0.78rem; font-weight: 700; color: var(--wc-neutral-dark); }
-    .elim-hora  { font-size: 0.7rem; color: var(--clr-text-muted); font-weight: 500; }
-    .elim-sede  { font-size: 0.68rem; color: var(--clr-text-muted); max-width: 120px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.8; }
-
-    .por-definir { font-size: 0.78rem; color: var(--clr-text-muted); font-style: italic; font-weight: 500; }
-
-    /* Badge x2 */
-    .multi-badge-fixture {
-      display: inline-flex;
-      align-items: center;
-      gap: 1px;
-      background: #ffc107;
-      color: #856404;
-      font-size: 0.55rem;
-      font-weight: 800;
-      padding: 1px 3px;
-      border-radius: 4px;
-      text-transform: uppercase;
-      box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
-    }
-
-    /* ── Responsive ──────────────────────────────────────────────────────── */
-    @media (max-width: 640px) {
-      .group-teams-mobile { 
-        display: flex; 
-        flex-wrap: wrap; 
-        gap: 0.8em; 
-        width: 100%;
-        padding-top: 0.4em;
-        border-top: 1px solid rgba(255,255,255,0.1);
-      }
-      .mobile-team-item { display: flex; align-items: center; gap: 0.3em; }
-      .flag-mini { width: 18px; height: 12px; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
-      .team-name-mini { color: white; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; }
-
-      .th-date    { width: 60px; } 
-      .equipo-txt { display: none; }
-      .th-sede    { display: none; }
-      .elim-card  { grid-template-columns: 24px 1fr 36px 1fr; }
-      .elim-meta  { display: none; }
-      .elim-nomb  { font-size: 0.75rem; }
-      .subtitulo  { font-size: 0.78rem; }
-    }
-
-  `]
+  imports: [CommonModule, DatePipe, ShortCountryPipe, RouterLink],
+  templateUrl: './fixture.component.html',
+  styleUrls: ['./fixture.component.css']
 })
 export class FixtureComponent implements OnInit {
 
-  cargando     = signal(true);
+  cargando = signal(true);
+  tabActual = signal<'PARTIDOS' | 'POSICIONES'>('PARTIDOS');
   filtroActual = signal<VistaFiltro>('GRUPOS');
-  grupoActivo  = signal<string | null>(null);
+  grupoActivo = signal<string | null>(null);
 
   private todosLosPartidos: Partido[] = [];
+  private resultadosSignal = signal<any[]>([]);
   private golesSignal = signal<Record<number, { local: number | null, visitante: number | null }>>({});
 
-  grupos = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+  grupos = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
 
   fases = [
-    { valor: 'GRUPOS'        as VistaFiltro, label: 'Grupos',      icono: 'fas fa-layer-group' },
-    { valor: 'DIECISEISAVOS' as VistaFiltro, label: '16avos',      icono: 'fas fa-futbol' },
-    { valor: 'OCTAVOS'       as VistaFiltro, label: 'Octavos',     icono: 'fas fa-futbol' },
-    { valor: 'CUARTOS'       as VistaFiltro, label: 'Cuartos',     icono: 'fas fa-futbol' },
-    { valor: 'SEMIFINAL'     as VistaFiltro, label: 'Semis',       icono: 'fas fa-futbol' },
-    { valor: 'FINAL'         as VistaFiltro, label: 'Final',       icono: 'fas fa-star' },
+    { valor: 'GRUPOS' as VistaFiltro, label: 'Grupos', icono: 'fas fa-layer-group' },
+    { valor: 'DIECISEISAVOS' as VistaFiltro, label: '16avos', icono: 'fas fa-futbol' },
+    { valor: 'OCTAVOS' as VistaFiltro, label: 'Octavos', icono: 'fas fa-futbol' },
+    { valor: 'CUARTOS' as VistaFiltro, label: 'Cuartos', icono: 'fas fa-futbol' },
+    { valor: 'SEMIFINAL' as VistaFiltro, label: 'Semis', icono: 'fas fa-futbol' },
+    { valor: 'FINAL' as VistaFiltro, label: 'Final', icono: 'fas fa-star' },
   ];
 
   partidosFiltrados = computed(() =>
@@ -639,7 +58,101 @@ export class FixtureComponent implements OnInit {
 
   cantidadFiltrada = computed(() => this.partidosFiltrados().length);
 
-  constructor(private partidoService: PartidoService, private resultadoService: ResultadoService) {}
+  constructor(private partidoService: PartidoService, private resultadoService: ResultadoService) { }
+
+  gruposStandings = computed(() => {
+    const partidos = this.todosLosPartidos;
+    const resultados = this.resultadosSignal();
+
+    const standMap = new Map<string, EquipoPosicion>();
+
+    // Inicializar
+    partidos.forEach(p => {
+      if (p.equipoLocalShow && !standMap.has(p.equipoLocalShow)) {
+        standMap.set(p.equipoLocalShow, {
+          nombre: p.equipoLocalShow as string, bandera: p.equipoLocalBandera || '', grupo: p.grupo || '',
+          puntos: 0, pj: 0, pg: 0, pe: 0, pp: 0, gf: 0, gc: 0, dif: 0
+        });
+      }
+      if (p.equipoVisitanteShow && !standMap.has(p.equipoVisitanteShow)) {
+        standMap.set(p.equipoVisitanteShow, {
+          nombre: p.equipoVisitanteShow as string, bandera: p.equipoVisitanteBandera || '', grupo: p.grupo || '',
+          puntos: 0, pj: 0, pg: 0, pe: 0, pp: 0, gf: 0, gc: 0, dif: 0
+        });
+      }
+    });
+
+    // Procesar
+    resultados.forEach(r => {
+      const p = partidos.find(x => x.id === r.partido.id);
+      if (!p || !p.equipoLocalShow || !p.equipoVisitanteShow) return;
+
+      const local = standMap.get(p.equipoLocalShow)!;
+      const visit = standMap.get(p.equipoVisitanteShow)!;
+
+      local.pj++; visit.pj++;
+      const gl = r.golesLocal ?? 0;
+      const gv = r.golesVisitante ?? 0;
+      local.gf += gl; local.gc += gv;
+      visit.gf += gv; visit.gc += gl;
+
+      if (r.resultado === 'LOCAL') {
+        local.puntos += 3; local.pg++; visit.pp++;
+      } else if (r.resultado === 'EMPATE') {
+        local.puntos += 1; local.pe++;
+        visit.puntos += 1; visit.pe++;
+      } else if (r.resultado === 'VISITANTE') {
+        visit.puntos += 3; visit.pg++; local.pp++;
+      }
+    });
+
+    Array.from(standMap.values()).forEach(t => t.dif = t.gf - t.gc);
+
+    const byGroup: Record<string, EquipoPosicion[]> = {};
+    Array.from(standMap.values()).forEach(t => {
+      if (!byGroup[t.grupo]) byGroup[t.grupo] = [];
+      byGroup[t.grupo].push(t);
+    });
+
+    // Ordenar (Pts > Dif > GF > H2H)
+    Object.keys(byGroup).forEach(grupo => {
+      byGroup[grupo].sort((a, b) => {
+        if (a.puntos !== b.puntos) return b.puntos - a.puntos;
+        if (a.dif !== b.dif) return b.dif - a.dif;
+        if (a.gf !== b.gf) return b.gf - a.gf;
+
+        // H2H
+        const tiedMatches = resultados.filter(r => {
+          const p = partidos.find(x => x.id === r.partido.id);
+          return p && ((p.equipoLocalShow === a.nombre && p.equipoVisitanteShow === b.nombre) ||
+            (p.equipoLocalShow === b.nombre && p.equipoVisitanteShow === a.nombre));
+        });
+
+        if (tiedMatches.length > 0) {
+          const tm = tiedMatches[0];
+          const matchP = partidos.find(x => x.id === tm.partido.id)!;
+          if (tm.resultado === 'LOCAL') return matchP.equipoLocalShow === a.nombre ? -1 : 1;
+          if (tm.resultado === 'VISITANTE') return matchP.equipoVisitanteShow === a.nombre ? -1 : 1;
+        }
+        return 0;
+      });
+    });
+
+    return byGroup;
+  });
+
+  mejoresTerceros = computed(() => {
+    const stands = this.gruposStandings();
+    const terceros: EquipoPosicion[] = [];
+    Object.keys(stands).forEach(grupo => {
+      if (stands[grupo].length >= 3) terceros.push(stands[grupo][2]);
+    });
+    return terceros.sort((a, b) => {
+      if (a.puntos !== b.puntos) return b.puntos - a.puntos;
+      if (a.dif !== b.dif) return b.dif - a.dif;
+      return b.gf - a.gf;
+    });
+  });
 
   ngOnInit(): void {
     forkJoin({
@@ -648,12 +161,13 @@ export class FixtureComponent implements OnInit {
     }).subscribe({
       next: ({ partidos, resultados }) => {
         this.todosLosPartidos = partidos;
-        
+
         const goles: Record<number, { local: number | null, visitante: number | null }> = {};
         resultados.forEach(r => {
           goles[r.partido.id] = { local: r.golesLocal ?? null, visitante: r.golesVisitante ?? null };
         });
         this.golesSignal.set(goles);
+        this.resultadosSignal.set(resultados);
 
         this.cargando.set(false);
       },
@@ -707,8 +221,8 @@ export class FixtureComponent implements OnInit {
     const hoy = new Date();
     return (
       fechaPartido.getFullYear() === hoy.getFullYear() &&
-      fechaPartido.getMonth()    === hoy.getMonth()    &&
-      fechaPartido.getDate()     === hoy.getDate()
+      fechaPartido.getMonth() === hoy.getMonth() &&
+      fechaPartido.getDate() === hoy.getDate()
     );
   }
 

@@ -14,4 +14,4 @@ export interface Partido {
   fechaHora: string;        // ISO 8601: "2026-06-11T16:00:00"
   sede: string;
   multiplicador: number;
-}
+}

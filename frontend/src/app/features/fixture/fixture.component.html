@@ -1,0 +1,266 @@
+<main class="main">
+    <h2><i class="fas fa-calendar-days"></i> Fixture de la Copa del Mundo 2026</h2>
+
+    <p class="subtitulo">
+        <i class="fas fa-circle-info" style="color:var(--clr-primary-light);font-size:0.8rem"></i>
+        Calendario completo de los <strong>72 partidos</strong> de la fase de grupos.
+    </p>
+
+    <!-- Toggle de vistas -->
+    <div class="vista-toggle">
+        <a routerLink="/fixture" class="pill-btn">
+            <i class="fas fa-bolt"></i> Partidos de hoy
+        </a>
+        <a routerLink="/fixture/completo" class="pill-btn pill-btn--activo">
+            <i class="fas fa-list"></i> Fixture completo
+        </a>
+        <a routerLink="/fixture/posiciones" class="pill-btn">
+            <i class="fas fa-table-list"></i> Posiciones Grupos
+        </a>
+
+    </div>
+
+    <!-- Filtro de fases (Oculto temporalmente)
+      <div class="fase-tabs">
+        @for (fase of fases; track fase.valor) {
+          <button
+            class="fase-tab"
+            [class.activo]="filtroActual() === fase.valor"
+            (click)="filtroActual.set(fase.valor)"
+          >
+            <i [class]="fase.icono" style="font-size:0.75rem"></i>
+            {{ fase.label }}
+            @if (filtroActual() === fase.valor && !cargando()) {
+              <span class="fase-count">{{ cantidadFiltrada() }}</span>
+            }
+          </button>
+        }
+      </div>
+      -->
+
+    <!-- TABS -->
+
+
+    @if (cargando()) {
+    <div class="spinner-container">
+        <div class="spinner"></div>
+    </div>
+    }
+
+    <!-- Vista grupos Partidos -->
+    @if (!cargando() && filtroActual() === 'GRUPOS' && tabActual() === 'PARTIDOS') {
+
+    <div class="groups-grid">
+        @for (grupo of gruposMostrados(); track grupo) {
+        <div class="group-table-wrap">
+            <div class="group-caption">
+                <div class="caption-header-row">
+                    <div class="caption-left">
+                        <span class="group-label">GRUPO</span>
+                        <span class="group-letter">{{ grupo }}</span>
+                    </div>
+                </div>
+                <div class="group-teams-mobile">
+                    @for (eq of getEquiposDelGrupo(grupo); track eq.nombre) {
+                    <div class="mobile-team-item">
+                        <img [src]="eq.bandera" [alt]="eq.nombre" class="flag-mini" />
+                        <span class="team-name-mini">{{ eq.nombre | shortCountry }}</span>
+                    </div>
+                    }
+                </div>
+            </div>
+            <table class="tabla-grupo">
+                <thead>
+                    <tr>
+                        <th class="th-num">#</th>
+                        <th>Local</th>
+                        <th class="th-center"></th>
+                        <th>Visitante</th>
+                        <th class="th-date">Fecha</th>
+                        <th class="th-sede">Sede</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (partido of getPartidosPorGrupo(grupo); track partido.id) {
+                    <tr [class.partido-jugado]="esJugado(partido)" [class.partido-hoy]="esHoy(partido)">
+                        <td class="th-num col-muted">
+                            <div style="position:relative; display:flex; align-items:center; justify-content:center;">
+                                <span>{{ partido.numero }}</span>
+                                @if (partido.multiplicador > 1) {
+                                <span class="multi-badge-fixture" title="Partido vale doble puntaje"
+                                    style="position:absolute; top:50%; transform:translateY(-50%); right:-18px;">
+                                    <i class="fas fa-bolt" style="font-size:0.55rem"></i>x2
+                                </span>
+                                }
+                            </div>
+                        </td>
+                        <td class="td-equipo">
+                            <div class="equipo-vertical">
+                                <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow"
+                                    [title]="partido.equipoLocalShow" class="flag" width="24" height="16" />
+                                <span class="equipo-txt">{{ partido.equipoLocalShow | shortCountry }}</span>
+                            </div>
+                        </td>
+                        <td class="th-center">
+                            <div style="display:flex; justify-content:center; align-items:center; width:100%">
+                                @if (esJugado(partido)) {
+                                <div style="display:flex; flex-direction:column; align-items:center; gap:2px">
+                                    <span class="badge-final">Final</span>
+                                    @if (getGolesLocal(partido.id) !== null) {
+                                    <span style="font-size:0.75rem; font-weight:800; color:var(--wc-neutral-dark)">
+                                        {{ getGolesLocal(partido.id) }} - {{ getGolesVisitante(partido.id) }}
+                                    </span>
+                                    }
+                                </div>
+                                } @else if (esJugando(partido)) {
+                                <span class="badge-playing">Jugando</span>
+                                } @else if (esHoy(partido)) {
+                                <span class="badge-hoy">Hoy</span>
+                                } @else {
+                                <span class="badge-vs">VS</span>
+                                }
+                            </div>
+                        </td>
+                        <td class="td-equipo">
+                            <div class="equipo-vertical">
+                                <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow"
+                                    [title]="partido.equipoVisitanteShow" class="flag" width="24" height="16" />
+                                <span class="equipo-txt">{{ partido.equipoVisitanteShow | shortCountry }}</span>
+                            </div>
+                        </td>
+                        <td class="th-date col-muted">
+                            <div class="date-vertical">
+                                <span>{{ partido.fechaHora | date:'dd/MM' }}</span>
+                                <span class="time-txt">{{ partido.fechaHora | date:'HH:mm' }}</span>
+                            </div>
+                        </td>
+                        <td class="th-sede col-muted">{{ formatEstadio(partido.sede) }}</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        }
+    </div>
+    } @else if (!cargando() && tabActual() === 'POSICIONES') {
+    <div class="grid-posiciones">
+        @for (grupo of gruposMostrados(); track grupo) {
+        <div class="tabla-grupo-card">
+            <div class="tabla-grupo-header">Grupo {{ grupo }}</div>
+            <div class="table-responsive">
+                <table class="tabla-posiciones">
+                    <thead>
+                        <tr>
+                            <th class="col-equipo">Equipo</th>
+                            <th title="Puntos">Pts</th>
+                            <th title="Partidos Jugados">PJ</th>
+                            <th title="Victorias">G</th>
+                            <th title="Empates">E</th>
+                            <th title="Derrotas">P</th>
+                            <th class="desktop-only" title="Goles a Favor">GF</th>
+                            <th class="desktop-only" title="Goles en Contra">GC</th>
+                            <th title="Diferencia de Goles">DIF</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (equipo of gruposStandings()[grupo]; track equipo.nombre; let i = $index) {
+                        <tr [class.clasificado]="i < 2" [class.tercero]="i === 2">
+                            <td class="col-equipo">
+                                <span class="pos-idx">{{ i + 1 }}</span>
+                                <img [src]="equipo.bandera" [alt]="equipo.nombre" width="20" height="13"
+                                    class="flag-min">
+                                <span class="equipo-nombre">{{ equipo.nombre | shortCountry }}</span>
+                            </td>
+                            <td class="pts-val">{{ equipo.puntos }}</td>
+                            <td>{{ equipo.pj }}</td>
+                            <td>{{ equipo.pg }}</td>
+                            <td>{{ equipo.pe }}</td>
+                            <td>{{ equipo.pp }}</td>
+                            <td class="desktop-only">{{ equipo.gf }}</td>
+                            <td class="desktop-only">{{ equipo.gc }}</td>
+                            <td>{{ equipo.dif > 0 ? '+' + equipo.dif : equipo.dif }}</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        }
+    </div>
+
+    <h3 class="terceros-title">Tabla de Mejores Terceros</h3>
+    <p class="terceros-sub">Los 8 mejores equipos que finalicen en tercer lugar clasificarán a Dieciseisavos.</p>
+
+    <div class="tabla-grupo-card tabla-terceros" style="margin-bottom: 2em">
+        <div class="table-responsive">
+            <table class="tabla-posiciones">
+                <thead>
+                    <tr>
+                        <th class="col-equipo">Equipo (Grupo)</th>
+                        <th title="Puntos">Pts</th>
+                        <th title="Partidos Jugados">PJ</th>
+                        <th title="Diferencia de Goles">DIF</th>
+                        <th title="Goles a Favor">GF</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (equipo of mejoresTerceros(); track equipo.nombre; let i = $index) {
+                    <tr [class.clasificado-tercero]="i < 8" [class.eliminado-tercero]="i >= 8">
+                        <td class="col-equipo">
+                            <span class="pos-idx">{{ i + 1 }}</span>
+                            <img [src]="equipo.bandera" [alt]="equipo.nombre" width="20" height="13" class="flag-min">
+                            <span class="equipo-nombre">{{ equipo.nombre | shortCountry }} <strong>({{ equipo.grupo
+                                    }})</strong></span>
+                        </td>
+                        <td class="pts-val">{{ equipo.puntos }}</td>
+                        <td>{{ equipo.pj }}</td>
+                        <td>{{ equipo.dif > 0 ? '+' + equipo.dif : equipo.dif }}</td>
+                        <td>{{ equipo.gf }}</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    }
+
+    <!-- Vista eliminatorias -->
+    @if (!cargando() && filtroActual() !== 'GRUPOS' && tabActual() === 'PARTIDOS') {
+    <div class="elim-wrap">
+        @for (partido of partidosFiltrados(); track partido.id) {
+        <div class="elim-card">
+            <span class="elim-num">#{{ partido.numero }}</span>
+
+            <div class="elim-equipo elim-equipo--local">
+                @if (partido.equipoLocalShow) {
+                <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" class="flag flag-elim"
+                    width="32" height="21" />
+                <span class="elim-nomb">{{ partido.equipoLocalShow | shortCountry }}</span>
+                } @else {
+                <span class="por-definir">Por definir</span>
+                }
+            </div>
+
+            <div class="elim-vs">VS</div>
+
+            <div class="elim-equipo elim-equipo--visit">
+                @if (partido.equipoVisitanteShow) {
+                <span class="elim-nomb">{{ partido.equipoVisitanteShow | shortCountry }}</span>
+                <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow" class="flag flag-elim"
+                    width="32" height="21" />
+                } @else {
+                <span class="por-definir">Por definir</span>
+                }
+            </div>
+
+            <div class="elim-meta">
+                <span class="elim-fecha">{{ partido.fechaHora | date:'dd/MM/yyyy' }}</span>
+                <span class="elim-hora">{{ partido.fechaHora | date:'HH:mm' }} hs</span>
+                <span class="elim-sede">{{ formatEstadio(partido.sede) }}</span>
+            </div>
+        </div>
+        }
+    </div>
+    }
+
+</main>

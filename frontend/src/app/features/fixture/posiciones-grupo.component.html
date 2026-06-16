@@ -1,0 +1,79 @@
+<main class="main">
+    <h2><i class="fas fa-calendar-days"></i>Posiciones por Grupo</h2>
+
+    <p class="subtitulo">
+        <i class="fas fa-circle-info" style="color:var(--clr-primary-light);font-size:0.8rem"></i>
+        Posiciones de los <strong>48 equipos</strong> de la fase de grupos.
+    </p>
+
+    <!-- Toggle de vistas -->
+    <div class="vista-toggle">
+        <a routerLink="/fixture" class="pill-btn">
+            <i class="fas fa-bolt"></i> Partidos de hoy
+        </a>
+        <a routerLink="/fixture/completo" class="pill-btn">
+            <i class="fas fa-list"></i> Fixture completo
+        </a>
+        <a routerLink="/fixture/posiciones" class="pill-btn pill-btn--activo">
+            <i class="fas fa-table-list"></i> Posiciones Grupos
+        </a>
+
+    </div>
+    @if (cargando()) {
+    <div class="spinner-container">
+        <div class="spinner"></div>
+    </div>
+    } @else {
+    <div class="groups-grid-posiciones">
+        @for (grupo of grupos(); track grupo.nombreGrupo) {
+        <div class="group-table-wrap">
+            <div class="group-caption">
+                <div class="caption-left">
+                    <span class="group-label">GRUPO</span>
+                    <span class="group-letter">{{ grupo.nombreGrupo.replace('Grupo ', '') }}</span>
+                </div>
+            </div>
+
+            <table class="tabla-grupo">
+                <thead>
+                    <tr>
+                        <th class="th-num">#</th>
+                        <th class="text-left">Equipo</th>
+                        <th class="th-center">PTS</th>
+                        <th class="th-center">PJ</th>
+                        <th class="th-center">PG</th>
+                        <th class="th-center">PE</th>
+                        <th class="th-center">PP</th>
+                        <th class="th-center">GF</th>
+                        <th class="th-center">GC</th>
+                        <th class="th-center">DG</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (fila of grupo.equipos; track fila.nombreEquipo; let i = $index) {
+                    <tr>
+                        <td class="th-num col-muted">{{ i + 1 }}</td>
+                        <td class="td-equipo">
+                            <div class="equipo-horizontal">
+                                <img [src]="fila.banderaUrl" [alt]="fila.nombreEquipo" class="flag" width="24"
+                                    height="16" />
+                                <span class="equipo-txt">{{ fila.nombreEquipo | shortCountry }}</span>
+                            </div>
+                        </td>
+                        <td class="th-center font-bold text-emerald-400">{{ fila.puntos }}</td>
+                        <td class="th-center">{{ fila.partidosJugados }}</td>
+                        <td class="th-center">{{ fila.partidosGanados }}</td>
+                        <td class="th-center">{{ fila.partidosEmpatados }}</td>
+                        <td class="th-center">{{ fila.partidosPerdidos }}</td>
+                        <td class="th-center">{{ fila.golesFavor }}</td>
+                        <td class="th-center">{{ fila.golesContra }}</td>
+                        <td class="th-center">{{ fila.diferenciaGoles }}</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        }
+    </div>
+    }
+</main>

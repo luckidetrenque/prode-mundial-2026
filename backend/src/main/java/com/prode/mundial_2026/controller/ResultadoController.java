@@ -1,5 +1,6 @@
 package com.prode.mundial_2026.controller;
 
+import com.prode.mundial_2026.dto.GrupoPosicionesDTO;
 import com.prode.mundial_2026.dto.ResultadoDTO;
 import com.prode.mundial_2026.dto.ResultadoRequestDTO;
 import com.prode.mundial_2026.model.Partido;
@@ -17,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import com.prode.mundial_2026.service.ResultadoService;
+import com.prode.mundial_2026.service.TablaPosicionesService;
+
 @RestController
 @RequestMapping("/api/resultados")
 @RequiredArgsConstructor
@@ -25,6 +28,7 @@ public class ResultadoController {
         private final ResultadoRepository resultadoRepository;
         private final PartidoRepository partidoRepository;
         private final ResultadoService resultadoService;
+        private final TablaPosicionesService tablaPosicionesService;
 
         // ── FIX SEG #4 ──────────────────────────────────────────────────────────
         // Devolvemos ResultadoDTO en lugar de la entidad Resultado cruda,
@@ -52,28 +56,11 @@ public class ResultadoController {
                         @PathVariable Long partidoId,
                         @Valid @RequestBody ResultadoRequestDTO request) {
 
-                Partido partido = partidoRepository.findById(partidoId)
-                                .orElseThrow(() -> new RuntimeException("Partido no encontrado: " + partidoId));
+                // Delegamos TODO el trabajo al Service (buscar, guardar, disparar tablas y
+                // mapear)
+                ResultadoDTO dtoGuardado = resultadoService.guardarResultadoOficial(partidoId, request);
 
-                Resultado resultado = resultadoRepository
-                                .findByPartidoId(partidoId)
-                                .orElse(new Resultado());
-
-                resultado.setPartido(partido);
-                resultado.setResultado(
-                                Prediccion.ResultadoPrediccion.valueOf(request.getResultado()));
-                resultado.setGolesLocal(request.getGolesLocal());
-                resultado.setGolesVisitante(request.getGolesVisitante());
-
-                Resultado guardado = resultadoRepository.save(resultado);
-
-                return ResponseEntity.ok(new ResultadoDTO(
-                                new ResultadoDTO.PartidoResumenDTO(
-                                                guardado.getPartido().getId(),
-                                                guardado.getPartido().getNumero()),
-                                guardado.getResultado().name(),
-                                guardado.getGolesLocal(),
-                                guardado.getGolesVisitante()));
+                return ResponseEntity.ok(dtoGuardado);
         }
 
         @DeleteMapping("/grupo/{grupo}")
@@ -101,5 +88,12 @@ public class ResultadoController {
         public ResponseEntity<Void> eliminarResultado(@PathVariable Long partidoId) {
                 resultadoService.eliminar(partidoId);
                 return ResponseEntity.noContent().build();
+        }
+
+        @GetMapping("/posiciones-oficiales")
+        public ResponseEntity<List<GrupoPosicionesDTO>> getPosicionesMundial() {
+                // Retorna el JSON estructurado por grupos ordenados listo para ser consumido en
+                // milisegundos
+                return ResponseEntity.ok(tablaPosicionesService.obtenerTablaAgrupada());
         }
 }

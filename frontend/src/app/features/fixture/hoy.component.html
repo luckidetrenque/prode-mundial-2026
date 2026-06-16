@@ -1,0 +1,111 @@
+<main class="main">
+    <h2><i class="fas fa-calendar-days"></i> Fixture de la Copa del Mundo 2026</h2>
+
+    <p class="subtitulo">
+        <i class="fas fa-circle-info" style="color:var(--clr-primary-light);font-size:0.8rem"></i>
+        Partidos del día de hoy de la <strong>Copa del Mundo 2026</strong>.
+    </p>
+
+    <!-- Toggle de vistas -->
+    <div class="vista-toggle">
+        <span class="pill-btn pill-btn--activo">
+            <i class="fas fa-bolt"></i> Partidos de hoy
+        </span>
+        <a routerLink="/fixture/completo" class="pill-btn">
+            <i class="fas fa-list"></i> Fixture completo
+        </a>
+        <a routerLink="/fixture/posiciones" class="pill-btn">
+            <i class="fas fa-table-list"></i> Posiciones Grupos
+        </a>
+    </div>
+
+    @if (cargando()) {
+    <div class="spinner-container">
+        <div class="spinner"></div>
+    </div>
+    }
+
+    @if (!cargando()) {
+    <div class="hoy-header">
+        <i class="fas fa-calendar-check" style="color:var(--clr-primary)"></i>
+        <span>{{ fechaHoy() }}</span>
+        <span class="badge-count">{{ partidosHoy().length }} partido{{ partidosHoy().length !== 1 ? 's' : '' }}</span>
+    </div>
+
+    @if (partidosHoy().length === 0) {
+    <div class="empty-state">
+        <div class="empty-icon">🏟️</div>
+        <h3>Sin partidos hoy</h3>
+        <p>No hay partidos programados para el día de hoy.</p>
+        <a routerLink="/fixture" class="btn-volver">
+            <i class="fas fa-list"></i> Ver fixture completo
+        </a>
+    </div>
+    }
+
+    @if (partidosHoy().length > 0) {
+    <div class="hoy-grid">
+        @for (partido of partidosHoy(); track partido.id) {
+        <div class="hoy-card" [class.jugado]="esJugado(partido)" [class.jugando]="esJugando(partido)">
+
+            <!-- Número y fase -->
+            <div class="card-top">
+                <span class="card-num">#{{ partido.numero }}</span>
+                <span class="card-fase">{{ partido.fase === 'GRUPOS' ? 'Grupo ' + partido.grupo :
+                    faseLabel(partido.fase) }}</span>
+                @if (partido.multiplicador > 1) {
+                <span class="multi-badge" title="Partido vale doble puntaje">
+                    <i class="fas fa-bolt" style="font-size:0.5rem"></i>x2
+                </span>
+                }
+            </div>
+
+            <!-- Equipos -->
+            <div class="card-match">
+                <!-- Local -->
+                <div class="card-equipo card-equipo--local">
+                    <img [src]="partido.equipoLocalBandera" [alt]="partido.equipoLocalShow" class="flag-hoy" width="40"
+                        height="27" />
+                    <span class="equipo-nombre">{{ partido.equipoLocalShow | shortCountry }}</span>
+                </div>
+
+                <!-- Separador central -->
+                <div class="card-center">
+                    @if (esJugado(partido)) {
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:3px">
+                        <span class="badge-final">Finalizado</span>
+                        @if (getGolesLocal(partido.id) !== null) {
+                        <span
+                            style="font-size:1.1rem; font-weight:800; color:var(--wc-neutral-dark); font-family:var(--font-display)">
+                            {{ getGolesLocal(partido.id) }} - {{ getGolesVisitante(partido.id) }}
+                        </span>
+                        }
+                    </div>
+                    } @else if (esJugando(partido)) {
+                    <span class="badge-jugando">Jugando</span>
+                    } @else {
+                    <span class="card-hora">{{ partido.fechaHora | date:'HH:mm' }}</span>
+                    <span class="card-hs">hs</span>
+                    }
+                </div>
+
+                <!-- Visitante -->
+                <div class="card-equipo card-equipo--visit">
+                    <img [src]="partido.equipoVisitanteBandera" [alt]="partido.equipoVisitanteShow" class="flag-hoy"
+                        width="40" height="27" />
+                    <span class="equipo-nombre">{{ partido.equipoVisitanteShow | shortCountry }}</span>
+                </div>
+            </div>
+
+            <!-- Sede -->
+            <div class="card-sede">
+                <i class="fas fa-location-dot" style="font-size:0.65rem; opacity:0.6"></i>
+                {{ formatEstadio(partido.sede) }}
+            </div>
+
+        </div>
+        }
+    </div>
+    }
+    }
+</main>

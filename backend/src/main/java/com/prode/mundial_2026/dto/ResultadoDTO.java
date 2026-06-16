@@ -3,10 +3,6 @@ package com.prode.mundial_2026.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-// ── FIX SEG #4 ──────────────────────────────────────────────────────────────
-// En lugar de devolver la entidad Resultado directamente (que expone el ID
-// interno y cualquier campo de Hibernate), usamos este DTO controlado.
-// ─────────────────────────────────────────────────────────────────────────────
 @Data
 @AllArgsConstructor
 public class ResultadoDTO {
