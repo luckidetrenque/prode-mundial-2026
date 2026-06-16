@@ -315,6 +315,44 @@
     opacity: 0.6;
 }
 
+/* Estilo para las dos primeras filas clasificadas */
+.tabla-grupo tr.fila-clasificado {
+    background-color: rgba(16, 185, 129, 0.08) !important;
+    /* Verde muy sutil de fondo */
+    position: relative;
+}
+
+/* Opcional: Un borde izquierdo esmeralda para darle un toque más Pro */
+.tabla-grupo tr.fila-clasificado td:first-child {
+    border-left: 3px solid #10b981;
+}
+
+/* Mantenemos un hover limpio para la fila destacada */
+.tabla-grupo tr.fila-clasificado:hover {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+}
+
+.leyenda-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 8px;
+    padding: 2px 8px;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 4px;
+    color: #10b981;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.punto-verde {
+    width: 8px;
+    height: 8px;
+    background-color: #10b981;
+    border-radius: 50%;
+}
+
 /* ── Partido de HOY ─────────────────────────────────────────────────── */
 .partido-hoy {
     background: linear-gradient(90deg, rgba(46, 158, 45, 0.08) 0%, transparent 100%);

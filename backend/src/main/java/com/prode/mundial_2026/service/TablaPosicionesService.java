@@ -31,71 +31,93 @@ public class TablaPosicionesService {
     }
 
     @Transactional
-    public void generarYActualizarTablas() {
-        // 1. Limpiamos por completo el estado viejo de la tabla física
-        posicionRepository.deleteAll();
+    public void aplicarImpactoResultado(Partido partido, int golesLocal, int golesVisitante) {
+        String nombreLocal = partido.getEquipoLocal().getNombreShow();
+        String nombreVisitante = partido.getEquipoVisitante().getNombreShow();
 
-        // 2. Traemos todos los partidos estructurados de la fase de grupos
-        List<Partido> partidos = partidoRepository.findAll().stream()
-                .filter(p -> p.getFase() != null && "GRUPOS".equalsIgnoreCase(p.getFase().name()))
-                .collect(Collectors.toList());
+        // Upsert: Si el equipo no tiene fila en la tabla de posiciones, se crea una
+        // inicializada en 0
+        PosicionEquipo local = posicionRepository.findByNombreEquipo(nombreLocal)
+                .orElse(new PosicionEquipo(partido.getGrupo(), nombreLocal, partido.getEquipoLocal().getBanderaUrl()));
+        PosicionEquipo visitante = posicionRepository.findByNombreEquipo(nombreVisitante)
+                .orElse(new PosicionEquipo(partido.getGrupo(), nombreVisitante,
+                        partido.getEquipoVisitante().getBanderaUrl()));
 
-        Map<String, PosicionEquipo> mapaPosiciones = new HashMap<>();
+        // Sumar estadísticas básicas
+        local.setPartidosJugados(local.getPartidosJugados() + 1);
+        visitante.setPartidosJugados(visitante.getPartidosJugados() + 1);
 
-        for (Partido p : partidos) {
-            String grupo = (p.getGrupo() != null) ? p.getGrupo() : "Sin Grupo";
+        local.setGolesFavor(local.getGolesFavor() + golesLocal);
+        local.setGolesContra(local.getGolesContra() + golesVisitante);
+        visitante.setGolesFavor(visitante.getGolesFavor() + golesVisitante);
+        visitante.setGolesContra(visitante.getGolesContra() + golesLocal);
 
-            // Accedemos al nombre usando .getNombre() (ajustá esto si el getter en Equipo
-            // se llama distinto)
-            String nombreLocal = p.getEquipoLocal().getNombreShow();
-            String nombreVisitante = p.getEquipoVisitante().getNombreShow();
-            String banderaLocal = p.getEquipoLocal().getBanderaUrl();
-            String banderaVisitante = p.getEquipoVisitante().getBanderaUrl();
-
-            // Ahora usamos los nombres (Strings) como llaves y para el constructor
-            mapaPosiciones.putIfAbsent(nombreLocal, new PosicionEquipo(grupo, nombreLocal, banderaLocal));
-            mapaPosiciones.putIfAbsent(nombreVisitante, new PosicionEquipo(grupo, nombreVisitante, banderaVisitante));
-
-            Optional<Resultado> resultadoOpt = resultadoRepository.findByPartidoId(p.getId());
-
-            if (resultadoOpt.isPresent()) {
-                Resultado res = resultadoOpt.get();
-                PosicionEquipo el = mapaPosiciones.get(nombreLocal);
-                PosicionEquipo ev = mapaPosiciones.get(nombreVisitante);
-
-                el.setPartidosJugados(el.getPartidosJugados() + 1);
-                ev.setPartidosJugados(ev.getPartidosJugados() + 1);
-
-                int gl = res.getGolesLocal();
-                int gv = res.getGolesVisitante();
-
-                el.setGolesFavor(el.getGolesFavor() + gl);
-                el.setGolesContra(el.getGolesContra() + gv);
-                ev.setGolesFavor(ev.getGolesFavor() + gv);
-                ev.setGolesContra(ev.getGolesContra() + gl);
-
-                if (gl > gv) {
-                    el.setPuntos(el.getPuntos() + 3);
-                    el.setPartidosGanados(el.getPartidosGanados() + 1);
-                    ev.setPartidosPerdidos(ev.getPartidosPerdidos() + 1);
-                } else if (gl < gv) {
-                    ev.setPuntos(ev.getPuntos() + 3);
-                    ev.setPartidosGanados(ev.getPartidosGanados() + 1);
-                    el.setPartidosPerdidos(el.getPartidosPerdidos() + 1);
-                } else {
-                    el.setPuntos(el.getPuntos() + 1);
-                    ev.setPuntos(ev.getPuntos() + 1);
-                    el.setPartidosEmpatados(el.getPartidosEmpatados() + 1);
-                    ev.setPartidosEmpatados(ev.getPartidosEmpatados() + 1);
-                }
-
-                el.setDiferenciaGoles(el.getGolesFavor() - el.getGolesContra());
-                ev.setDiferenciaGoles(ev.getGolesFavor() - ev.getGolesContra());
-            }
+        // Evaluar resultado para asignar puntos y tendencias
+        if (golesLocal > golesVisitante) {
+            local.setPuntos(local.getPuntos() + 3);
+            local.setPartidosGanados(local.getPartidosGanados() + 1);
+            visitante.setPartidosPerdidos(visitante.getPartidosPerdidos() + 1);
+        } else if (golesLocal < golesVisitante) {
+            visitante.setPuntos(visitante.getPuntos() + 3);
+            visitante.setPartidosGanados(visitante.getPartidosGanados() + 1);
+            local.setPartidosPerdidos(local.getPartidosPerdidos() + 1);
+        } else {
+            local.setPuntos(local.getPuntos() + 1);
+            visitante.setPuntos(visitante.getPuntos() + 1);
+            local.setPartidosEmpatados(local.getPartidosEmpatados() + 1);
+            visitante.setPartidosEmpatados(visitante.getPartidosEmpatados() + 1);
         }
 
-        // 3. Guardamos el nuevo estado definitivo procesado directo en la base de datos
-        posicionRepository.saveAll(mapaPosiciones.values());
+        local.setDiferenciaGoles(local.getGolesFavor() - local.getGolesContra());
+        visitante.setDiferenciaGoles(visitante.getGolesFavor() - visitante.getGolesContra());
+
+        posicionRepository.save(local);
+        posicionRepository.save(visitante);
+    }
+
+    @Transactional
+    public void revertirImpactoResultado(Partido partido, int golesLocalAnterior, int golesVisitanteAnterior) {
+        String nombreLocal = partido.getEquipoLocal().getNombreShow();
+        String nombreVisitante = partido.getEquipoVisitante().getNombreShow();
+
+        PosicionEquipo local = posicionRepository.findByNombreEquipo(nombreLocal).orElse(null);
+        PosicionEquipo visitante = posicionRepository.findByNombreEquipo(nombreVisitante).orElse(null);
+
+        // Si por alguna anomalía no existen, prevenimos un NullPointerException
+        if (local == null || visitante == null)
+            return;
+
+        // Restar el partido que se había computado
+        local.setPartidosJugados(local.getPartidosJugados() - 1);
+        visitante.setPartidosJugados(visitante.getPartidosJugados() - 1);
+
+        // Restar los goles de la carga errónea
+        local.setGolesFavor(local.getGolesFavor() - golesLocalAnterior);
+        local.setGolesContra(local.getGolesContra() - golesVisitanteAnterior);
+        visitante.setGolesFavor(visitante.getGolesFavor() - golesVisitanteAnterior);
+        visitante.setGolesContra(visitante.getGolesContra() - golesLocalAnterior);
+
+        // Restar los puntos y tendencias de la carga errónea
+        if (golesLocalAnterior > golesVisitanteAnterior) {
+            local.setPuntos(local.getPuntos() - 3);
+            local.setPartidosGanados(local.getPartidosGanados() - 1);
+            visitante.setPartidosPerdidos(visitante.getPartidosPerdidos() - 1);
+        } else if (golesLocalAnterior < golesVisitanteAnterior) {
+            visitante.setPuntos(visitante.getPuntos() - 3);
+            visitante.setPartidosGanados(visitante.getPartidosGanados() - 1);
+            local.setPartidosPerdidos(local.getPartidosPerdidos() - 1);
+        } else {
+            local.setPuntos(local.getPuntos() - 1);
+            visitante.setPuntos(visitante.getPuntos() - 1);
+            local.setPartidosEmpatados(local.getPartidosEmpatados() - 1);
+            visitante.setPartidosEmpatados(visitante.getPartidosEmpatados() - 1);
+        }
+
+        local.setDiferenciaGoles(local.getGolesFavor() - local.getGolesContra());
+        visitante.setDiferenciaGoles(visitante.getGolesFavor() - visitante.getGolesContra());
+
+        posicionRepository.save(local);
+        posicionRepository.save(visitante);
     }
 
     // Consulta ultrarrápida: Estructura y agrupa directamente para solucionar el

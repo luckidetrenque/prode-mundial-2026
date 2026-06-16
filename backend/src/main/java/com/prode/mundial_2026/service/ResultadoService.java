@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,76 +24,77 @@ public class ResultadoService {
     private final TablaPosicionesService tablaPosicionesService;
 
     @Transactional
-    public int resetearPorGrupo(String grupo) {
-        List<Partido> partidos = partidoRepository.findByGrupo(grupo);
-        List<Long> partidoIds = partidos.stream()
-                .map(Partido::getId)
-                .collect(Collectors.toList());
-
-        if (partidoIds.isEmpty()) {
-            return 0;
-        }
-
-        int eliminados = resultadoRepository.deleteByPartidoIdIn(partidoIds);
-
-        // Si borramos resultados, actualizamos la tabla de posiciones a su nuevo estado
-        tablaPosicionesService.generarYActualizarTablas();
-
-        return eliminados;
-    }
-
-    @Transactional
-    public int resetearTodos() {
-        int eliminados = resultadoRepository.deleteAllBulk();
-
-        // Actualizamos la tabla de posiciones para que vuelva a cero
-        tablaPosicionesService.generarYActualizarTablas();
-
-        return eliminados;
-    }
-
-    @Transactional
-    public void eliminar(Long partidoId) {
-        resultadoRepository.findByPartidoId(partidoId).ifPresent(resultado -> {
-            resultadoRepository.delete(resultado);
-            // Actualizamos posiciones al borrar un resultado puntual
-            tablaPosicionesService.generarYActualizarTablas();
-        });
-    }
-
-    @Transactional
     public ResultadoDTO guardarResultadoOficial(Long partidoId, ResultadoRequestDTO dto) {
-
         Partido partido = partidoRepository.findById(partidoId)
                 .orElseThrow(() -> new RuntimeException("Partido no encontrado: " + partidoId));
 
-        Resultado resultado = resultadoRepository.findByPartidoId(partidoId)
-                .orElse(new Resultado());
+        Optional<Resultado> resultadoExistenteOpt = resultadoRepository.findByPartidoId(partidoId);
 
-        // 1. Seteamos los valores SOLO en la entidad Resultado
+        // CORRECCIÓN DE ERRORES: Si ya existía un resultado, restamos su impacto antes
+        // de guardar el nuevo
+        if (resultadoExistenteOpt.isPresent()) {
+            Resultado resViejo = resultadoExistenteOpt.get();
+            tablaPosicionesService.revertirImpactoResultado(partido, resViejo.getGolesLocal(),
+                    resViejo.getGolesVisitante());
+        }
+
+        Resultado resultado = resultadoExistenteOpt.orElse(new Resultado());
+
         resultado.setPartido(partido);
         resultado.setResultado(Prediccion.ResultadoPrediccion.valueOf(dto.getResultado()));
         resultado.setGolesLocal(dto.getGolesLocal());
         resultado.setGolesVisitante(dto.getGolesVisitante());
 
-        // 2. Guardamos físicamente el resultado
         Resultado guardado = resultadoRepository.save(resultado);
 
-        // 3. [GATILLO CLAVE]: Recalculamos las posiciones físicas en la tabla
-        // PosicionEquipo
-        tablaPosicionesService.generarYActualizarTablas();
+        // NUEVA CARGA: Sumamos el impacto del resultado final/corregido
+        tablaPosicionesService.aplicarImpactoResultado(partido, guardado.getGolesLocal(), guardado.getGolesVisitante());
 
-        // 4. Mapeamos al DTO de salida
         return mapearADto(guardado, partido);
-        /*
-         * return new ResultadoDTO(
-         * new ResultadoDTO.PartidoResumenDTO(
-         * guardado.getPartido().getId(),
-         * guardado.getPartido().getNumero()),
-         * guardado.getResultado().name(),
-         * guardado.getGolesLocal(),
-         * guardado.getGolesVisitante());
-         */
+    }
+
+    @Transactional
+    public void eliminar(Long partidoId) {
+        resultadoRepository.findByPartidoId(partidoId).ifPresent(resultado -> {
+            // Antes de borrar físicamente el resultado, restamos su impacto de las tablas
+            tablaPosicionesService.revertirImpactoResultado(resultado.getPartido(), resultado.getGolesLocal(),
+                    resultado.getGolesVisitante());
+            resultadoRepository.delete(resultado);
+        });
+    }
+
+    @Transactional
+    public int resetearPorGrupo(String grupo) {
+        List<Partido> partidos = partidoRepository.findByGrupo(grupo);
+        int eliminados = 0;
+
+        for (Partido p : partidos) {
+            Optional<Resultado> rOpt = resultadoRepository.findByPartidoId(p.getId());
+            if (rOpt.isPresent()) {
+                Resultado r = rOpt.get();
+                // Revertimos de a uno el impacto del grupo
+                tablaPosicionesService.revertirImpactoResultado(p, r.getGolesLocal(), r.getGolesVisitante());
+                resultadoRepository.delete(r);
+                eliminados++;
+            }
+        }
+        return eliminados;
+    }
+
+    @Transactional
+    public int resetearTodos() {
+        // En un enfoque puramente incremental, para vaciar todo limpiamos los
+        // resultados uno a uno
+        // o ejecutamos un truncado directo sobre posiciones_equipos si se quiere volver
+        // a cero absoluto.
+        List<Resultado> todos = resultadoRepository.findAll();
+        int eliminados = todos.size();
+
+        for (Resultado r : todos) {
+            tablaPosicionesService.revertirImpactoResultado(r.getPartido(), r.getGolesLocal(), r.getGolesVisitante());
+        }
+        resultadoRepository.deleteAll();
+        return eliminados;
     }
 
     // ── MÉTODO PRIVADO PARA MAPEAR TU DTO ──────────────────────────

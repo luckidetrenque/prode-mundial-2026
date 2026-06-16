@@ -4,6 +4,7 @@
     <p class="subtitulo">
         <i class="fas fa-circle-info" style="color:var(--clr-primary-light);font-size:0.8rem"></i>
         Posiciones de los <strong>48 equipos</strong> de la fase de grupos.
+        <span class="leyenda-badge"><span class="punto-verde"></span> Clasifica a 16avos de Final</span>
     </p>
 
     <!-- Toggle de vistas -->
@@ -51,7 +52,7 @@
                 </thead>
                 <tbody>
                     @for (fila of grupo.equipos; track fila.nombreEquipo; let i = $index) {
-                    <tr>
+                    <tr [class.fila-clasificado]="i < 2">
                         <td class="th-num col-muted">{{ i + 1 }}</td>
                         <td class="td-equipo">
                             <div class="equipo-horizontal">
@@ -70,7 +71,6 @@
                         <td class="th-center">{{ fila.diferenciaGoles }}</td>
                     </tr>
                     }
-                </tbody>
             </table>
         </div>
         }
