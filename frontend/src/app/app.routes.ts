@@ -18,6 +18,18 @@ export const routes: Routes = [
       import('./features/fixture/hoy.component').then(m => m.HoyComponent)
   },
   {
+    path: 'fixture/completo',
+    loadComponent: () =>
+      import('./features/fixture/fixture.component').then(m => m.FixtureComponent)
+  },
+
+  {
+    path: 'fixture/posiciones',
+    loadComponent: () =>
+      import('./features/fixture/posiciones-grupo.component').then(m => m.PosicionesComponent)
+  },
+
+  {
     path: 'planilla',
     loadComponent: () =>
       import('./features/planilla/planilla.component').then(m => m.PlanillaComponent)
@@ -55,12 +67,6 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/reglamento/reglamento.component')
         .then(m => m.ReglamentoComponent)
-  },
-
-  {
-    path: 'fixture/completo',
-    loadComponent: () =>
-      import('./features/fixture/fixture.component').then(m => m.FixtureComponent)
   },
 
   {
