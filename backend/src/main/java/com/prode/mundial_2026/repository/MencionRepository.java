@@ -107,36 +107,7 @@ public interface MencionRepository extends JpaRepository<Planilla, Long> {
             """)
     List<Object[]> findAcertadoresDiamante();
 
-    /**
-     * Participantes que acertaron todos los partidos de alguna jornada.
-     * Retorna: [jornada, nombre, apellido, codigoPlanilla]
-     */
-    @Query("""
-            SELECT
-                pa.jornada,
-                u.nombre,
-                u.apellido,
-                pl.codigo
-            FROM Prediccion pr
-            JOIN pr.planilla pl
-            JOIN pl.usuario u
-            JOIN pr.partido pa
-            JOIN Resultado r ON r.partido = pa
-            WHERE pl.confirmada = true
-              AND pr.prediccion = r.resultado
-              AND pa.jornada IS NOT NULL
-            GROUP BY pa.jornada, pl.id, u.nombre, u.apellido, pl.codigo
-            HAVING COUNT(pr.id) = (
-                SELECT COUNT(pa2.id)
-                FROM Partido pa2
-                JOIN Resultado r2 ON r2.partido = pa2
-                WHERE pa2.jornada = pa.jornada
-            )
-            ORDER BY pa.jornada ASC
-            """)
-    List<Object[]> findJornadaPerfecta();
-
-    /**
+     /**
      * Participante con más puntos en partidos x2.
      * Retorna: [nombre, apellido, codigoPlanilla, puntosX2]
      */
@@ -236,26 +207,61 @@ public interface MencionRepository extends JpaRepository<Planilla, Long> {
     List<Object[]> findPuntajeGeneral();
 
     /**
-     * Puntaje por jornada por participante (para remontada y bajón).
-     * Retorna: [jornada, nombre, apellido, codigoPlanilla, puntosEnJornada]
+     * Participantes que acertaron todos los partidos de un mismo día.
+     * Retorna: [fecha (DATE), nombre, apellido, codigoPlanilla]
+     *
+     * CAST(pa.fechaHora AS DATE) agrupa por día calendario ignorando la hora.
+     * Solo cuenta días donde haya al menos 1 resultado cargado.
      */
-    @Query("""
-            SELECT
-                pa.jornada,
-                u.nombre,
-                u.apellido,
-                pl.codigo,
-                COALESCE(SUM(CASE WHEN pr.prediccion = r.resultado
-                              THEN pa.multiplicador ELSE 0 END), 0)
-            FROM Planilla pl
-            JOIN pl.usuario u
-            LEFT JOIN pl.predicciones pr
-            LEFT JOIN pr.partido pa
-            LEFT JOIN Resultado r ON r.partido = pa
-            WHERE pl.confirmada = true
-              AND pa.jornada IS NOT NULL
-            GROUP BY pa.jornada, pl.id, u.nombre, u.apellido, pl.codigo
-            ORDER BY pa.jornada ASC, pl.codigo ASC
-            """)
-    List<Object[]> findPuntajePorJornada();
+    @Query(value = """
+        SELECT
+            CAST(pa.fecha_hora AS DATE)   AS fecha,
+            u.nombre,
+            u.apellido,
+            pl.codigo
+        FROM predicciones pr
+        JOIN planillas    pl ON pl.id = pr.planilla_id
+        JOIN usuarios     u  ON u.id  = pl.usuario_id
+        JOIN partidos     pa ON pa.id = pr.partido_id
+        JOIN resultados   r  ON r.partido_id = pa.id
+        WHERE pl.confirmada = true
+          AND pr.prediccion  = r.resultado
+        GROUP BY CAST(pa.fecha_hora AS DATE), pl.id, u.nombre, u.apellido, pl.codigo
+        HAVING COUNT(pr.id) = (
+            SELECT COUNT(pa2.id)
+            FROM partidos  pa2
+            JOIN resultados r2 ON r2.partido_id = pa2.id
+            WHERE CAST(pa2.fecha_hora AS DATE) = CAST(pa.fecha_hora AS DATE)
+        )
+        ORDER BY CAST(pa.fecha_hora AS DATE) ASC
+        """, nativeQuery = true)
+    List<Object[]> findDiaPerfecto();
+
+    /**
+     * Puntaje obtenido por cada participante en cada día calendario.
+     * Retorna: [fecha (DATE), nombre, apellido, codigoPlanilla, puntosEnElDia]
+     *
+     * Solo incluye días con al menos 1 resultado cargado.
+     */
+    @Query(value = """
+        SELECT
+            CAST(pa.fecha_hora AS DATE)   AS fecha,
+            u.nombre,
+            u.apellido,
+            pl.codigo,
+            COALESCE(SUM(
+                CASE WHEN pr.prediccion = r.resultado
+                    THEN pa.multiplicador ELSE 0 END
+            ), 0)                         AS puntos_dia
+        FROM planillas    pl
+        JOIN usuarios     u  ON u.id  = pl.usuario_id
+        LEFT JOIN predicciones pr ON pr.planilla_id = pl.id
+        LEFT JOIN partidos     pa ON pa.id = pr.partido_id
+        LEFT JOIN resultados   r  ON r.partido_id  = pa.id
+        WHERE pl.confirmada = true
+          AND pa.fecha_hora IS NOT NULL
+        GROUP BY CAST(pa.fecha_hora AS DATE), pl.id, u.nombre, u.apellido, pl.codigo
+        ORDER BY CAST(pa.fecha_hora AS DATE) ASC, pl.codigo ASC
+        """, nativeQuery = true)
+    List<Object[]> findPuntajePorDia();
 }

@@ -53,7 +53,7 @@ public class MencionService {
 
             calcularAdivinos(menciones);
             calcularDiamante(menciones);
-            calcularJornadaPerfecta(menciones);
+            calcularDiaPerfecto(menciones);
             calcularPuntero(menciones);
             calcularMasX2(menciones);
             calcularMasEmpatador(menciones);
@@ -126,28 +126,35 @@ public class MencionService {
                 participantes));
     }
 
-    private void calcularJornadaPerfecta(List<MencionDTO> menciones) {
-        List<Object[]> rows = mencionRepository.findJornadaPerfecta();
-        if (rows.isEmpty())
-            return;
+    private void calcularDiaPerfecto(List<MencionDTO> menciones) {
+        List<Object[]> rows = mencionRepository.findDiaPerfecto();
+        if (rows.isEmpty()) return;
 
-        // Agrupar por jornada
-        Map<Integer, List<ParticipanteResumenDTO>> porJornada = new LinkedHashMap<>();
+        // Agrupar por fecha
+        Map<String, List<ParticipanteResumenDTO>> porFecha = new LinkedHashMap<>();
         for (Object[] row : rows) {
-            int jornada = ((Number) row[0]).intValue();
-            String nombre = (String) row[1];
-            String apellido = (String) row[2];
-            Long codigo = ((Number) row[3]).longValue();
-            porJornada.computeIfAbsent(jornada, k -> new ArrayList<>())
+            String fecha   = row[0].toString(); // "2026-06-11"
+            String nombre  = (String) row[1];
+            String apellido= (String) row[2];
+            Long codigo    = ((Number) row[3]).longValue();
+
+            porFecha.computeIfAbsent(fecha, k -> new ArrayList<>())
                     .add(new ParticipanteResumenDTO(nombre, apellido, codigo));
         }
 
-        porJornada.forEach((jornada, participantes) -> menciones.add(new MencionDTO(
-                "JORNADA_PERFECTA",
+        porFecha.forEach((fecha, participantes) -> {
+            // Formatear fecha: "2026-06-11" → "11/06"
+            String[] partes = fecha.split("-");
+            String fechaShow = partes[2] + "/" + partes[1];
+
+            menciones.add(new MencionDTO(
+                "DIA_PERFECTO",
                 "🔥",
-                "Jornada perfecta",
-                "Acertó todos los partidos de la jornada " + jornada,
-                participantes)));
+                "Día perfecto",
+                "Acertó todos los partidos del " + fechaShow,
+                participantes
+            ));
+        });
     }
 
     private void calcularPuntero(List<MencionDTO> menciones) {
@@ -244,99 +251,99 @@ public class MencionService {
     }
 
     private void calcularRemontadaYBajon(List<MencionDTO> menciones) {
-        List<Object[]> rows = mencionRepository.findPuntajePorJornada();
-        if (rows.isEmpty())
-            return;
+        List<Object[]> rows = mencionRepository.findPuntajePorDia();
+        if (rows.isEmpty()) return;
 
-        // Agrupar puntaje por jornada y por planilla
-        // Estructura: Map<codigoPlanilla, Map<jornada, puntos>>
-        Map<Long, Map<Integer, Long>> puntajesPorPlanilla = new LinkedHashMap<>();
+        // Agrupar: Map<codigoPlanilla, Map<fecha, puntosEnEseDia>>
+        Map<Long, Map<String, Long>> puntajesPorPlanilla = new LinkedHashMap<>();
         Map<Long, ParticipanteResumenDTO> infoParticipante = new HashMap<>();
 
         for (Object[] row : rows) {
-            int jornada = ((Number) row[0]).intValue();
-            String nombre = (String) row[1];
-            String apellido = (String) row[2];
-            Long codigo = ((Number) row[3]).longValue();
-            long puntos = ((Number) row[4]).longValue();
+            String fecha   = row[0].toString(); // "2026-06-11"
+            String nombre  = (String) row[1];
+            String apellido= (String) row[2];
+            Long codigo    = ((Number) row[3]).longValue();
+            long puntos    = ((Number) row[4]).longValue();
 
             puntajesPorPlanilla
-                    .computeIfAbsent(codigo, k -> new TreeMap<>())
-                    .put(jornada, puntos);
+                .computeIfAbsent(codigo, k -> new TreeMap<>()) // TreeMap → orden cronológico
+                .put(fecha, puntos);
             infoParticipante.putIfAbsent(codigo,
-                    new ParticipanteResumenDTO(nombre, apellido, codigo));
+                new ParticipanteResumenDTO(nombre, apellido, codigo));
         }
 
-        // Determinar la última jornada con resultados
-        int ultimaJornada = rows.stream()
-                .mapToInt(r -> ((Number) r[0]).intValue())
-                .max()
-                .orElse(0);
+        // Obtener lista de fechas ordenadas
+        List<String> fechasOrdenadas = rows.stream()
+            .map(r -> r[0].toString())
+            .distinct()
+            .sorted()
+            .toList();
 
-        if (ultimaJornada < 2)
-            return; // Necesitamos al menos 2 jornadas
+        if (fechasOrdenadas.size() < 2) return; // Necesitamos al menos 2 días
 
-        // Calcular posiciones en jornada actual vs anterior
-        // Posición = rank por puntos acumulados hasta esa jornada
-        Map<Long, Long> puntosHastaAnterior = calcularPuntosAcumulados(
-                puntajesPorPlanilla, ultimaJornada - 1);
-        Map<Long, Long> puntosHastaActual = calcularPuntosAcumulados(
-                puntajesPorPlanilla, ultimaJornada);
+        String diaActual   = fechasOrdenadas.get(fechasOrdenadas.size() - 1);
+        String diaAnterior = fechasOrdenadas.get(fechasOrdenadas.size() - 2);
 
+        // Puntos acumulados hasta el día anterior y hasta el día actual
+        Map<Long, Long> puntosHastaAnterior =
+            calcularPuntosAcumuladosHasta(puntajesPorPlanilla, diaAnterior);
+        Map<Long, Long> puntosHastaActual   =
+            calcularPuntosAcumuladosHasta(puntajesPorPlanilla, diaActual);
+
+        // Ranking en cada momento
         Map<Long, Integer> posAnterior = calcularRanking(puntosHastaAnterior);
-        Map<Long, Integer> posActual = calcularRanking(puntosHastaActual);
+        Map<Long, Integer> posActual   = calcularRanking(puntosHastaActual);
 
-        // Calcular diferencia de posición para cada participante
         Long mejorCodigo = null;
-        int mejorSalto = 0;
-        Long peorCodigo = null;
-        int peorCaida = 0;
+        int  mejorSalto  = 0;
+        Long peorCodigo  = null;
+        int  peorCaida   = 0;
 
         for (Long codigo : posActual.keySet()) {
-            if (!posAnterior.containsKey(codigo))
-                continue;
-            int diff = posAnterior.get(codigo) - posActual.get(codigo); // positivo = subió
-            if (diff > mejorSalto) {
-                mejorSalto = diff;
-                mejorCodigo = codigo;
-            }
-            if (diff < peorCaida) {
-                peorCaida = diff;
-                peorCodigo = codigo;
-            }
+            if (!posAnterior.containsKey(codigo)) continue;
+            // positivo = subió puestos, negativo = bajó
+            int diff = posAnterior.get(codigo) - posActual.get(codigo);
+            if (diff > mejorSalto) { mejorSalto = diff; mejorCodigo = codigo; }
+            if (diff < peorCaida)  { peorCaida  = diff; peorCodigo  = codigo; }
         }
+
+        // Formatear fecha para mostrar: "2026-06-12" → "12/06"
+        String[] partes = diaActual.split("-");
+        String fechaShow = partes[2] + "/" + partes[1];
 
         if (mejorCodigo != null && mejorSalto > 0) {
             menciones.add(new MencionDTO(
-                    "REMONTADA",
-                    "📈",
-                    "La Remontada",
-                    "Subió " + mejorSalto + " puesto" + (mejorSalto != 1 ? "s" : "")
-                            + " en la jornada " + ultimaJornada,
-                    List.of(infoParticipante.get(mejorCodigo))));
+                "REMONTADA",
+                "📈",
+                "La Remontada",
+                "Subió " + mejorSalto + " puesto" + (mejorSalto != 1 ? "s" : "")
+                    + " el " + fechaShow,
+                List.of(infoParticipante.get(mejorCodigo))
+            ));
         }
 
         if (peorCodigo != null && peorCaida < 0) {
             menciones.add(new MencionDTO(
-                    "BAJON",
-                    "📉",
-                    "El Bajón",
-                    "Cayó " + Math.abs(peorCaida) + " puesto" + (Math.abs(peorCaida) != 1 ? "s" : "")
-                            + " en la jornada " + ultimaJornada,
-                    List.of(infoParticipante.get(peorCodigo))));
+                "BAJON",
+                "📉",
+                "El Bajón",
+                "Cayó " + Math.abs(peorCaida) + " puesto" + (Math.abs(peorCaida) != 1 ? "s" : "")
+                    + " el " + fechaShow,
+                List.of(infoParticipante.get(peorCodigo))
+            ));
         }
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────
 
-    private Map<Long, Long> calcularPuntosAcumulados(
-            Map<Long, Map<Integer, Long>> puntajesPorPlanilla, int hastaJornada) {
+    private Map<Long, Long> calcularPuntosAcumuladosHasta(
+            Map<Long, Map<String, Long>> puntajesPorPlanilla, String hastaFecha) {
         Map<Long, Long> resultado = new HashMap<>();
-        puntajesPorPlanilla.forEach((codigo, jornadaMap) -> {
-            long total = jornadaMap.entrySet().stream()
-                    .filter(e -> e.getKey() <= hastaJornada)
-                    .mapToLong(Map.Entry::getValue)
-                    .sum();
+        puntajesPorPlanilla.forEach((codigo, fechaMap) -> {
+            long total = fechaMap.entrySet().stream()
+                .filter(e -> e.getKey().compareTo(hastaFecha) <= 0) // comparación lexicográfica — funciona con ISO dates
+                .mapToLong(Map.Entry::getValue)
+                .sum();
             resultado.put(codigo, total);
         });
         return resultado;

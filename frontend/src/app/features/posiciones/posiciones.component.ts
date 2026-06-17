@@ -348,7 +348,7 @@ type TabActiva = 'posiciones' | 'menciones';
     /* Colores por tipo */
     .mencion-card.mencion-el_adivino   { border-left-color: #2A398D; }
     .mencion-card.mencion-diamante     { border-left-color: #00bcd4; }
-    .mencion-card.mencion-jornada_perfecta { border-left-color: #E61D25; }
+    .mencion-card.mencion-dia_perfecto { border-left-color: #E61D25; }
     .mencion-card.mencion-puntero      { border-left-color: #FFD700; }
     .mencion-card.mencion-mas_x2       { border-left-color: #ff9800; }
     .mencion-card.mencion-empatador    { border-left-color: #3CAC3B; }
@@ -479,16 +479,16 @@ type TabActiva = 'posiciones' | 'menciones';
 })
 export class PosicionesComponent implements OnInit {
 
-  torneoService       = inject(TorneoService);
+  torneoService = inject(TorneoService);
   private posicionService = inject(PosicionService);
-  private mencionService  = inject(MencionService);
+  private mencionService = inject(MencionService);
 
-  tabActiva       = signal<TabActiva>('posiciones');
-  cargando        = signal(true);
+  tabActiva = signal<TabActiva>('posiciones');
+  cargando = signal(true);
   cargandoMenciones = signal(false);
-  posiciones      = signal<Posicion[]>([]);
-  mencionesData   = signal<MencionesResponse | null>(null);
-  paginaActual    = signal(1);
+  posiciones = signal<Posicion[]>([]);
+  mencionesData = signal<MencionesResponse | null>(null);
+  paginaActual = signal(1);
   readonly POR_PAGINA = 10;
 
   podio = computed(() => {
@@ -560,8 +560,8 @@ export class PosicionesComponent implements OnInit {
     this.posicionesFiltradas.set(!this.termino
       ? this._posicionesProcesadas
       : this._posicionesProcesadas.filter(p =>
-          p.nombre.toLowerCase().includes(this.termino) ||
-          p.apellido.toLowerCase().includes(this.termino)));
+        p.nombre.toLowerCase().includes(this.termino) ||
+        p.apellido.toLowerCase().includes(this.termino)));
   }
 
   paginaAnterior(): void { if (this.paginaActual() > 1) this.irAPagina(this.paginaActual() - 1); }
