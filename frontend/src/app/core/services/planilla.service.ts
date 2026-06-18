@@ -7,13 +7,19 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { PlanillaRequest, PlanillaResponse } from '../../shared/models/planilla.model';
 
+export interface FiltroPrediccionUsuario {
+  apellido: string;
+  nombre: string;
+  codigoPlanilla: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class PlanillaService {
 
-  private apiUrl   = `${environment.apiUrl}/planillas`;
+  private apiUrl = `${environment.apiUrl}/planillas`;
   private adminUrl = `${environment.apiUrl}/admin/planillas`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // POST /api/planillas → guarda una nueva planilla (público)
   guardar(planilla: PlanillaRequest): Observable<PlanillaResponse> {
@@ -57,5 +63,14 @@ export class PlanillaService {
   // GET /api/admin/planillas/pendientes/count
   getPendientesCount(): Observable<number> {
     return this.http.get<number>(`${this.adminUrl}/pendientes/count`);
+  }
+
+  obtenerUsuariosPorPrediccion(partidoId: number, prediccion: string): Observable<FiltroPrediccionUsuario[]> {
+    // Reemplazamos /planillas por /admin para pegarle directo al AdminController
+    const urlAdmin = this.apiUrl.replace('/planillas', '/admin');
+
+    return this.http.get<FiltroPrediccionUsuario[]>(`${urlAdmin}/predicciones-filtros`, {
+      params: { partidoId, prediccion }
+    });
   }
 }

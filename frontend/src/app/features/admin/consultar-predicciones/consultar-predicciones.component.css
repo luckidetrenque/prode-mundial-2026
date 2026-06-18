@@ -1,0 +1,169 @@
+.admin-panel {
+    padding: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.panel-title {
+    font-size: 1.8rem;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+}
+
+.panel-subtitle {
+    font-size: 0.95rem;
+    color: #a0aec0;
+    margin-bottom: 2rem;
+}
+
+/* Tarjeta de Filtros */
+.filters-card {
+    background-color: #1a202c;
+    border: 1px solid #2d3748;
+    border-radius: 8px;
+    padding: 1.5rem;
+    display: grid;
+    grid-template-columns: 2fr 1fr auto;
+    gap: 1.5rem;
+    align-items: flex-end;
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #e2e8f0;
+}
+
+.form-select {
+    background-color: #2d3748;
+    border: 1px solid #4a5568;
+    color: #ffffff;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+}
+
+.form-select:focus {
+    border-color: #10b981;
+}
+
+.btn-search {
+    background-color: #10b981;
+    color: #ffffff;
+    border: none;
+    padding: 0.65rem 1.5rem;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.2s;
+    height: 40px;
+}
+
+.btn-search:hover:not(:disabled) {
+    background-color: #059669;
+}
+
+.btn-search:disabled {
+    background-color: #4a5568;
+    color: #a0aec0;
+    cursor: not-allowed;
+}
+
+/* Tablas Estilo Admin */
+.table-container {
+    background-color: #1a202c;
+    border: 1px solid #2d3748;
+    border-radius: 8px;
+    overflow-hidden: hidden;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.95rem;
+}
+
+.admin-table th {
+    background-color: #2d3748;
+    color: #e2e8f0;
+    font-weight: 600;
+    padding: 1rem;
+    border-bottom: 2px solid #4a5568;
+}
+
+.admin-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #2d3748;
+    color: #cbd5e0;
+}
+
+.admin-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+.cell-bold {
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.code-badge {
+    background-color: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: #10b981;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+/* Estado Vacío */
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    background-color: #1a202c;
+    border: 1px dashed #4a5568;
+    border-radius: 8px;
+    color: #a0aec0;
+}
+
+.empty-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #4a5568;
+}
+
+.empty-text {
+    font-size: 0.95rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .filters-card {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .btn-search {
+        width: 100%;
+        justify-content: center;
+    }
+}

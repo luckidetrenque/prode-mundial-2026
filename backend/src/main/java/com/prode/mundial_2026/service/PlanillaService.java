@@ -1,6 +1,7 @@
 package com.prode.mundial_2026.service;
 
 import com.prode.mundial_2026.dto.EditarPlanillaRequestDTO;
+import com.prode.mundial_2026.dto.FiltroPrediccionUsuarioDTO;
 import com.prode.mundial_2026.dto.PlanillaRequestDTO;
 import com.prode.mundial_2026.dto.PlanillaResponseDTO;
 import com.prode.mundial_2026.exception.BusinessException;
@@ -103,15 +104,15 @@ public class PlanillaService {
                 Planilla planilla = planillaRepository
                                 .findByCodigoWithPredicciones(codigo)
                                 .orElseThrow(() -> new BusinessException(
-                                        "No encontramos una planilla con ese código. Verificá el número.",
-                                        org.springframework.http.HttpStatus.NOT_FOUND));
+                                                "No encontramos una planilla con ese código. Verificá el número.",
+                                                org.springframework.http.HttpStatus.NOT_FOUND));
 
                 String emailDueño = planilla.getUsuario().getEmail().toLowerCase();
                 String emailIngresado = email.trim().toLowerCase();
                 if (!emailDueño.equals(emailIngresado)) {
                         throw new BusinessException(
-                                "El email no coincide con el registrado para esta planilla.",
-                                org.springframework.http.HttpStatus.FORBIDDEN);
+                                        "El email no coincide con el registrado para esta planilla.",
+                                        org.springframework.http.HttpStatus.FORBIDDEN);
                 }
 
                 return new PlanillaResponseDTO(
@@ -178,23 +179,23 @@ public class PlanillaService {
                 Planilla planilla = planillaRepository
                                 .findByCodigo(request.getCodigo())
                                 .orElseThrow(() -> new BusinessException(
-                                        "No encontramos una planilla con ese código. Verificá el número.",
-                                        HttpStatus.NOT_FOUND));
+                                                "No encontramos una planilla con ese código. Verificá el número.",
+                                                HttpStatus.NOT_FOUND));
 
                 // Verificar que el email corresponde al dueño de la planilla
                 String emailDueño = planilla.getUsuario().getEmail().toLowerCase();
                 String emailIngresado = request.getEmail().trim().toLowerCase();
                 if (!emailDueño.equals(emailIngresado)) {
                         throw new BusinessException(
-                                "El email no coincide con el registrado para esta planilla.",
-                                HttpStatus.FORBIDDEN);
+                                        "El email no coincide con el registrado para esta planilla.",
+                                        HttpStatus.FORBIDDEN);
                 }
 
                 // No se puede editar una planilla ya confirmada
                 if (planilla.getConfirmada()) {
                         throw new BusinessException(
-                                "Esta planilla ya fue confirmada y no puede editarse.",
-                                HttpStatus.CONFLICT);
+                                        "Esta planilla ya fue confirmada y no puede editarse.",
+                                        HttpStatus.CONFLICT);
                 }
 
                 // Reemplazar todas las predicciones.
@@ -209,7 +210,7 @@ public class PlanillaService {
                 for (PlanillaRequestDTO.PrediccionItemDTO item : request.getPredicciones()) {
                         Partido partido = partidoRepository.findById(item.getPartidoId())
                                         .orElseThrow(() -> new BusinessException.PartidoNotFoundException(
-                                                item.getPartidoId()));
+                                                        item.getPartidoId()));
 
                         Prediccion prediccion = new Prediccion();
                         prediccion.setPlanilla(planilla);
@@ -240,5 +241,11 @@ public class PlanillaService {
                 throw new BusinessException(
                                 "No se pudo generar un código único. Intentá nuevamente.",
                                 org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE);
+        }
+
+        public List<FiltroPrediccionUsuarioDTO> obtenerUsuariosPorPrediccion(Long partidoId, String prediccionStr) {
+                com.prode.mundial_2026.model.Prediccion.ResultadoPrediccion prediccion = com.prode.mundial_2026.model.Prediccion.ResultadoPrediccion
+                                .valueOf(prediccionStr.toUpperCase());
+                return planillaRepository.buscarUsuariosPorPrediccion(partidoId, prediccion);
         }
 }
