@@ -101,27 +101,6 @@ public class AdminController {
                         @RequestParam Long partidoId,
                         @RequestParam String prediccion) {
 
-                com.prode.mundial_2026.model.Prediccion.ResultadoPrediccion resultadoEnum = com.prode.mundial_2026.model.Prediccion.ResultadoPrediccion
-                                .valueOf(prediccion.toUpperCase());
-
-                List<Object[]> filasRaw = planillaRepository.buscarUsuariosPorPrediccionRaw(partidoId, resultadoEnum);
-
-                List<FiltroPrediccionUsuarioDTO> dtos = filasRaw.stream()
-                                .map(fila -> {
-                                        String apellido = fila[0] != null ? String.valueOf(fila[0]) : "";
-                                        String nombre = fila[1] != null ? String.valueOf(fila[1]) : "";
-
-                                        Long codigoLong = null;
-                                        if (fila[2] != null) {
-                                                // Al ser bigint, convertimos de forma segura el objeto de la DB a su
-                                                // valor numérico real
-                                                codigoLong = Long.valueOf(fila[2].toString());
-                                        }
-
-                                        return new FiltroPrediccionUsuarioDTO(apellido, nombre, codigoLong);
-                                })
-                                .toList();
-
-                return ResponseEntity.ok(dtos);
+                return ResponseEntity.ok(planillaService.obtenerUsuariosPorPrediccion(partidoId, prediccion));
         }
 }

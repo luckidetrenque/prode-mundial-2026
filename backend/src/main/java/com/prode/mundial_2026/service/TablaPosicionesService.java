@@ -4,7 +4,6 @@ import com.prode.mundial_2026.dto.GrupoPosicionesDTO;
 import com.prode.mundial_2026.dto.FilaPosicionDTO;
 import com.prode.mundial_2026.model.Partido;
 import com.prode.mundial_2026.model.PosicionEquipo;
-import com.prode.mundial_2026.model.Resultado;
 import com.prode.mundial_2026.repository.PartidoRepository;
 import com.prode.mundial_2026.repository.PosicionEquipoRepository;
 import com.prode.mundial_2026.repository.ResultadoRepository;

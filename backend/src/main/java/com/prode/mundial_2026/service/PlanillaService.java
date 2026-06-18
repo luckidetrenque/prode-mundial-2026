@@ -246,6 +246,20 @@ public class PlanillaService {
         public List<FiltroPrediccionUsuarioDTO> obtenerUsuariosPorPrediccion(Long partidoId, String prediccionStr) {
                 com.prode.mundial_2026.model.Prediccion.ResultadoPrediccion prediccion = com.prode.mundial_2026.model.Prediccion.ResultadoPrediccion
                                 .valueOf(prediccionStr.toUpperCase());
-                return planillaRepository.buscarUsuariosPorPrediccion(partidoId, prediccion);
+
+                List<Object[]> filasRaw = planillaRepository.buscarUsuariosPorPrediccionRaw(partidoId, prediccion);
+
+                return filasRaw.stream()
+                                .map((Object[] fila) -> {
+                                        String apellido = fila[0] != null ? String.valueOf(fila[0]) : "";
+                                        String nombre = fila[1] != null ? String.valueOf(fila[1]) : "";
+
+                                        Long codigoLong = null;
+                                        if (fila[2] != null) {
+                                                codigoLong = Long.valueOf(fila[2].toString());
+                                        }
+                                        return new FiltroPrediccionUsuarioDTO(apellido, nombre, codigoLong);
+                                })
+                                .toList();
         }
 }
