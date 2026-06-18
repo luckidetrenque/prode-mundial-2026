@@ -7,7 +7,7 @@
 //   - Todo lo demás permanece igual (breadcrumb, pendientesCount, menú mobile)
 
 import { Component, signal, HostListener, inject } from '@angular/core';
-import { Router, NavigationEnd, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, NavigationEnd, RouterOutlet, RouterLink, RouterLinkActive, Event as RouterEvent } from '@angular/router';
 import { filter } from 'rxjs';
 import { PlanillaService } from './core/services/planilla.service';
 import { AuthService } from './core/services/auth.service';
@@ -16,6 +16,8 @@ import { switchMap, of, catchError, timer } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { ToastContainerComponent } from './shared/components/toast-container/toast-container.component';
 import { ScrollToTopComponent } from './shared/components/scroll-to-top/scroll-to-top.component';
+
+declare let dataLayer: any[];
 
 const ROUTE_LABELS: Record<string, string> = {
   '/home': 'Inicio',
@@ -39,32 +41,41 @@ const ROUTE_LABELS: Record<string, string> = {
   styleUrl: './app.css'
 })
 export class App {
-  private authService    = inject(AuthService);
+  private authService = inject(AuthService);
   private planillaService = inject(PlanillaService);
-  private router         = inject(Router);
-  private torneoService  = inject(TorneoService);
+  private router = inject(Router);
+  private torneoService = inject(TorneoService);
 
-  admin          = this.authService.adminActual;
+  admin = this.authService.adminActual;
   pendientesCount = signal(0);
 
   // ── Countdown: delegado al servicio ──────────────────────────────────────
   // Los signals son readonly refs al mismo objeto del servicio,
   // por lo que el template sigue usando {{ countdownText() }} y tiempoExpirado()
   // sin ningún cambio en app.html.
-  countdownText  = this.torneoService.countdownText;
+  countdownText = this.torneoService.countdownText;
   tiempoExpirado = this.torneoService.tiempoExpirado;
 
   // ── Breadcrumb ────────────────────────────────────────────────────────────
   breadcrumbRootLabel = signal<string | null>(null);
-  breadcrumbRootLink  = signal<string | null>(null);
+  breadcrumbRootLink = signal<string | null>(null);
   breadcrumbPageLabel = signal<string | null>(null);
 
   constructor() {
     // Breadcrumb
     this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd),
+      // 2. Filtro seguro para TypeScript indicando que solo pasan eventos NavigationEnd
+      filter((e: RouterEvent): e is NavigationEnd => e instanceof NavigationEnd),
       takeUntilDestroyed()
-    ).subscribe(() => {
+    ).subscribe((navEvent) => { // navEvent ya contiene con certeza 'urlAfterRedirects'
+
+      // 3. Envío seguro del evento pageview a Google Tag Manager
+      if (typeof dataLayer !== 'undefined') {
+        dataLayer.push({
+          event: 'pageview',
+          pageUrl: navEvent.urlAfterRedirects
+        });
+      }
       const url = this.router.url.split('?')[0];
 
       if (url === '/home' || url === '/') {

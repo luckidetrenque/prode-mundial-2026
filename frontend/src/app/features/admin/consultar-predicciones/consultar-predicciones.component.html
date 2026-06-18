@@ -11,7 +11,7 @@
                 @for (p of partidos(); track p.id) {
                 @if (p) {
                 <option [value]="p.id">
-                    Partido N°{{ p.numero }} -
+                    Partido #{{ p.numero }} -
                     {{ p.equipoLocalShow || 'Sin equipo' }} vs {{ p.equipoVisitanteShow || 'Sin equipo' }}
                 </option>
                 }

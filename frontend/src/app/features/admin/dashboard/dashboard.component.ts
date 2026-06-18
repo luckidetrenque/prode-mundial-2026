@@ -27,7 +27,7 @@ import { AuthService } from '../../../core/services/auth.service';
           <a routerLink="/admin/resultados">Cargar Resultados</a>
         </li>
         <li class="menu__li">
-          <i class="fas fa-3x fa-trophy"></i>
+          <i class="fas fa-3x fa-search"></i>
           <a routerLink="/admin/consultar-predicciones">Consultar Predicciones</a>
         </li>
         <li class="menu__li">
