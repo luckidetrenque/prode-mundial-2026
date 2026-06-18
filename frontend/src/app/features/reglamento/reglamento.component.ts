@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+//import { RouterLink } from '@angular/router';
 
 interface ArticuloReglamento {
   numero: number;
@@ -12,7 +12,7 @@ interface ArticuloReglamento {
 @Component({
   selector: 'app-reglamento',
   standalone: true,
-  imports: [RouterLink],
+  imports: [/*RouterLink*/],
   template: `
     <main class="main reglamento-main">
 
@@ -102,7 +102,7 @@ interface ArticuloReglamento {
       </div>
 
       <!-- Footer CTA -->
-      <div class="reglamento-cta">
+      <!--<div class="reglamento-cta">
         <div class="cta-inner">
           <i class="fas fa-list-check cta-icono" aria-hidden="true"></i>
           <div class="cta-texto">
@@ -114,7 +114,7 @@ interface ArticuloReglamento {
             Cargar mi planilla
           </a>
         </div>
-      </div>
+      </div>-->
 
     </main>
   `,

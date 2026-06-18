@@ -28,6 +28,10 @@ import { AuthService } from '../../../core/services/auth.service';
         </li>
         <li class="menu__li">
           <i class="fas fa-3x fa-trophy"></i>
+          <a routerLink="/admin/consultar-predicciones">Consultar Predicciones</a>
+        </li>
+        <li class="menu__li">
+          <i class="fas fa-3x fa-trophy"></i>
           <a routerLink="/admin/podio">Ver Podio</a>
         </li>
         <li class="menu__li" (click)="auth.logout()" style="cursor:pointer">

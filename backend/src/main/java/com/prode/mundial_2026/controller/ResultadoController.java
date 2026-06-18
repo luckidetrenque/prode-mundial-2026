@@ -3,10 +3,6 @@ package com.prode.mundial_2026.controller;
 import com.prode.mundial_2026.dto.GrupoPosicionesDTO;
 import com.prode.mundial_2026.dto.ResultadoDTO;
 import com.prode.mundial_2026.dto.ResultadoRequestDTO;
-import com.prode.mundial_2026.model.Partido;
-import com.prode.mundial_2026.model.Prediccion;
-import com.prode.mundial_2026.model.Resultado;
-import com.prode.mundial_2026.repository.PartidoRepository;
 import com.prode.mundial_2026.repository.ResultadoRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +22,6 @@ import com.prode.mundial_2026.service.TablaPosicionesService;
 public class ResultadoController {
 
         private final ResultadoRepository resultadoRepository;
-        private final PartidoRepository partidoRepository;
         private final ResultadoService resultadoService;
         private final TablaPosicionesService tablaPosicionesService;
 

@@ -1,0 +1,67 @@
+<div class="admin-panel">
+    <h2 class="panel-title">Consultar Predicciones de Usuarios</h2>
+    <p class="panel-subtitle">Selecciona un partido y un resultado para ver qué participantes realizaron esa predicción.
+    </p>
+
+    <div class="filters-card">
+        <div class="form-group">
+            <label class="form-label">Partido:</label>
+            <select class="form-select" [(ngModel)]="partidoSeleccionado" (change)="buscar()">
+                <option [value]="null" disabled selected>Selecciona un partido...</option>
+                @for (p of partidos(); track p.id) {
+                @if (p) {
+                <option [value]="p.id">
+                    Partido N°{{ p.numero }} -
+                    {{ p.equipoLocalShow || 'Sin equipo' }} vs {{ p.equipoVisitanteShow || 'Sin equipo' }}
+                </option>
+                }
+                }
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Predicción:</label>
+            <select class="form-select" [(ngModel)]="prediccionSeleccionada" (change)="buscar()">
+                <option value="LOCAL">LOCAL</option>
+                <option value="EMPATE">EMPATE</option>
+                <option value="VISITANTE">VISITANTE</option>
+            </select>
+        </div>
+
+        <button class="btn-search" [disabled]="!partidoSeleccionado()" (click)="buscar()">
+            @if (cargando()) {
+            Buscando...
+            } @else {
+            <i class="fas fa-search"></i> Consultar
+            }
+        </button>
+    </div>
+
+    @if (usuariosEncontrados().length > 0) {
+    <div class="table-container">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Apellido</th>
+                    <th>Nombre</th>
+                    <th class="text-center">Código Planilla</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (u of usuariosEncontrados(); track u.codigoPlanilla) {
+                <tr>
+                    <td class="cell-bold">{{ u.apellido }}</td>
+                    <td>{{ u.nombre }}</td>
+                    <td class="text-center"><code class="code-badge">{{ u.codigoPlanilla }}</code></td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    } @else if (partidoSeleccionado() && !cargando()) {
+    <div class="empty-state">
+        <i class="fas fa-folder-open empty-icon"></i>
+        <p class="empty-text">Ningún participante realizó esta predicción para este partido.</p>
+    </div>
+    }
+</div>
