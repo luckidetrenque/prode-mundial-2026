@@ -51,7 +51,7 @@ public class ResultadoController {
                         @PathVariable Long partidoId,
                         @Valid @RequestBody ResultadoRequestDTO request) {
 
-                // Delegamos TODO el trabajo al Service (buscar, guardar, disparar tablas y
+                // Delegamos el trabajo al Service (buscar, guardar, disparar tablas y
                 // mapear)
                 ResultadoDTO dtoGuardado = resultadoService.guardarResultadoOficial(partidoId, request);
 

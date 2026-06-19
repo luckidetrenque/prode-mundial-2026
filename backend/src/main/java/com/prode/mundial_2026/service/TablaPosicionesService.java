@@ -4,9 +4,7 @@ import com.prode.mundial_2026.dto.GrupoPosicionesDTO;
 import com.prode.mundial_2026.dto.FilaPosicionDTO;
 import com.prode.mundial_2026.model.Partido;
 import com.prode.mundial_2026.model.PosicionEquipo;
-import com.prode.mundial_2026.repository.PartidoRepository;
 import com.prode.mundial_2026.repository.PosicionEquipoRepository;
-import com.prode.mundial_2026.repository.ResultadoRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,15 +16,9 @@ import java.util.stream.Collectors;
 public class TablaPosicionesService {
 
     private final PosicionEquipoRepository posicionRepository;
-    private final PartidoRepository partidoRepository;
-    private final ResultadoRepository resultadoRepository;
 
-    public TablaPosicionesService(PosicionEquipoRepository posicionRepository,
-            PartidoRepository partidoRepository,
-            ResultadoRepository resultadoRepository) {
+    public TablaPosicionesService(PosicionEquipoRepository posicionRepository) {
         this.posicionRepository = posicionRepository;
-        this.partidoRepository = partidoRepository;
-        this.resultadoRepository = resultadoRepository;
     }
 
     @Transactional
