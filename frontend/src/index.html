@@ -3,30 +3,41 @@
 
 <head>
   <!-- Google Tag Manager -->
-  <script>(function (w, d, s, l, i) {
-      w[l] = w[l] || []; w[l].push({
-        'gtm.start':
-          new Date().getTime(), event: 'gtm.js'
-      }); var f = d.getElementsByTagName(s)[0],
-        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
-          'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
-    })(window, document, 'script', 'dataLayer', 'GTM-KSFLVDZX');</script>
+  <script>
+    (function (w, d, s, l, i) {
+      w[l] = w[l] || [];
+      w[l].push({
+        'gtm.start': new Date().getTime(),
+        event: 'gtm.js',
+      });
+      var f = d.getElementsByTagName(s)[0],
+        j = d.createElement(s),
+        dl = l != 'dataLayer' ? '&l=' + l : '';
+      j.async = true;
+      j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+      f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-KSFLVDZX');
+  </script>
   <!-- End Google Tag Manager -->
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   <title>Prode Mundial 2026 — Canadá, EE.UU. y México</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base href="/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description"
-    content="Prode del Mundial de Fútbol 2026. Cargá tu planilla, mirá el fixture, resultados y la tabla de posiciones.">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+    content="Prode del Mundial de Fútbol 2026. Cargá tu planilla, mirá el fixture, resultados y la tabla de posiciones." />
+  <link rel="icon" type="image/png" href="/favicons/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg" />
+  <link rel="shortcut icon" href="/favicons/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-title" content="Prode Mundial 2026" />
   <!-- FontAwesome se maneja via angular.json (node_modules) -->
-
+  <link rel="manifest" href="manifest.webmanifest" />
 </head>
 
 <body>
   <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KSFLVDZX" height="0" width="0"
-      style="display:none;visibility:hidden"></iframe></noscript>
+      style="display: none; visibility: hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
   <app-root></app-root>
 </body>
