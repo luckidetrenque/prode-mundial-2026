@@ -205,12 +205,11 @@ type TabActiva = 'posiciones' | 'menciones';
             <p class="menciones-intro">
               <i class="fas fa-circle-info"></i>
               Reconocimientos especiales basados en el rendimiento durante el torneo.
-              Se actualizan automáticamente cada 30 minutos.
             </p>
             @if (mencionesData()?.ultimaActualizacion) {
               <span class="menciones-timestamp">
                 <i class="fas fa-clock"></i>
-                Última actualización: {{ mencionesData()!.ultimaActualizacion | date:'dd/MM HH:mm' }}
+                Última actualización: {{ mencionesData()!.ultimaActualizacion | date:'dd/MM' }}
               </span>
             }
           </div>
@@ -356,6 +355,11 @@ type TabActiva = 'posiciones' | 'menciones';
     .mencion-card.mencion-resistente   { border-left-color: #78909c; }
     .mencion-card.mencion-remontada    { border-left-color: #3CAC3B; }
     .mencion-card.mencion-bajon        { border-left-color: #E61D25; }
+    .mencion-card.mencion-contra_corriente  { border-left-color: #0097a7; }
+.mencion-card.mencion-racha_en_llamas   { border-left-color: #f4511e; }
+.mencion-card.mencion-el_tapado         { border-left-color: #546e7a; }
+.mencion-card.mencion-especialista_x2   { border-left-color: #6a1b9a; }
+.mencion-card.mencion-el_arranque       { border-left-color: #00897b; }
 
     .mencion-emoji {
       font-size: 2rem;
