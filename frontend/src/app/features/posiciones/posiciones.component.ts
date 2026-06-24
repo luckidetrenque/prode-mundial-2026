@@ -215,22 +215,59 @@ type TabActiva = 'posiciones' | 'menciones';
           </div>
 
           <div class="menciones-grid">
-            @for (m of mencionesData()!.menciones; track m.tipo + m.descripcion) {
-              <div class="mencion-card" [class]="'mencion-' + m.tipo.toLowerCase()">
+            @for (m of mencionesData()!.menciones; track m.tipo + m.descripcion; let idx = $index) {
+
+              <!-- Todas las cards son expandibles -->
+              <div
+                class="mencion-card mencion-card--expandible"
+                [style.border-left-color]="getColorMencion(m.tipo)"
+                [class.mencion-card--expandida]="estaExpandida(m.tipo + idx)"
+                (click)="toggleMencion(m.tipo + idx)"
+                role="button"
+                [attr.aria-expanded]="estaExpandida(m.tipo + idx)"
+                tabindex="0"
+                (keydown.enter)="toggleMencion(m.tipo + idx)"
+                (keydown.space)="$event.preventDefault(); toggleMencion(m.tipo + idx)"
+              >
                 <div class="mencion-emoji">{{ m.emoji }}</div>
                 <div class="mencion-body">
-                  <span class="mencion-titulo">{{ m.titulo }}</span>
-                  <span class="mencion-desc">{{ m.descripcion }}</span>
-                  <div class="mencion-participantes">
-                    @for (p of m.participantes; track p.codigoPlanilla) {
-                      <a [routerLink]="['/planillas', p.codigoPlanilla]" class="mencion-chip">
-                        {{ p.nombre }} {{ p.apellido }}
-                        <i class="fas fa-arrow-up-right-from-square" style="font-size:0.55rem;opacity:0.6"></i>
-                      </a>
-                    }
+
+                  <!-- Header: título + chevron -->
+                  <div class="mencion-header-row">
+                    <span class="mencion-titulo">{{ m.titulo }}</span>
+                    <i class="fas"
+                      [class.fa-chevron-down]="!estaExpandida(m.tipo + idx)"
+                      [class.fa-chevron-up]="estaExpandida(m.tipo + idx)"
+                      style="font-size:0.75rem;color:var(--clr-text-muted);flex-shrink:0">
+                    </i>
                   </div>
+
+                  <!-- Descripción -->
+                  <span class="mencion-desc">{{ m.descripcion }}</span>
+
+                  <!-- Hint: cantidad de participantes -->
+                  <span class="mencion-hint">
+                    {{ m.participantes.length }} participante{{ m.participantes.length !== 1 ? 's' : '' }}
+                    · Tocá para {{ estaExpandida(m.tipo + idx) ? 'cerrar' : 'ver' }}
+                  </span>
+
+                  <!-- Lista expandida de participantes -->
+                  @if (estaExpandida(m.tipo + idx)) {
+                    <div class="mencion-participantes mencion-participantes--expanded"
+                        (click)="$event.stopPropagation()">
+                      @for (p of m.participantes; track p.codigoPlanilla) {
+                        <a [routerLink]="['/planillas', p.codigoPlanilla]" class="mencion-chip mencion-chip--full">
+                          <i class="fas fa-user" style="font-size:0.65rem;opacity:0.6;flex-shrink:0"></i>
+                          {{ p.nombre }} {{ p.apellido }}
+                          <i class="fas fa-arrow-up-right-from-square" style="font-size:0.55rem;opacity:0.6;margin-left:auto;flex-shrink:0"></i>
+                        </a>
+                      }
+                    </div>
+                  }
+
                 </div>
               </div>
+
             }
           </div>
         }
@@ -344,23 +381,6 @@ type TabActiva = 'posiciones' | 'menciones';
       box-shadow: var(--shadow-md);
     }
 
-    /* Colores por tipo */
-    .mencion-card.mencion-el_adivino   { border-left-color: #2A398D; }
-    .mencion-card.mencion-diamante     { border-left-color: #00bcd4; }
-    .mencion-card.mencion-dia_perfecto { border-left-color: #E61D25; }
-    .mencion-card.mencion-puntero      { border-left-color: #FFD700; }
-    .mencion-card.mencion-mas_x2       { border-left-color: #ff9800; }
-    .mencion-card.mencion-empatador    { border-left-color: #3CAC3B; }
-    .mencion-card.mencion-consenso     { border-left-color: #9c27b0; }
-    .mencion-card.mencion-resistente   { border-left-color: #78909c; }
-    .mencion-card.mencion-remontada    { border-left-color: #3CAC3B; }
-    .mencion-card.mencion-bajon        { border-left-color: #E61D25; }
-    .mencion-card.mencion-contra_corriente  { border-left-color: #0097a7; }
-.mencion-card.mencion-racha_en_llamas   { border-left-color: #f4511e; }
-.mencion-card.mencion-el_tapado         { border-left-color: #546e7a; }
-.mencion-card.mencion-especialista_x2   { border-left-color: #6a1b9a; }
-.mencion-card.mencion-el_arranque       { border-left-color: #00897b; }
-
     .mencion-emoji {
       font-size: 2rem;
       line-height: 1;
@@ -416,6 +436,113 @@ type TabActiva = 'posiciones' | 'menciones';
       color: white;
       border-color: var(--clr-primary-dark);
     }
+
+    /* ── Card expandible (Día Perfecto) ───────────────────────────────────── */
+.mencion-card--expandible {
+  cursor: pointer;
+  user-select: none;
+}
+
+.mencion-card--expandible:hover {
+  border-color: var(--clr-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.mencion-card--expandible:focus-visible {
+  outline: 2px solid var(--clr-primary);
+  outline-offset: 2px;
+}
+
+.mencion-card--expandida {
+  border-color: var(--clr-primary);
+  background: linear-gradient(to bottom, var(--clr-surface), #f0fbf0);
+}
+
+.mencion-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5em;
+  width: 100%;
+}
+
+.mencion-hint {
+  font-size: 0.72rem;
+  color: var(--clr-primary);
+  font-weight: 600;
+  margin-top: 0.2em;
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+}
+
+.mencion-hint::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--clr-primary);
+  animation: pulse-dot 1.5s infinite;
+}
+
+@keyframes pulse-dot {
+  0%  { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+  100%{ opacity: 1; transform: scale(1); }
+}
+
+/* Lista de participantes expandida */
+.mencion-participantes--expanded {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+  margin-top: 0.75em;
+  padding-top: 0.75em;
+  border-top: 1px solid var(--clr-border);
+  animation: slideDown 0.2s ease;
+  max-height: 300px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.mencion-participantes--expanded::-webkit-scrollbar {
+  width: 4px;
+}
+
+.mencion-participantes--expanded::-webkit-scrollbar-thumb {
+  background: var(--clr-border-strong);
+  border-radius: 2px;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Chip full-width para la lista expandida */
+.mencion-chip--full {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  width: 100%;
+  padding: 0.45em 0.8em;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: var(--clr-surface-alt);
+  border: 1px solid var(--clr-border);
+  color: var(--clr-primary-dark);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.mencion-chip--full:hover {
+  background: var(--clr-primary-dark);
+  color: white;
+  border-color: var(--clr-primary-dark);
+  transform: translateX(3px);
+}
 
     /* ── Posiciones (mismo estilo que antes) ───────────────────────────── */
     .podio { display: flex; align-items: flex-end; justify-content: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-xl); padding: var(--spacing-lg) var(--spacing-md) 0; }
@@ -493,6 +620,7 @@ export class PosicionesComponent implements OnInit {
   posiciones = signal<Posicion[]>([]);
   mencionesData = signal<MencionesResponse | null>(null);
   paginaActual = signal(1);
+  mencionesExpandidas = signal<Set<string>>(new Set());
   readonly POR_PAGINA = 10;
 
   podio = computed(() => {
@@ -531,6 +659,22 @@ export class PosicionesComponent implements OnInit {
       error: () => this.cargando.set(false)
     });
   }
+
+  toggleMencion(key: string): void {
+  this.mencionesExpandidas.update(set => {
+    const nueva = new Set(set);
+    if (nueva.has(key)) {
+      nueva.delete(key);
+    } else {
+      nueva.add(key);
+    }
+    return nueva;
+  });
+}
+
+estaExpandida(key: string): boolean {
+  return this.mencionesExpandidas().has(key);
+}
 
   setTabMenciones(): void {
     this.tabActiva.set('menciones');
@@ -578,4 +722,26 @@ export class PosicionesComponent implements OnInit {
     if (posicion === 3) return 'row-bronze';
     return '';
   }
+
+  getColorMencion(tipo: string): string {
+  if (tipo.startsWith('ESPECIALISTA_GRUPO')) return '#3f51b5';
+  switch (tipo) {
+    case 'EL_ADIVINO':        return '#2A398D';
+    case 'DIAMANTE':          return '#00bcd4';
+    case 'DIA_PERFECTO':      return '#E61D25';
+    case 'PUNTERO':           return '#FFD700';
+    case 'MAS_X2':            return '#ff9800';
+    case 'EMPATADOR':         return '#3CAC3B';
+    case 'CONSENSO':          return '#9c27b0';
+    case 'RESISTENTE':        return '#78909c';
+    case 'REMONTADA':         return '#3CAC3B';
+    case 'BAJON':             return '#E61D25';
+    case 'CONTRA_CORRIENTE':  return '#0097a7';
+    case 'RACHA_EN_LLAMAS':   return '#f4511e';
+    case 'EL_TAPADO':         return '#546e7a';
+    case 'ESPECIALISTA_X2':   return '#6a1b9a';
+    case 'EL_ARRANQUE':       return '#00897b';
+    default:                  return '#90a4ae';
+  }
+}
 }

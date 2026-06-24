@@ -23,7 +23,7 @@ public class MencionService {
     private final MencionRepository mencionRepository;
     private final ResultadoRepository resultadoRepository;
 
-    // Caché en memoria — se actualiza cada 30 min por el scheduler
+    // Caché en memoria — se actualiza cada 5 min por el scheduler
     private MencionesResponseDTO cache = null;
 
     // ── Punto de entrada público ──────────────────────────────────────────
@@ -37,7 +37,7 @@ public class MencionService {
 
     // ── Scheduler ─────────────────────────────────────────────────────────
 
-    @Scheduled(fixedRate = 30 * 60 * 1000)
+    @Scheduled(fixedRate = 5 * 60 * 1000)
     @Transactional(readOnly = true)
     public void calcularYCachear() {
         log.info("[MENCIONES] Iniciando cálculo de menciones...");
@@ -64,6 +64,7 @@ public class MencionService {
             calcularElTapado(menciones);
             calcularEspecialistaX2(menciones);
             calcularElArranque(menciones);
+            calcularEspecialistaPorGrupo(menciones);
             calcularDiaPerfecto(menciones);
 
             cache = new MencionesResponseDTO(menciones, LocalDateTime.now(), true);
@@ -527,5 +528,42 @@ public class MencionService {
                 "El Arranque",
                 "Acertó los primeros 3 partidos del torneo",
                 participantes));
+    }
+
+    private void calcularEspecialistaPorGrupo(List<MencionDTO> menciones) {
+        List<Object[]> rows = mencionRepository.findMejorPorGrupo();
+        if (rows.isEmpty())
+            return;
+
+        // Quedarse con la primera fila de cada grupo (ya viene ordenado por aciertos
+        // DESC)
+        Map<String, Object[]> mejorPorGrupo = new LinkedHashMap<>();
+        for (Object[] row : rows) {
+            String grupo = (String) row[0];
+            mejorPorGrupo.putIfAbsent(grupo, row); // putIfAbsent → solo el primero (el mejor)
+        }
+
+        mejorPorGrupo.forEach((grupo, row) -> {
+            long aciertos = ((Number) row[4]).longValue();
+            if (aciertos == 0)
+                return;
+
+            // Buscar todos los empatados en ese grupo con los mismos aciertos
+            List<ParticipanteResumenDTO> participantes = rows.stream()
+                    .filter(r -> grupo.equals(r[0]) && ((Number) r[4]).longValue() == aciertos)
+                    .map(r -> new ParticipanteResumenDTO(
+                            (String) r[1],
+                            (String) r[2],
+                            ((Number) r[3]).longValue()))
+                    .toList();
+
+            menciones.add(new MencionDTO(
+                    "ESPECIALISTA_GRUPO_" + grupo,
+                    "🏅",
+                    "Rey del Grupo " + grupo,
+                    "Más aciertos en el Grupo " + grupo + ": " + aciertos
+                            + " partido" + (aciertos != 1 ? "s" : ""),
+                    participantes));
+        });
     }
 }

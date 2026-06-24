@@ -408,4 +408,29 @@ public interface MencionRepository extends JpaRepository<Planilla, Long> {
             ORDER BY pl.codigo ASC
             """)
     List<Object[]> findElArranque();
+
+    /**
+     * Por cada grupo, trae todos los participantes ordenados por aciertos DESC.
+     * Se filtra en Java para quedarse con el mejor de cada grupo.
+     * Retorna: [grupo, nombre, apellido, codigoPlanilla, aciertos]
+     */
+    @Query("""
+            SELECT
+                pa.grupo,
+                u.nombre,
+                u.apellido,
+                pl.codigo,
+                COUNT(pr.id)
+            FROM Prediccion pr
+            JOIN pr.planilla pl
+            JOIN pl.usuario u
+            JOIN pr.partido pa
+            JOIN Resultado r ON r.partido = pa
+            WHERE pl.confirmada = true
+              AND pa.grupo IS NOT NULL
+              AND pr.prediccion = r.resultado
+            GROUP BY pa.grupo, pl.id, u.nombre, u.apellido, pl.codigo
+            ORDER BY pa.grupo ASC, COUNT(pr.id) DESC
+            """)
+    List<Object[]> findMejorPorGrupo();
 }
