@@ -160,7 +160,14 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
               <div class="partidos-lista">
                 @for (partido of getPartidosPorGrupo(grupo); track partido.id) {
                   <div class="partido-row" [class.guardado]="resultadosGuardados().has(partido.id)">
-                    <span class="partido-n">#{{ partido.numero }}</span>
+                    <div style="position:relative; display:flex; align-items:center; justify-content:center;">
+                      <span class="partido-n">#{{ partido.numero }}</span>
+                      @if (partido.multiplicador > 1) {
+                        <span style="position:absolute; top:-24px; right:-96px; display:inline-flex; align-items:center; gap:1px; background:#ffc107; color:#856404; font-size:0.55rem; font-weight:800; padding:1px 3px; border-radius:4px; text-transform:uppercase; white-space:nowrap;">
+                          <i class="fas fa-bolt" style="font-size:0.55rem"></i>x2
+                        </span>
+                      }
+                    </div>
                     <div class="partido-equipo partido-equipo--local">
                       <input type="number" class="input-goles" min="0" placeholder="-" 
                         [ngModel]="getGolesLocal(partido.id)"

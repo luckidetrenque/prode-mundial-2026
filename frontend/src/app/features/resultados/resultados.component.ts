@@ -148,7 +148,15 @@ const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
                     class="partido-row"
                     [class.guardado]="resultadosGuardados().has(partido.id)"
                   >
-                    <span class="partido-n" aria-hidden="true">#{{ partido.numero }}</span>
+                      <div style="position:relative; display:flex; align-items:center; justify-content:center;">
+                        <span class="partido-n" aria-hidden="true">#{{ partido.numero }}</span>
+                        @if (partido.multiplicador > 1) {
+                          <span class="multi-badge-res" title="Partido vale doble puntaje"
+                                style="position:absolute; top:50%; transform:translateY(-50%); right:-22px; display:inline-flex; align-items:center; gap:1px; background:#ffc107; color:#856404; font-size:0.55rem; font-weight:800; padding:1px 3px; border-radius:4px; text-transform:uppercase; white-space:nowrap;">
+                            <i class="fas fa-bolt" style="font-size:0.55rem"></i>x2
+                          </span>
+                        }
+                      </div>
 
                     <div class="partido-equipo partido-equipo--local">
                       <span class="goles-txt">{{ getGolesLocal(partido.id) !== null ? getGolesLocal(partido.id) : '-' }}</span>
