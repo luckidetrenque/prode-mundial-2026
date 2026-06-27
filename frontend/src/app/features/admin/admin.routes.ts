@@ -28,6 +28,11 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () => import('./ver-podio/ver-podio.component').then(m => m.VerPodioComponent)
     },
     {
+        path: 'tabla-posiciones',
+        canActivate: [authGuard],
+        loadComponent: () => import('./tabla-posiciones/tabla-posiciones.component').then(m => m.TablaPosicionesComponent)
+    },
+    {
         path: 'login',
         loadComponent: () => import('./login/login.component').then(m => m.LoginComponent)
     }

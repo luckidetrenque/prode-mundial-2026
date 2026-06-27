@@ -1,0 +1,89 @@
+<!-- src/app/features/admin/tabla-posiciones/tabla-posiciones.component.html -->
+<main class="main">
+  <h2><i class="fas fa-list-ol"></i> Tabla de Posiciones — Dirección de Contrataciones y Ex</h2>
+  <p class="subtitulo">
+    <i class="fas fa-circle-info" style="color:var(--clr-primary-light);font-size:0.8rem"></i>
+    Posiciones del grupo de {{ posicionesFiltradas().length }} participantes.
+  </p>
+
+  <!-- Spinner -->
+  @if (cargando()) {
+  <div class="spinner-container">
+    <div class="spinner"></div>
+  </div>
+  }
+
+  <!-- Error -->
+  @if (!cargando() && error()) {
+  <div class="estado-vacio">
+    <i class="fas fa-triangle-exclamation icono-vacio" style="color:var(--clr-action)"></i>
+    <p class="titulo-vacio">Error al cargar posiciones</p>
+    <p class="desc-vacio">No se pudo conectar con el servidor. Intentá de nuevo más tarde.</p>
+  </div>
+  }
+
+  <!-- Sin datos -->
+  @if (!cargando() && !error() && posicionesFiltradas().length === 0) {
+  <div class="estado-vacio">
+    <i class="fas fa-hourglass-half icono-vacio"></i>
+    <p class="titulo-vacio">Aún no hay resultados</p>
+    <p class="desc-vacio">Las posiciones se actualizarán a medida que se carguen los resultados.</p>
+  </div>
+  }
+
+  <!-- Tabla -->
+  @if (!cargando() && !error() && posicionesFiltradas().length > 0) {
+
+  <!-- Podio top 3 -->
+  <!-- @if (podioAgrupado().length >= 1) {
+  <div class="podio-mini">
+    @for (grupo of podioAgrupado(); track grupo.posicion) {
+    <div class="podio-mini-item podio-pos-{{ grupo.posicion }}">
+      <span class="podio-mini-medal">
+        @if (grupo.posicion === 1) { <i class="fas fa-trophy" style="color:#f5c518"></i> }
+        @if (grupo.posicion === 2) { <i class="fas fa-medal" style="color:#adb5bd"></i> }
+        @if (grupo.posicion === 3) { <i class="fas fa-medal" style="color:#cd7f32"></i> }
+      </span>
+      <div class="podio-nombres-grupo">
+        @for (j of grupo.jugadores; track j.codigoPlanilla) {
+        <span class="podio-mini-nombre">{{ nombreCompleto(j) }}</span>
+        }
+      </div>
+      <span class="podio-mini-pts">{{ grupo.puntos }} puntos</span>
+    </div>
+    }
+  </div>
+  } -->
+
+  <div class="table-container">
+    <div class="table-wrap">
+      <table class="tabla-pos">
+        <thead>
+          <tr>
+            <th class="col-pos">#</th>
+            <th>Participante</th>
+            <th class="col-num">Partidos</th>
+            <th class="col-num">Puntos</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of posicionesFiltradas(); track p.codigoPlanilla) {
+          <tr [class]="getClaseRow(p.posicion)">
+            <td class="col-pos">
+              <span class="badge-pos" [class]="'badge-pos--' + p.posicion">
+                {{ p.posicion }}
+              </span>
+            </td>
+            <td class="col-nombre">{{ nombreCompleto(p) }}</td>
+            <td class="col-num">{{ p.totalPartidos }}</td>
+            <td class="col-num puntos-cell">
+              <strong>{{ p.puntos }}</strong>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+  }
+</main>

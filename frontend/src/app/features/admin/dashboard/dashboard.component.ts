@@ -34,6 +34,10 @@ import { AuthService } from '../../../core/services/auth.service';
           <i class="fas fa-3x fa-trophy"></i>
           <a routerLink="/admin/podio">Ver Podio</a>
         </li>
+        <li class="menu__li">
+          <i class="fas fa-3x fa-list-ol"></i>
+          <a routerLink="/admin/tabla-posiciones">Tabla de Posiciones <br>Dirección de Contrataciones</a>
+        </li>
         <li class="menu__li" (click)="auth.logout()" style="cursor:pointer">
           <i class="fas fa-3x fa-right-from-bracket"></i>
           <span>Salir</span>
@@ -43,7 +47,7 @@ import { AuthService } from '../../../core/services/auth.service';
   `,
   styles: [`
     .admin-name { font-size: 0.8rem; color: #888; font-weight: normal; }
-    .menu { grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    .menu { grid-template-columns: repeat(3, 1fr); gap: 1rem; }
     @media (max-width: 768px) {
       .menu { grid-template-columns: repeat(2, 1fr); }
     }
